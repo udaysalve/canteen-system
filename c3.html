@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Shree Gajanan Canteen</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="responsive-styles.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="js/api-helper.js"></script>
+    <script src="js/order-sync.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #e53935;
+            --secondary-color: #4CAF50;
+            --reward-color: #ff9800;
+            --text-color: #333;
+            --light-text-color: #777;
+            --border-color: #eee;
+            --background-color: #f9f9f9;
+            --white: #fff;
+            --green-veg: #008000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- Auth Page Styles --- */
+        #auth-container { 
+            width: 100%; 
+            max-width: 450px; 
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 50px 45px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 100px rgba(102, 126, 234, 0.2);
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        #auth-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #auth-container:hover::before {
+            opacity: 0.3;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .auth-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #ff6b6b 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            color: white;
+            box-shadow: 0 10px 30px rgba(229, 57, 53, 0.3);
+        }
+
+        #auth-container h2 { 
+            text-align: center; 
+            margin-bottom: 10px; 
+            color: var(--text-color); 
+            font-size: 2.2em; 
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: var(--light-text-color);
+            font-size: 1em;
+            margin-bottom: 30px;
+        }
+
+        .form-group { 
+            margin-bottom: 25px; 
+            position: relative;
+        }
+
+        .form-group label { 
+            display: block; 
+            margin-bottom: 10px; 
+            color: var(--text-color); 
+            font-weight: 600; 
+            font-size: 1em;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input { 
+            width: 100%; 
+            padding: 16px 20px; 
+            border: 2px solid #e8e8e8; 
+            border-radius: 12px; 
+            font-size: 1.05em; 
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .form-group input:focus { 
+            outline: none; 
+            border-color: var(--primary-color); 
+            background: white;
+            box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .auth-btn { 
+            width: 100%; 
+            padding: 15px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            margin-bottom: 20px;  
+        }
+        
+        .admin-login-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .admin-login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .admin-logo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+        
+        .admin-logo::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+            border-radius: 50%;
+            z-index: -1;
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 10px;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+        
+        
+        .password-input-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: #333;
+        }
+        
+        .input-validation {
+            font-size: 12px;
+            margin-top: 5px;
+            min-height: 16px;
+        }
+        
+        .input-validation.valid {
+            color: #4CAF50;
+        }
+        
+        .input-validation.invalid {
+            color: #f44336;
+        }
+        
+        .security-features {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .security-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .admin-footer {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+        
+        .admin-help {
+            text-align: center;
+            margin-top: 12px;
+        }
+        
+        .admin-help small {
+            color: #718096;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .auth-toggle span:hover {
+            border-bottom-color: var(--primary-color);
+        }
+
+        .auth-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 15px;
+            text-align: center;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(231, 76, 60, 0.05) 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .auth-error::before {
+            content: '\f071';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #e74c3c;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .admin-login-section {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .admin-login-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #667eea;
+            background: transparent;
+            color: #667eea;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .admin-login-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        #back-to-customer-login {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        #back-to-customer-login:hover {
+            color: #5a67d8;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(-2px);
+        }
+
+        /* --- Main App Styles --- */
+        .mobile-container { 
+            width: 100%; 
+            max-width: 100vw; 
+            background: var(--white); 
+            box-shadow: none;
+            border-radius: 0; 
+            overflow: hidden; 
+            position: relative; 
+            padding-bottom: 0; 
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body:has(.mobile-container:not(.hidden)) {
+            padding: 0;
+            background: var(--white);
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        body:has(.mobile-container:not(.hidden))::before {
+            display: none;
+        }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-bottom: 2px solid var(--border-color); background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); }
+        header .logo h2 { font-size: 1.8rem; color: var(--text-color); font-weight: 700; letter-spacing: 0.5px; }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .header-btn { background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 1.1rem; font-weight: 600; padding: 8px 12px; border-radius: 5px; transition: all 0.3s; }
+        .header-btn:hover { background-color: rgba(229, 57, 53, 0.1); transform: translateY(-2px); }
+        #reward-indicator { color: var(--reward-color); font-weight: bold; font-size: 1rem; padding: 5px 10px; background-color: rgba(255, 152, 0, 0.1); border-radius: 5px; }
+
+        .search-container { padding: 20px 30px; display: flex; align-items: center; background-color: var(--background-color); border-bottom: 2px solid var(--border-color); }
+        .search-container i { font-size: 1.3rem; color: var(--light-text-color); }
+        .search-container input { border: none; outline: none; background: transparent; margin-left: 15px; font-size: 1.1rem; width: 100%; }
+        .categories { padding: 15px 30px; display: flex; gap: 15px; overflow-x: auto; white-space: nowrap; border-bottom: 2px solid var(--border-color); background-color: #fafafa; }
+        .categories::-webkit-scrollbar { height: 6px; }
+        .categories::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 3px; }
+        .category-btn { padding: 12px 25px; border: 2px solid var(--border-color); background: var(--white); border-radius: 25px; font-size: 1.05rem; cursor: pointer; font-weight: 500; transition: all 0.3s; }
+        .category-btn:hover { border-color: var(--primary-color); color: var(--primary-color); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .category-btn.active { background-color: var(--primary-color); color: var(--white); border-color: var(--primary-color); box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3); }
+
+        .menu { 
+            padding: 30px 40px 120px 40px; 
+            flex: 1; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            background: #f5f5f5;
+        }
+        .menu::-webkit-scrollbar { width: 10px; }
+        .menu::-webkit-scrollbar-track { background: #e0e0e0; }
+        .menu::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 5px; }
+        .menu::-webkit-scrollbar-thumb:hover { background: #c62828; }
+        
+        .menu h3 { 
+            margin: 35px 0 25px 0; 
+            color: var(--text-color); 
+            font-size: 1.6rem; 
+            font-weight: 700;
+        }
+        .menu h3:first-child { margin-top: 0; }
+
+        .category-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (min-width: 1200px) {
+            .category-items {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1199px) and (min-width: 768px) {
+            .category-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 767px) {
+            .category-items {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-item { 
+            background: white;
+            border-radius: 15px;
+            padding: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .menu-item:hover { 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+            transform: translateY(-5px);
+        }
+
+        .item-image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+        }
+
+        .item-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .menu-item:hover .item-image-container img {
+            transform: scale(1.05);
+        }
+
+        .veg-icon { 
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            color: var(--green-veg); 
+            background: white;
+            border: 2px solid var(--green-veg); 
+            padding: 5px; 
+            font-size: 0.85rem; 
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .item-details { 
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .item-details h4 { 
+            margin: 0; 
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+        
+        .price { 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            color: var(--primary-color); 
+            margin: 5px 0 15px 0;
+        }
+
+        .item-action { 
+            margin-top: auto;
+        }
+        
+        .add-btn { 
+            width: 100%;
+            background: #007bff;
+            color: var(--white); 
+            border: none;
+            padding: 12px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-size: 1.05rem; 
+            transition: all 0.3s;
+        }
+        
+        .add-btn:hover { 
+            background: #0056b3;
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+        
+        .quantity-stepper { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            background: var(--primary-color); 
+            color: var(--white); 
+            width: 100%;
+            padding: 10px 15px; 
+            border-radius: 8px;
+        }
+        
+        .quantity-btn { 
+            background: rgba(255,255,255,0.25);
+            border: none; 
+            color: white; 
+            font-size: 1.4rem; 
+            cursor: pointer; 
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: 700; 
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quantity-btn:hover { 
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.1);
+        }
+        
+        .quantity-display { 
+            font-weight: 700; 
+            font-size: 1.2rem;
+            min-width: 35px;
+            text-align: center;
+        }
+        
+        .order-summary { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            width: 100%; 
+            max-width: 100vw;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #c62828 100%); 
+            color: var(--white); 
+            padding: 20px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.3s ease, visibility 0.3s ease; 
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        .order-summary.visible { opacity: 1; visibility: visible; }
+        #order-details { font-size: 1.2rem; font-weight: 600; }
+        #view-order-btn { background-color: var(--white); color: var(--primary-color); border: none; padding: 12px 30px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1.1rem; transition: all 0.3s; box-shadow: 0 4px 10px rgba(255,255,255,0.3); }
+        #view-order-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255,255,255,0.4); }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1000;}
+        .modal.visible { opacity: 1; visibility: visible; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1000;}
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--white); padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;}
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+        
+        .order-item, .history-order-item { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .order-item:last-child, .history-order-item:last-child { border-bottom: none; }
+        .order-item-details, .history-details { display: flex; flex-direction: column; }
+        .order-item-total, .history-total { font-weight: 500; text-align: right; }
+        .history-date { font-weight: bold; color: var(--text-color); margin-bottom: 5px; }
+
+        .modal-footer { border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px; }
+        .totals-summary { text-align: right; margin-bottom: 15px; font-size: 1rem; }
+        .totals-summary p { margin: 5px 0; }
+        .totals-summary .discount { color: var(--secondary-color); }
+        .totals-summary .grand-total { font-size: 1.1rem; font-weight: 700; }
+        
+        #redeem-reward-btn { width: 100%; padding: 10px; margin-bottom: 10px; background-color: var(--reward-color); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .payment-options { display: flex; flex-direction: column; gap: 10px; }
+        .payment-btn { width: 100%; padding: 12px; border-radius: 5px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+        .payment-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .online-btn { background-color: var(--secondary-color); color: var(--white); }
+        .upi-btn { background-color: #5f259f; color: var(--white); }
+        .card-btn { background-color: #1a73e8; color: var(--white); }
+        .cash-btn { background-color: #f0f0f0; color: var(--text-color); border: 1px solid #ddd;}
+        
+        .payment-method-section { margin-bottom: 15px; }
+        .payment-method-section h4 { margin-bottom: 10px; color: var(--text-color); font-size: 0.95rem; }
+        
+        .success-animation { text-align: center; padding: 20px; }
+        .success-animation i { font-size: 4rem; color: var(--secondary-color); animation: scaleIn 0.5s ease; }
+        @keyframes scaleIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+        /* Receipt Styles */
+        .receipt-modal-content { max-width: 400px; }
+        .receipt-content { 
+            background: white; 
+            padding: 20px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 12px; 
+            line-height: 1.4;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .receipt-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+        .receipt-header h2 { margin: 0; font-size: 18px; font-weight: bold; }
+        .receipt-header p { margin: 2px 0; font-size: 11px; }
+        .receipt-info { margin-bottom: 15px; }
+        .receipt-info div { display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .receipt-items { border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; margin: 15px 0; }
+        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .receipt-item-name { flex: 1; }
+        .receipt-item-qty { width: 30px; text-align: center; }
+        .receipt-item-price { width: 60px; text-align: right; }
+        .receipt-totals { margin-top: 10px; }
+        .receipt-totals div { display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .receipt-total { font-weight: bold; border-top: 1px solid #000; padding-top: 5px; }
+        .receipt-footer { text-align: center; margin-top: 15px; border-top: 1px dashed #000; padding-top: 10px; }
+        .receipt-actions { display: flex; gap: 10px; justify-content: center; }
+        .receipt-action-btn { 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.3s ease;
+        }
+        .print-btn { background-color: #4CAF50; color: white; }
+        .download-btn { background-color: #2196F3; color: white; }
+        .close-btn { background-color: #f44336; color: white; }
+        .receipt-action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
+        @media print {
+            body * { visibility: hidden; }
+            .receipt-content, .receipt-content * { visibility: visible; }
+            .receipt-content { position: absolute; left: 0; top: 0; width: 100%; }
+            .receipt-actions { display: none !important; }
+        }
+        
+        .no-results { text-align: center; color: var(--light-text-color); padding: 40px 20px; }
+
+    </style>
+</head>
+<body>
+    
+    <div id="auth-container">
+        <div id="login-form">
+            <div class="auth-header">
+                <div class="auth-logo">🍽️</div>
+                <h2>Welcome Back!</h2>
+                <p class="auth-subtitle">Login to order delicious food</p>
+            </div>
+            <div class="form-group">
+                <label for="login-username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="login-username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="login-password" placeholder="Enter your password" required>
+            </div>
+            <button id="login-btn" class="auth-btn">
+                <i class="fas fa-sign-in-alt"></i> Login to Order
+            </button>
+            <p id="login-error" class="auth-error hidden"></p>
+            <p class="auth-toggle">Don't have an account? <span id="show-signup">Create Account</span></p>
+            <div class="admin-login-section">
+                <button id="admin-access-link" class="admin-login-btn">
+                    <i class="fas fa-user-shield"></i> Admin Portal Access
+                </button>
+            </div>
+        </div>
+        
+        <div id="signup-form" class="hidden">
+            <div class="auth-header">
+                <div class="auth-logo">🍽️</div>
+                <h2>Create Account</h2>
+                <p class="auth-subtitle">Join us for amazing food experience</p>
+            </div>
+            <div class="form-group">
+                <label for="signup-username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="signup-username" placeholder="Choose a username" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="signup-password" placeholder="Create a password" required>
+            </div>
+            <button id="signup-btn" class="auth-btn">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+            <p id="signup-error" class="auth-error hidden"></p>
+            <p class="auth-toggle">Already have an account? <span id="show-login">Login Here</span></p>
+            <div class="admin-login-section">
+                <button id="admin-access-link-signup" class="admin-login-btn">
+                    <i class="fas fa-user-shield"></i> Admin Portal Access
+                </button>
+            </div>
+        </div>
+        
+        <div id="admin-login-form" class="hidden">
+            <div class="auth-header">
+                <div class="auth-logo admin-logo">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2>Admin Portal</h2>
+                <p class="auth-subtitle">Secure Administrative Access</p>
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i> Encrypted Connection
+                </div>
+            </div>
+            
+            
+            <div class="form-group">
+                <label for="admin-login-username">
+                    <i class="fas fa-user-shield"></i> Admin Username
+                </label>
+                <input type="text" id="admin-login-username" placeholder="Enter admin username" required autocomplete="username">
+                <div class="input-validation" id="username-validation"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="admin-login-password">
+                    <i class="fas fa-key"></i> Admin Password
+                </label>
+                <div class="password-input-container">
+                    <input type="password" id="admin-login-password" placeholder="Enter admin password" required autocomplete="current-password">
+                    <button type="button" class="password-toggle" id="admin-password-toggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="input-validation" id="password-validation"></div>
+            </div>
+            
+            <div class="security-features">
+                <div class="security-item">
+                    <i class="fas fa-clock"></i> Session timeout: 2 hours
+                </div>
+                <div class="security-item">
+                    <i class="fas fa-history"></i> Activity logging enabled
+                </div>
+            </div>
+            
+            <button id="admin-login-btn" class="auth-btn admin-login-btn">
+                <i class="fas fa-sign-in-alt"></i> Access Admin Portal
+            </button>
+            
+            <div id="admin-login-error" class="auth-error hidden"></div>
+            
+            <div class="admin-footer">
+                <p class="auth-toggle">
+                    <span id="back-to-customer-login">
+                        <i class="fas fa-arrow-left"></i> Back to Customer Login
+                    </span>
+                </p>
+                <div class="admin-help">
+                    <small><i class="fas fa-question-circle"></i> Need help? Contact system administrator</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-container hidden">
+        <header>
+            <div class="logo"><h2>Shree Gajanan Canteen</h2></div>
+            <div class="header-actions">
+                <span id="reward-indicator" class="hidden">🎁 Reward!</span>
+                <button id="history-btn" class="header-btn"><i class="fas fa-history"></i> History</button>
+                <button id="logout-btn" class="header-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+        <div class="search-container"><i class="fas fa-search"></i><input type="text" id="search-input" placeholder="Search item..."></div>
+        <nav class="categories" id="categories-nav"></nav>
+        <main class="menu" id="menu-container"></main>
+    </div>
+
+    <footer id="order-summary" class="order-summary">
+        <div id="order-details"><p>Your order is empty</p></div>
+        <button id="view-order-btn">View Order</button>
+    </footer>
+
+    <div id="order-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Your Order</h3><button id="close-order-modal-btn" class="close-btn">&times;</button></div>
+            <div id="modal-order-items" class="modal-body"></div>
+            <div class="modal-footer">
+                <div id="totals-summary" class="totals-summary"></div>
+                <button id="redeem-reward-btn" class="hidden">Redeem Monthly Reward (Free Cold Coffee)</button>
+                <div class="payment-method-section">
+                    <h4>💳 Choose Payment Method</h4>
+                    <div class="payment-options">
+                        <button id="pay-upi-btn" class="payment-btn upi-btn"><i class="fas fa-mobile-alt"></i> Pay with UPI</button>
+                        <button id="pay-card-btn" class="payment-btn card-btn"><i class="fas fa-credit-card"></i> Pay with Card/Wallet</button>
+                        <button id="pay-cash-btn" class="payment-btn cash-btn"><i class="fas fa-money-bill-wave"></i> Pay with Cash</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div id="receipt-modal" class="modal">
+        <div class="modal-content receipt-modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-receipt"></i> Receipt</h3>
+                <span class="modal-close" onclick="document.getElementById('receipt-modal').classList.remove('visible')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="receipt-content" class="receipt-content"></div>
+                <div class="receipt-actions">
+                    <button id="print-receipt-btn" class="receipt-action-btn print-btn">
+                        <i class="fas fa-print"></i> Print Receipt
+                    </button>
+                    <button id="download-receipt-btn" class="receipt-action-btn download-btn">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                    <button id="close-receipt-btn" class="receipt-action-btn close-btn">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History Modal -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> Order History</h3>
+                <span class="modal-close" onclick="document.getElementById('history-modal').classList.remove('visible')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="modal-history-items"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load menu data from localStorage (synced with admin portal)
+            function loadMenuData() {
+                const adminMenuData = JSON.parse(localStorage.getItem('GajananCMS_menu')) || [];
+                
+                // If admin menu exists, use it; otherwise use default menu
+                if (adminMenuData.length > 0) {
+                    return adminMenuData.map(item => ({
+                        category: item.category,
+                        name: item.name,
+                        price: item.price,
+                        image: getItemImage(item.name) // Use default images based on item name
+                    }));
+                }
+                
+                // Default menu data (fallback)
+                return [
+                    { category: 'Tea, Coffee & Milk', name: 'Tea', price: 10, image: 'chai.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Special Tea', price: 15, image: 'special_chai.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Coffee', price: 20, image: 'coffee.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Black Coffee', price: 12, image: 'black_coffee.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Milk', price: 20, image: 'milk.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Hot Chocolate', price: 25, image: 'hot_chocolate_milk.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Badam Milk', price: 30, image: 'badam_milk.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Lassi', price: 25, image: 'lassi.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Buttermilk', price: 15, image: 'buttermilk.jpg' },
+                    { category: 'Tea, Coffee & Milk', name: 'Coconut Water', price: 20, image: 'coconut_water.jpg' },
+
+                    { category: 'Snacks & Fast Food', name: 'Samosa', price: 12, image: 'potato_samosa.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Vada Pav', price: 15, image: 'vada_pav.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Pav Bhaji', price: 40, image: 'pav_bhaji.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Misal Pav', price: 35, image: 'misal_pav.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Bhel Puri', price: 25, image: 'bhel.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Sev Puri', price: 30, image: 'sev_puri.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Dahi Puri', price: 35, image: 'dahi_puri.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Pani Puri', price: 20, image: 'pani_puri.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Aloo Tikki', price: 25, image: 'aloo_tikki.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Chole Bhature', price: 50, image: 'chole_bhature.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Rajma Chawal', price: 45, image: 'rajma_chawal.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Poha', price: 20, image: 'onion_pohe.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Upma', price: 18, image: 'upma.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Idli Sambhar', price: 30, image: 'idli_sambar.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Dosa', price: 35, image: 'plain_dosa.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Uttapam', price: 40, image: 'uttapam.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Medu Vada', price: 25, image: 'medu_vada.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Rava Dosa', price: 45, image: 'rava_dosa.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Masala Dosa', price: 50, image: 'masala_dosa.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Sandwich', price: 25, image: 'veg_sandwich.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Grilled Sandwich', price: 35, image: 'grilled_sandwich.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Club Sandwich', price: 45, image: 'club_sandwich.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Burger', price: 40, image: 'burger.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Pizza Slice', price: 50, image: 'pizza_slice.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'French Fries', price: 30, image: 'french_fries.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Maggi', price: 25, image: 'plain_maggie.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Pasta', price: 40, image: 'pasta.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Noodles', price: 35, image: 'noodles.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Fried Rice', price: 45, image: 'fried_rice.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Manchurian', price: 40, image: 'manchurian.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Spring Roll', price: 35, image: 'spring_roll.jpg' },
+                    { category: 'Snacks & Fast Food', name: 'Momos', price: 30, image: 'momos.jpg' },
+
+                    { category: 'Sweets & Desserts', name: 'Gulab Jamun', price: 20, image: 'gulab_jamun.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Rasgulla', price: 18, image: 'rasgulla.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Jalebi', price: 25, image: 'jalebi.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Laddu', price: 15, image: 'laddu.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Barfi', price: 30, image: 'barfi.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Kheer', price: 25, image: 'kheer.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Halwa', price: 20, image: 'halwa.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Ice Cream', price: 35, image: 'ice_cream.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Kulfi', price: 25, image: 'kulfi.jpg' },
+                    { category: 'Sweets & Desserts', name: 'Falooda', price: 40, image: 'falooda.jpg' },
+
+                    { category: 'Specials & Main Course', name: 'Thali (Full)', price: 80, image: 'thali_full.jpg' },
+                    { category: 'Specials & Main Course', name: 'Thali (Half)', price: 50, image: 'thali_half.jpg' },
+                    { category: 'Specials & Main Course', name: 'Dal Chawal', price: 40, image: 'dal_fry.jpg' },
+                    { category: 'Specials & Main Course', name: 'Sabzi Roti', price: 35, image: 'poli_bhaji.jpg' },
+                    { category: 'Specials & Main Course', name: 'Chapati', price: 8, image: 'plain_paratha.jpg' },
+                    { category: 'Specials & Main Course', name: 'Paratha', price: 15, image: 'aloo_paratha.jpg' },
+                    { category: 'Specials & Main Course', name: 'Stuffed Paratha', price: 25, image: 'stuffed_paratha.jpg' },
+                    { category: 'Specials & Main Course', name: 'Biryani', price: 60, image: 'biryani.jpg' },
+                    { category: 'Specials & Main Course', name: 'Pulao', price: 45, image: 'pulao.jpg' },
+                    { category: 'Specials & Main Course', name: 'Curd Rice', price: 30, image: 'curd_rice.jpg' },
+                    { category: 'Specials & Main Course', name: 'Green Salad', price: 40, image: 'green_salad.jpg' },
+                    { category: 'Specials & Main Course', name: 'Poli Bhaji (Roti with Curry)', price: 50, image: 'poli_bhaji.jpg' },
+                    { category: 'Specials & Main Course', name: 'Varan Khichdi (Dal Khichdi)', price: 60, image: 'varan_khichdi.jpg' },
+                    { category: 'Specials & Main Course', name: 'Plain Rice', price: 40, image: 'plain_rice.jpg' },
+                    { category: 'Specials & Main Course', name: 'Rice Plate', price: 80, image: 'rice_plate.jpg' },
+                    { category: 'Specials & Main Course', name: 'Paneer Pulao', price: 120, image: 'paneer_pulao.jpg' },
+                    { category: 'Specials & Main Course', name: 'Plain Pulao', price: 90, image: 'plain_pulao.jpg' },
+                ];
+            }
+            
+            // Function to get appropriate image for menu items
+            function getItemImage(itemName) {
+                // Comprehensive image mapping for all menu items
+                const imageMap = {
+                    // Tea, Coffee & Milk
+                    'Tea': 'chai.jpg',
+                    'Special Tea': 'special_chai.jpg',
+                    'Coffee': 'coffee.jpg',
+                    'Milk': 'milk.jpg',
+                    'Hot Chocolate Milk': 'hot_chocolate_milk.jpg',
+                    'Cold Chocolate Milk': 'cold_chocolate_milk.jpg',
+                    'Buttermilk': 'buttermilk.jpg',
+                    'Lassi': 'lassi.jpg',
+                    
+                    // Breakfast
+                    'Pohe': 'pohe.jpg',
+                    'Onion Pohe': 'onion_pohe.jpg',
+                    'Chickpea Pohe': 'chickpea_pohe.jpg',
+                    'Curd Pohe': 'curd_pohe.jpg',
+                    'Upma': 'upma.jpg',
+                    'Sabudana Khichdi': 'sabudana_khichdi.jpg',
+                    'Special Sabudana Pith': 'special_sabudana_pith.jpg',
+                    'Bread Butter': 'bread_butter.jpg',
+                    'Bread Pakora': 'bread_pakora.jpg',
+                    'Buttered Bun': 'buttered_bun.jpg',
+                    
+                    // Parathas
+                    'Plain Paratha': 'plain_paratha.jpg',
+                    'Aloo Paratha': 'aloo_paratha.jpg',
+                    'Paneer Paratha': 'paneer_paratha.jpg',
+                    'Metti Paratha': 'metti_paratha.jpg',
+                    'Special Paratha': 'special_paratha.jpg',
+                    
+                    // Rice & Main Course
+                    'Plain Rice': 'plain_rice.jpg',
+                    'Jeera Rice': 'jeera_rice.jpg',
+                    'Jeera Rice Full': 'jeera_rice_full.jpg',
+                    'Rice Plate': 'rice_plate.jpg',
+                    'Paneer Pulao': 'paneer_pulao.jpg',
+                    'Varan Khichdi': 'varan_khichdi.jpg',
+                    'Dal Fry': 'dal_fry.jpg',
+                    'Paneer Masala': 'paneer_masala.jpg',
+                    
+                    // Snacks & Street Food
+                    'Vada Pav': 'vada_pav.jpg',
+                    'Dabeli': 'dabeli.jpg',
+                    'Bhel': 'bhel.jpg',
+                    'Bhel Puri': 'bhel.jpg',
+                    'Potato Samosa': 'potato_samosa.jpg',
+                    'Samosa': 'potato_samosa.jpg',
+                    'Kachori': 'kachori.jpg',
+                    'Aloo Bonda': 'aloo_bonda.jpg',
+                    'Dokla': 'dokla.jpg',
+                    'Dahi Puri': 'placeholder.jpg',
+                    'Pani Puri': 'placeholder.jpg',
+                    'Aloo Tikki': 'placeholder.jpg',
+                    
+                    // Maggi & Noodles
+                    'Plain Maggi': 'plain_maggie.jpg',
+                    'Masala Maggi': 'masala_maggie.jpg',
+                    'Cheese Maggi': 'cheese_maggi.jpg',
+                    
+                    // South Indian
+                    'Plain Dosa': 'plain_dosa.jpg',
+                    'Dosa': 'plain_dosa.jpg',
+                    'Idli Sambar': 'idli_sambar.jpg',
+                    'Idli Sambhar': 'idli_sambar.jpg',
+                    'Vada Sambar': 'vada_sambar.jpg',
+                    
+                    // Special Items
+                    'Poli Bhaji': 'poli_bhaji.jpg',
+                    'Shev Bhaji': 'shev_bhaji.jpg',
+                    'Mix Pav': 'mix_pav.jpg',
+                    'Chole': 'chole.jpg',
+                    'Chana': 'chana.jpg',
+                    'Bhatura': 'bhatura.jpg',
+                    'Chole Bhature': 'bhatura.jpg',
+                    
+                    // Extras
+                    'Pav': 'pav.jpg',
+                    'Papad': 'papad.jpg',
+                    'Curd': 'curd.jpg',
+                    'Green Salad': 'green_salad.jpg',
+                    'Lemon Water': 'lemon_water.jpg',
+                    'Plain Curry': 'plain_curry.jpg',
+                    'Tarri': 'tarri.jpg',
+                    
+                    // Sandwiches
+                    'Veg Sandwich': 'veg_sandwich.jpg',
+                    'Sandwich': 'veg_sandwich.jpg',
+                    'Cheese Jumbo': 'cheese_jumbo.jpg',
+                    'Malai Sandwich': 'malai_sandwich.jpg',
+                    'Sahi Piece': 'sahi_piece.jpg',
+                    
+                    // Sweets & Desserts
+                    'Gulab Jamun': 'gulab_jamun.jpg',
+                    'Rasgulla': 'rasgulla.jpg',
+                    'Jalebi': 'jalebi.jpg'
+                };
+                
+                // Normalize item name for better matching
+                const normalizedName = itemName.trim();
+                
+                // Try exact match first
+                if (imageMap[normalizedName]) {
+                    return imageMap[normalizedName];
+                }
+                
+                // Try case-insensitive exact match
+                const lowerName = normalizedName.toLowerCase();
+                for (const [key, value] of Object.entries(imageMap)) {
+                    if (key.toLowerCase() === lowerName) {
+                        return value;
+                    }
+                }
+                
+                // Try partial match (contains)
+                for (const [key, value] of Object.entries(imageMap)) {
+                    const lowerKey = key.toLowerCase();
+                    if (lowerName.includes(lowerKey) || lowerKey.includes(lowerName)) {
+                        return value;
+                    }
+                }
+                
+                // Try keyword matching
+                const keywords = lowerName.split(/[\s\-_()]+/).filter(k => k.length > 2);
+                for (const keyword of keywords) {
+                    for (const [key, value] of Object.entries(imageMap)) {
+                        if (key.toLowerCase().includes(keyword)) {
+                            return value;
+                        }
+                    }
+                }
+                
+                // Default placeholder image
+                return 'placeholder.jpg';
+            }
+            
+            // Initialize menu data
+            let menuData = loadMenuData();
+            
+            // Get table number from URL parameter
+            function getTableNumber() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const tableNum = urlParams.get('table');
+                if (tableNum) {
+                    localStorage.setItem('currentTable', tableNum);
+                    return tableNum;
+                }
+                return localStorage.getItem('currentTable') || null;
+            }
+            
+            const currentTable = getTableNumber();
+            console.log('Current Table:', currentTable);
+            
+            const authContainer = document.getElementById('auth-container');
+            const appContainer = document.querySelector('.mobile-container');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const adminLoginForm = document.getElementById('admin-login-form');
+            
+            let cart = [];
+            let activeCategory = 'All';
+            let searchQuery = '';
+
+            const showSignupBtn = document.getElementById('show-signup');
+            const showLoginBtn = document.getElementById('show-login');
+            const adminAccessLink = document.getElementById('admin-access-link');
+            const adminAccessLinkSignup = document.getElementById('admin-access-link-signup');
+            const backToCustomerLogin = document.getElementById('back-to-customer-login');
+            const adminLoginBtn = document.getElementById('admin-login-btn');
+            
+            // Switch between customer login and signup
+            showSignupBtn.addEventListener('click', () => { 
+                loginForm.classList.add('hidden'); 
+                signupForm.classList.remove('hidden');
+                adminLoginForm.classList.add('hidden');
+            });
+            
+            showLoginBtn.addEventListener('click', () => { 
+                signupForm.classList.add('hidden'); 
+                loginForm.classList.remove('hidden');
+                adminLoginForm.classList.add('hidden');
+            });
+            
+            // Admin access links with security check
+            if (adminAccessLink) {
+                adminAccessLink.addEventListener('click', () => {
+                    // Log access attempt
+                    logAdminActivity('anonymous', 'ACCESS_ATTEMPT', 'Admin portal access attempted from login page');
+                    
+                    loginForm.classList.add('hidden');
+                    signupForm.classList.add('hidden');
+                    adminLoginForm.classList.remove('hidden');
+                    
+                    // Focus on username field
+                    setTimeout(() => {
+                        document.getElementById('admin-login-username').focus();
+                    }, 100);
+                });
+            }
+            
+            if (adminAccessLinkSignup) {
+                adminAccessLinkSignup.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loginForm.classList.add('hidden');
+                    signupForm.classList.add('hidden');
+                    adminLoginForm.classList.remove('hidden');
+                    document.getElementById('admin-login-username').value = '';
+                    document.getElementById('admin-login-password').value = '';
+                    document.getElementById('admin-login-error').classList.add('hidden');
+                });
+            }
+            
+            // Password toggle functionality
+            const adminPasswordToggle = document.getElementById('admin-password-toggle');
+            if (adminPasswordToggle) {
+                adminPasswordToggle.addEventListener('click', () => {
+                    const passwordInput = document.getElementById('admin-login-password');
+                    const icon = adminPasswordToggle.querySelector('i');
+                    
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            }
+            
+            // Input validation for admin login
+            const adminUsernameInput = document.getElementById('admin-login-username');
+            const adminPasswordInput = document.getElementById('admin-login-password');
+            
+            if (adminUsernameInput) {
+                adminUsernameInput.addEventListener('input', () => {
+                    const validation = document.getElementById('username-validation');
+                    const value = adminUsernameInput.value.trim();
+                    
+                    if (value.length === 0) {
+                        validation.textContent = '';
+                        validation.className = 'input-validation';
+                    } else if (value.length < 3) {
+                        validation.textContent = 'Username must be at least 3 characters';
+                        validation.className = 'input-validation invalid';
+                    } else {
+                        validation.textContent = 'Username format is valid';
+                        validation.className = 'input-validation valid';
+                    }
+                });
+            }
+            
+            if (adminPasswordInput) {
+                adminPasswordInput.addEventListener('input', () => {
+                    const validation = document.getElementById('password-validation');
+                    const value = adminPasswordInput.value;
+                    
+                    if (value.length === 0) {
+                        validation.textContent = '';
+                        validation.className = 'input-validation';
+                    } else if (value.length < 6) {
+                        validation.textContent = 'Password must be at least 6 characters';
+                        validation.className = 'input-validation invalid';
+                    } else {
+                        validation.textContent = 'Password strength: Good';
+                        validation.className = 'input-validation valid';
+                    }
+                });
+            }
+            
+            // Back to customer login
+            if (backToCustomerLogin) {
+                backToCustomerLogin.addEventListener('click', () => {
+                    adminLoginForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                    signupForm.classList.add('hidden');
+                    
+                    // Clear admin form
+                    if (adminUsernameInput) adminUsernameInput.value = '';
+                    if (adminPasswordInput) adminPasswordInput.value = '';
+                    document.getElementById('username-validation').textContent = '';
+                    document.getElementById('password-validation').textContent = '';
+                });
+            }
+            
+            // Enhanced admin login with security features
+            if (adminLoginBtn) {
+                adminLoginBtn.addEventListener('click', async () => {
+                    const username = document.getElementById('admin-login-username').value.trim();
+                    const password = document.getElementById('admin-login-password').value.trim();
+                    const errorEl = document.getElementById('admin-login-error');
+                    
+                    // Clear previous errors
+                    errorEl.classList.add('hidden');
+                    
+                    // Input validation
+                    if (!username || !password) {
+                        showAdminError('Please fill in all fields.');
+                        return;
+                    }
+                    
+                    if (username.length < 3) {
+                        showAdminError('Username must be at least 3 characters.');
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        showAdminError('Password must be at least 6 characters.');
+                        return;
+                    }
+                    
+                    // Show loading state
+                    adminLoginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+                    adminLoginBtn.disabled = true;
+                    
+                    // Simulate authentication delay for security
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Enhanced credential validation with multiple admin accounts
+                    const adminCredentials = {
+                        'admin': 'admin123',
+                        'superadmin': 'super@2024',
+                        'manager': 'manager@123'
+                    };
+                    
+                    if (adminCredentials[username] && adminCredentials[username] === password) {
+                        // Generate session token
+                        const sessionToken = generateSessionToken();
+                        const loginTime = new Date().toISOString();
+                        
+                        // Store admin session data
+                        localStorage.setItem('adminAuthenticated', 'true');
+                        localStorage.setItem('adminUser', username);
+                        localStorage.setItem('adminSessionToken', sessionToken);
+                        localStorage.setItem('adminLoginTime', loginTime);
+                        localStorage.setItem('adminRole', getAdminRole(username));
+                        
+                        // Log admin login activity
+                        logAdminActivity(username, 'LOGIN', 'Admin logged in successfully');
+                        
+                        // Success feedback
+                        adminLoginBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                        adminLoginBtn.style.background = '#28a745';
+                        
+                        setTimeout(() => {
+                            window.location.href = 'admin_portal.html';
+                        }, 500);
+                    } else {
+                        // Reset button state
+                        adminLoginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Admin Portal';
+                        adminLoginBtn.disabled = false;
+                        
+                        // Log failed login attempt
+                        logAdminActivity(username, 'FAILED_LOGIN', 'Invalid credentials attempted');
+                        
+                        showAdminError('Invalid admin credentials! Please check your username and password.');
+                    }
+                });
+            }
+            
+            // Helper functions for admin authentication
+            function showAdminError(message) {
+                const errorEl = document.getElementById('admin-login-error');
+                errorEl.textContent = message;
+                errorEl.classList.remove('hidden');
+                
+                // Auto-hide error after 5 seconds
+                setTimeout(() => {
+                    errorEl.classList.add('hidden');
+                }, 5000);
+            }
+            
+            function generateSessionToken() {
+                return 'admin_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            function getAdminRole(username) {
+                const roles = {
+                    'admin': 'Administrator',
+                    'superadmin': 'Super Administrator',
+                    'manager': 'Manager'
+                };
+                return roles[username] || 'Administrator';
+            }
+            
+            function logAdminActivity(username, action, description) {
+                const adminLog = JSON.parse(localStorage.getItem('adminActivityLog')) || [];
+                adminLog.push({
+                    username: username,
+                    action: action,
+                    description: description,
+                    timestamp: new Date().toISOString(),
+                    ip: 'localhost', // In real app, get actual IP
+                    userAgent: navigator.userAgent,
+                    sessionId: localStorage.getItem('adminSessionToken')
+                });
+                
+                // Keep only last 100 entries
+                if (adminLog.length > 100) {
+                    adminLog.splice(0, adminLog.length - 100);
+                }
+                
+                localStorage.setItem('adminActivityLog', JSON.stringify(adminLog));
+            }
+            
+            // Session management functions
+            function checkAdminSession() {
+                const loginTime = localStorage.getItem('adminLoginTime');
+                const sessionTimeout = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+                
+                if (loginTime) {
+                    const elapsed = Date.now() - new Date(loginTime).getTime();
+                    if (elapsed > sessionTimeout) {
+                        localStorage.removeItem('adminAuthenticated');
+                        localStorage.removeItem('adminUser');
+                        localStorage.removeItem('adminSessionToken');
+                        localStorage.removeItem('adminLoginTime');
+                        localStorage.removeItem('adminRole');
+                        
+                        alert('Your admin session has expired. Please login again.');
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
+            // Check session on page load
+            if (localStorage.getItem('adminAuthenticated') === 'true') {
+                if (!checkAdminSession()) {
+                    // Session expired, redirect to login
+                    window.location.reload();
+                }
+            }
+            
+            // Auto-logout warning
+            function showSessionWarning() {
+                const loginTime = localStorage.getItem('adminLoginTime');
+                if (!loginTime) return;
+                
+                const sessionTimeout = 2 * 60 * 60 * 1000; // 2 hours
+                const warningTime = sessionTimeout - (15 * 60 * 1000); // 15 minutes before expiry
+                const elapsed = Date.now() - new Date(loginTime).getTime();
+                
+                if (elapsed > warningTime && elapsed < sessionTimeout) {
+                    const remainingMinutes = Math.ceil((sessionTimeout - elapsed) / (60 * 1000));
+                    if (confirm(`Your admin session will expire in ${remainingMinutes} minutes. Would you like to extend your session?`)) {
+                        // Extend session
+                        localStorage.setItem('adminLoginTime', new Date().toISOString());
+                        logAdminActivity(localStorage.getItem('adminUser'), 'SESSION_EXTENDED', 'Admin session extended');
+                    }
+                }
+            }
+            
+            // Check session every 5 minutes
+            setInterval(() => {
+                if (localStorage.getItem('adminAuthenticated') === 'true') {
+                    if (!checkAdminSession()) {
+                        window.location.reload();
+                    } else {
+                        showSessionWarning();
+                    }
+                }
+            }, 5 * 60 * 1000);
+
+            function handleLogin(username) {
+                localStorage.setItem('currentUser', username);
+                
+                // Log login activity for admin tracking
+                const loginLog = JSON.parse(localStorage.getItem('loginLog')) || [];
+                loginLog.push({
+                    username: username,
+                    timestamp: new Date().toISOString(),
+                    action: 'LOGIN'
+                });
+                localStorage.setItem('loginLog', JSON.stringify(loginLog));
+                
+                // Trigger storage event for admin portal
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'loginLog',
+                    newValue: JSON.stringify(loginLog)
+                }));
+                
+                authContainer.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                initializeMenuApp();
+            }
+
+            function handleLogout() {
+                localStorage.removeItem('currentUser');
+                appContainer.classList.add('hidden');
+                authContainer.classList.remove('hidden');
+                document.location.reload();
+            }
+
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+            document.getElementById('login-btn').addEventListener('click', () => {
+                const username = document.getElementById('login-username').value.trim();
+                const password = document.getElementById('login-password').value;
+                const errorEl = document.getElementById('login-error');
+                if (!username || !password) { errorEl.textContent = 'Please fill in all fields.'; errorEl.classList.remove('hidden'); return; }
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.username === username && u.password === password);
+                if (user) handleLogin(username);
+                else { errorEl.textContent = 'Invalid username or password.'; errorEl.classList.remove('hidden'); }
+            });
+
+            document.getElementById('signup-btn').addEventListener('click', () => {
+                const username = document.getElementById('signup-username').value.trim();
+                const password = document.getElementById('signup-password').value;
+                const errorEl = document.getElementById('signup-error');
+                if (!username || !password) { errorEl.textContent = 'Please fill in all fields.'; errorEl.classList.remove('hidden'); return; }
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                if (users.find(u => u.username === username)) { errorEl.textContent = 'Username already exists.'; errorEl.classList.remove('hidden'); } 
+                else { 
+                    // Add new user
+                    users.push({ username, password }); 
+                    localStorage.setItem('users', JSON.stringify(users)); 
+                    
+                    // Sync with admin database
+                    const canteenUsers = JSON.parse(localStorage.getItem('canteen_users')) || [];
+                    const newUserId = 'C' + (canteenUsers.length + 1).toString().padStart(3, '0');
+                    canteenUsers.push({
+                        id: newUserId,
+                        name: username,
+                        role: 'Student',
+                        balance: 0,
+                        signupDate: new Date().toISOString()
+                    });
+                    localStorage.setItem('canteen_users', JSON.stringify(canteenUsers));
+                    
+                    // Log signup activity
+                    const signupLog = JSON.parse(localStorage.getItem('signupLog')) || [];
+                    signupLog.push({
+                        username: username,
+                        userId: newUserId,
+                        timestamp: new Date().toISOString(),
+                        action: 'SIGNUP'
+                    });
+                    localStorage.setItem('signupLog', JSON.stringify(signupLog));
+                    
+                    // Trigger storage event for admin portal
+                    window.dispatchEvent(new StorageEvent('storage', {
+                        key: 'canteen_users',
+                        newValue: JSON.stringify(canteenUsers)
+                    }));
+                    
+                    handleLogin(username); 
+                }
+            });
+
+            // Function to refresh menu data from localStorage
+            function refreshMenuData() {
+                menuData = loadMenuData();
+                renderCategories();
+                renderMenu();
+            }
+            
+            // Listen for menu updates from admin portal
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'GajananCMS_menu') {
+                    console.log('Menu updated by admin! Refreshing...');
+                    refreshMenuData();
+                }
+            });
+            
+            function initializeMenuApp() {
+                console.log('initializeMenuApp called');
+                console.log('menuData:', menuData);
+                const menuContainer = document.getElementById('menu-container');
+                const categoriesNav = document.getElementById('categories-nav');
+                const searchInput = document.getElementById('search-input');
+                const orderSummaryFooter = document.getElementById('order-summary');
+                const orderDetails = document.getElementById('order-details');
+                const viewOrderBtn = document.getElementById('view-order-btn');
+                const orderModal = document.getElementById('order-modal');
+                const closeOrderModalBtn = document.getElementById('close-order-modal-btn');
+                const modalOrderItems = document.getElementById('modal-order-items');
+                const totalsSummary = document.getElementById('totals-summary');
+                const payUpiBtn = document.getElementById('pay-upi-btn');
+                const payCardBtn = document.getElementById('pay-card-btn');
+                const payCashBtn = document.getElementById('pay-cash-btn');
+                const historyBtn = document.getElementById('history-btn');
+                const historyModal = document.getElementById('history-modal');
+                const closeHistoryModalBtn = document.getElementById('close-history-modal-btn');
+                const rewardIndicator = document.getElementById('reward-indicator');
+                const redeemRewardBtn = document.getElementById('redeem-reward-btn');
+                console.log('DOM elements loaded:', {menuContainer, categoriesNav, searchInput});
+
+                function getLoyaltyData() {
+                    const currentUser = localStorage.getItem('currentUser');
+                    if (!currentUser) return { visitTimestamps: [], hasUnclaimedReward: false };
+                    const key = `loyalty_${currentUser}`;
+                    return JSON.parse(localStorage.getItem(key)) || { visitTimestamps: [], hasUnclaimedReward: false };
+                }
+
+                function saveLoyaltyData(data) {
+                    const currentUser = localStorage.getItem('currentUser');
+                    if (!currentUser) return;
+                    const key = `loyalty_${currentUser}`;
+                    localStorage.setItem(key, JSON.stringify(data));
+                }
+
+                function checkAndDisplayRewardStatus() {
+                    const loyaltyData = getLoyaltyData();
+                    if (loyaltyData.hasUnclaimedReward) {
+                        rewardIndicator.classList.remove('hidden');
+                    } else {
+                        rewardIndicator.classList.add('hidden');
+                    }
+                }
+
+                function renderCategories() {
+                    console.log('renderCategories called, menuData length:', menuData.length);
+                    console.log('categoriesNav element:', categoriesNav);
+                    const categories = ['All', ...new Set(menuData.map(item => item.category))];
+                    console.log('Categories:', categories);
+                    categoriesNav.innerHTML = categories.map(cat => `<button class="category-btn ${cat === activeCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>`).join('');
+                }
+
+                function renderMenu() {
+                    console.log('renderMenu called, menuData length:', menuData.length);
+                    console.log('menuContainer element:', menuContainer);
+                    let filteredData = menuData;
+                    if (activeCategory !== 'All') filteredData = filteredData.filter(item => item.category === activeCategory);
+                    if (searchQuery) filteredData = filteredData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+                    console.log('Filtered data length:', filteredData.length);
+                    menuContainer.innerHTML = '';
+                    if (filteredData.length === 0) { menuContainer.innerHTML = '<p class="no-results">No items match your search.</p>'; return; }
+                    
+                    // Group items by category
+                    const groupedData = {};
+                    filteredData.forEach(item => {
+                        if (!groupedData[item.category]) {
+                            groupedData[item.category] = [];
+                        }
+                        groupedData[item.category].push(item);
+                    });
+                    
+                    // Render each category with 3-column grid
+                    Object.keys(groupedData).forEach(category => {
+                        if (activeCategory === 'All' && !searchQuery) {
+                            menuContainer.innerHTML += `<h3>${category}</h3>`;
+                        }
+                        
+                        // Create grid container
+                        let gridHTML = '<div class="category-items">';
+                        
+                        groupedData[category].forEach(item => {
+                            const itemInCart = cart.find(cartItem => cartItem.name === item.name);
+                            const quantity = itemInCart ? itemInCart.quantity : 0;
+                            const imageSrc = getItemImage(item.name);
+                            
+                            gridHTML += `
+                                <div class="menu-item" data-name="${item.name}" data-price="${item.price}">
+                                    <div class="item-image-container">
+                                        <i class="fas fa-leaf veg-icon"></i>
+                                        <img src="${imageSrc}" alt="${item.name}" onerror="this.src='placeholder.svg'">
+                                    </div>
+                                    <div class="item-details">
+                                        <h4>${item.name}</h4>
+                                        <p class="price">₹ ${item.price.toFixed(2)}</p>
+                                        <div class="item-action">
+                                            <button class="add-btn ${quantity > 0 ? 'hidden' : ''}">Add</button>
+                                            <div class="quantity-stepper ${quantity === 0 ? 'hidden' : ''}">
+                                                <button class="quantity-btn minus-btn">−</button>
+                                                <span class="quantity-display">${quantity}</span>
+                                                <button class="quantity-btn plus-btn">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        gridHTML += '</div>';
+                        menuContainer.innerHTML += gridHTML;
+                    });
+                }
+
+                function updateCart(name, price, change) {
+                    let itemInCart = cart.find(item => item.name === name);
+                    if (itemInCart) {
+                        if(itemInCart.price === 0) return;
+                        itemInCart.quantity += change;
+                    } else if (change > 0) {
+                        cart.push({ name, price, quantity: 1 });
+                    }
+                    cart = cart.filter(item => item.quantity > 0);
+                    updateUI();
+                }
+
+                function updateUI() {
+                    renderMenu();
+                    updateOrderSummaryFooter();
+                    updateOrderModal();
+                }
+
+                function updateOrderSummaryFooter() {
+                    if (cart.length === 0) { orderSummaryFooter.classList.remove('visible'); return; }
+                    let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                    let totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    orderDetails.innerHTML = `<p>${totalItems} Item${totalItems > 1 ? 's' : ''} | ₹ ${totalPrice.toFixed(2)}</p>`;
+                    orderSummaryFooter.classList.add('visible');
+                }
+
+                function updateOrderModal() {
+                    if (cart.length === 0) { modalOrderItems.innerHTML = '<p>Your order is empty.</p>'; totalsSummary.innerHTML = ''; redeemRewardBtn.classList.add('hidden'); return; }
+                    
+                    let subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    let discount = 0;
+                    if (subtotal > 500) { discount = subtotal * 0.05; }
+                    let grandTotal = subtotal - discount;
+
+                    modalOrderItems.innerHTML = cart.map(item => `<div class="order-item"><div class="order-item-details"><span class="order-item-name">${item.name}</span><span class="order-item-price">${item.quantity} &times; ₹ ${item.price.toFixed(2)}</span></div><span class="order-item-total">₹ ${(item.price * item.quantity).toFixed(2)}</span></div>`).join('');
+                    
+                    let totalsHTML = `<p>Subtotal: ₹ ${subtotal.toFixed(2)}</p>`;
+                    if (discount > 0) { totalsHTML += `<p class="discount">Discount (5%): - ₹ ${discount.toFixed(2)}</p>`; }
+                    totalsHTML += `<p class="grand-total">Grand Total: ₹ ${grandTotal.toFixed(2)}</p>`;
+                    totalsSummary.innerHTML = totalsHTML;
+
+                    const loyaltyData = getLoyaltyData();
+                    if (loyaltyData.hasUnclaimedReward) { redeemRewardBtn.classList.remove('hidden'); } 
+                    else { redeemRewardBtn.classList.add('hidden'); }
+                }
+
+                async function saveOrder(paymentMethod = 'cash', paymentStatus = 'completed', paymentId = null) {
+                    if (cart.length === 0) return;
+                    const currentUser = localStorage.getItem('currentUser');
+                    if (!currentUser) return;
+
+                    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    const discount = total > 500 ? total * 0.05 : 0;
+                    const grandTotal = total - discount;
+
+                    // Save to user history (localStorage)
+                    const historyKey = `orders_${currentUser}`;
+                    let userHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
+                    const tableNumber = localStorage.getItem('currentTable') || 'N/A';
+                    const newOrder = { 
+                        date: new Date().toISOString(), 
+                        items: [...cart], 
+                        total: grandTotal,
+                        payment_method: paymentMethod,
+                        payment_status: paymentStatus,
+                        table_number: tableNumber,
+                        customer: currentUser
+                    };
+                    userHistory.unshift(newOrder);
+                    localStorage.setItem(historyKey, JSON.stringify(userHistory));
+
+                    // ============================================
+                    // SAVE TO CENTRAL ORDERS FOR ADMIN PORTAL
+                    // ============================================
+                    try {
+                        // Get or initialize CanteenDB orders
+                        let centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                        
+                        // Generate order ID
+                        const orderId = centralOrders.length > 0 
+                            ? Math.max(...centralOrders.map(o => o.id || 0)) + 1 
+                            : 1;
+                        
+                        // Create order in format admin panel expects
+                        // Generate sequential order number
+                        const orderNumber = `ORD${orderId.toString().padStart(6, '0')}`;
+                        
+                        const adminOrder = {
+                            id: orderId,
+                            userId: currentUser,
+                            userName: currentUser,
+                            items: cart.map(item => `${item.quantity}x ${item.name}`).join(', '), // String format for display
+                            itemsArray: cart.map(item => ({
+                                name: item.name,
+                                quantity: item.quantity,
+                                price: item.price,
+                                category: item.category || 'General'
+                            })), // Array format with all details
+                            totalAmount: grandTotal,
+                            total: grandTotal,
+                            status: 'NEW',
+                            payment_method: paymentMethod,
+                            payment_status: paymentStatus,
+                            timestamp: new Date().toISOString(),
+                            created_at: new Date().toISOString(),
+                            table_number: tableNumber,
+                            tableNumber: tableNumber,
+                            customer: currentUser,
+                            order_number: orderNumber  // Sequential order number
+                        };
+                        
+                        // Add to beginning of array (newest first)
+                        centralOrders.unshift(adminOrder);
+                        
+                        // Save back to localStorage
+                        localStorage.setItem('canteen_orders', JSON.stringify(centralOrders));
+                        
+                        console.log('✅ Order saved to central database:', adminOrder);
+                        console.log('📊 Total orders in system:', centralOrders.length);
+                    } catch (error) {
+                        console.error('❌ Error saving to central orders:', error);
+                    }
+
+                    // Sync to order sync server for cross-device sync
+                    if (window.OrderSync) {
+                        try {
+                            await window.OrderSync.submitOrder({
+                                ...newOrder,
+                                userId: currentUser,
+                                userName: currentUser,
+                                items: cart.map(item => `${item.quantity}x ${item.name}`).join(', '),
+                                totalAmount: grandTotal,
+                                tableNumber: tableNumber
+                            });
+                            console.log('✅ Order synced across devices');
+                        } catch (error) {
+                            console.error('⚠️ Failed to sync order:', error);
+                        }
+                    }
+
+                    // Sync to database and admin panel
+                    if (window.CanteenAPI) {
+                        try {
+                            // Sync order to database
+                            const orderResult = await window.CanteenAPI.syncOrderToDatabase({
+                                items: cart,
+                                total: grandTotal,
+                                payment_method: paymentMethod,
+                                payment_status: paymentStatus
+                            });
+
+                            // Sync payment if successful
+                            if (orderResult && paymentStatus === 'completed') {
+                                await window.CanteenAPI.syncPaymentToDatabase({
+                                    order_id: orderResult.order_id || orderResult.id,
+                                    order_number: orderResult.order_number,
+                                    payment_method: paymentMethod,
+                                    payment_gateway: paymentMethod === 'cash' ? null : 'razorpay',
+                                    transaction_id: paymentId,
+                                    razorpay_payment_id: paymentId,
+                                    razorpay_order_id: orderResult.order_number,
+                                    amount: grandTotal,
+                                    payment_status: 'success'
+                                });
+                            }
+
+                            // Notify admin panel to refresh
+                            window.CanteenAPI.notifyAdminPanel();
+                            
+                            console.log('✅ Order synced to database and admin panel');
+                        } catch (error) {
+                            console.error('⚠️ Error syncing order:', error);
+                            // Order still saved to localStorage as fallback
+                        }
+                    }
+
+                    // Update loyalty
+                    let loyaltyData = getLoyaltyData();
+                    loyaltyData.visitTimestamps.push(new Date().getTime());
+
+                    const now = new Date();
+                    const visitsThisMonth = loyaltyData.visitTimestamps.filter(ts => {
+                        const d = new Date(ts);
+                        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                    }).length;
+
+                    if (visitsThisMonth > 15 && !loyaltyData.hasUnclaimedReward) {
+                        loyaltyData.hasUnclaimedReward = true;
+                        setTimeout(() => alert("Congratulations! You've earned a free Cold Coffee on your next order for being a loyal customer!"), 500);
+                    }
+                    saveLoyaltyData(loyaltyData);
+                    
+                    cart = [];
+                    updateUI();
+                    checkAndDisplayRewardStatus();
+                    orderModal.classList.remove('visible');
+                }
+
+                function renderHistory() {
+                    const currentUser = localStorage.getItem('currentUser');
+                    const historyKey = `orders_${currentUser}`;
+                    const userHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
+                    const historyContainer = document.getElementById('modal-history-items');
+                    if (userHistory.length === 0) { historyContainer.innerHTML = '<p class="no-results">You have no past orders.</p>'; return; }
+                    historyContainer.innerHTML = userHistory.map(order => {
+                        const orderDate = new Date(order.date).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                        const itemsHtml = order.items.map(item => `<div class="history-item-price">${item.quantity} &times; ${item.name}</div>`).join('');
+                        return `<div class="history-order-item"><div class="history-date">${orderDate}</div>${itemsHtml}<div class="history-total">Total: ₹ ${order.total.toFixed(2)}</div></div>`;
+                    }).join('');
+                }
+
+                if (redeemRewardBtn) redeemRewardBtn.addEventListener('click', () => {
+                    const hasRewardItem = cart.some(item => item.name === 'Cold Coffee (Reward)');
+                    if (hasRewardItem) return;
+
+                    cart.push({ name: 'Cold Coffee (Reward)', price: 0, quantity: 1, image: 'cold_chocolate_milk.jpg' });
+                    
+                    let loyaltyData = getLoyaltyData();
+                    loyaltyData.hasUnclaimedReward = false;
+                    saveLoyaltyData(loyaltyData);
+
+                    updateUI();
+                    checkAndDisplayRewardStatus();
+                });
+
+                menuContainer.addEventListener('click', (e) => {
+                    const menuItem = e.target.closest('.menu-item');
+                    if (!menuItem) return;
+                    const itemName = menuItem.dataset.name;
+                    const itemPrice = parseFloat(menuItem.dataset.price);
+                    if (e.target.matches('.add-btn, .plus-btn')) updateCart(itemName, itemPrice, 1);
+                    else if (e.target.matches('.minus-btn')) updateCart(itemName, itemPrice, -1);
+                });
+
+                if (categoriesNav) categoriesNav.addEventListener('click', (e) => { if (e.target.classList.contains('category-btn')) { activeCategory = e.target.dataset.category; renderCategories(); renderMenu(); } });
+                if (searchInput) searchInput.addEventListener('input', (e) => { searchQuery = e.target.value; renderMenu(); });
+                if (viewOrderBtn) viewOrderBtn.addEventListener('click', () => orderModal.classList.add('visible'));
+                if (closeOrderModalBtn) closeOrderModalBtn.addEventListener('click', () => orderModal.classList.remove('visible'));
+                if (orderModal) orderModal.addEventListener('click', (e) => { if (e.target === orderModal) orderModal.classList.remove('visible'); });
+                if (historyBtn) historyBtn.addEventListener('click', () => { renderHistory(); historyModal.classList.add('visible'); });
+                if (closeHistoryModalBtn) closeHistoryModalBtn.addEventListener('click', () => historyModal.classList.remove('visible'));
+                if (historyModal) historyModal.addEventListener('click', (e) => { if (e.target === historyModal) historyModal.classList.remove('visible'); });
+
+                // Razorpay Payment Integration
+                function initiateRazorpayPayment(amount, paymentMethod) {
+                    const options = {
+                        key: 'rzp_test_1DP5mmOlF5G5ag', // Test key - Replace with your Razorpay key
+                        amount: amount * 100, // Amount in paise
+                        currency: 'INR',
+                        name: 'Shree Gajanan Canteen',
+                        description: 'Food Order Payment',
+                        image: 'https://cdn-icons-png.flaticon.com/512/3075/3075977.png',
+                        handler: function(response) {
+                            // Payment successful
+                            // Save cart data BEFORE clearing
+                            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                            const discount = total > 500 ? total * 0.05 : 0;
+                            const grandTotal = total - discount;
+                            const orderData = {
+                                orderNumber: response.razorpay_payment_id,
+                                items: [...cart], // Create a copy of cart
+                                total: total,
+                                discount: discount,
+                                grandTotal: grandTotal,
+                                date: new Date().toISOString()
+                            };
+                            
+                            // Store order data temporarily for receipt
+                            window.lastOrderData = orderData;
+                            
+                            showPaymentSuccess(response.razorpay_payment_id, paymentMethod, orderData);
+                            saveOrder(paymentMethod, 'completed', response.razorpay_payment_id);
+                            
+                            // Clear cart after successful payment
+                            cart = [];
+                            updateUI();
+                        },
+                        prefill: {
+                            name: localStorage.getItem('currentUser') || 'Customer',
+                            email: 'customer@example.com',
+                            contact: '9999999999'
+                        },
+                        notes: {
+                            order_type: 'Canteen Order',
+                            user: localStorage.getItem('currentUser')
+                        },
+                        theme: {
+                            color: '#e53935'
+                        },
+                        method: {
+                            upi: paymentMethod === 'upi',
+                            card: paymentMethod === 'card',
+                            wallet: paymentMethod === 'card',
+                            netbanking: paymentMethod === 'card'
+                        },
+                        modal: {
+                            ondismiss: function() {
+                                alert('Payment cancelled. Please try again.');
+                            }
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', function(response) {
+                        alert('Payment Failed: ' + response.error.description);
+                    });
+                    rzp.open();
+                }
+
+                function showPaymentSuccess(paymentId, paymentMethod = 'card', orderData = null) {
+                    // Store order data for receipt access
+                    if (orderData) {
+                        window.lastOrderData = orderData;
+                    }
+                    
+                    console.log('Payment success - Order data saved:', orderData);
+                    
+                    // Show receipt immediately after payment
+                    showReceipt(paymentId, paymentMethod, orderData);
+                    
+                    // Also show success message
+                    setTimeout(() => {
+                        modalOrderItems.innerHTML = `
+                            <div class="success-animation">
+                                <i class="fas fa-check-circle"></i>
+                                <h3 style="color: var(--secondary-color); margin: 15px 0;">Payment Successful!</h3>
+                                <p style="color: var(--light-text-color); margin: 10px 0;">Payment ID: ${paymentId}</p>
+                                <p style="color: var(--text-color); font-weight: 500;">Receipt has been generated!</p>
+                                <p style="color: var(--light-text-color); margin-top: 10px; font-size: 0.9rem;">Please collect your order from the counter.</p>
+                                <button id="view-receipt-btn-card" class="receipt-action-btn print-btn" style="margin-top: 15px;">
+                                    <i class="fas fa-receipt"></i> View Receipt Again
+                                </button>
+                            </div>
+                        `;
+                        
+                        // Add event listener to the receipt button
+                        const receiptBtn = document.getElementById('view-receipt-btn-card');
+                        if (receiptBtn) {
+                            receiptBtn.addEventListener('click', () => {
+                                console.log('Receipt button clicked for card/UPI, using orderData:', orderData);
+                                showReceipt(paymentId, paymentMethod, orderData);
+                            });
+                        }
+                    }, 500);
+                    
+                    totalsSummary.innerHTML = '';
+                    document.querySelector('.payment-method-section').style.display = 'none';
+                    if (redeemRewardBtn) redeemRewardBtn.classList.add('hidden');
+                    
+                    setTimeout(() => {
+                        orderModal.classList.remove('visible');
+                        document.querySelector('.payment-method-section').style.display = 'block';
+                    }, 5000);
+                }
+
+                // Receipt Generation Function
+                function generateReceipt(paymentId, paymentMethod, orderData = null) {
+                    console.log('generateReceipt called with:', {paymentId, paymentMethod, orderData});
+                    console.log('Current cart:', cart);
+                    console.log('window.lastOrderData:', window.lastOrderData);
+                    
+                    const currentUser = localStorage.getItem('currentUser') || 'Guest';
+                    const orderNumber = orderData?.orderNumber || `#${Date.now().toString().slice(-6)}`;
+                    const currentDate = new Date();
+                    const dateStr = currentDate.toLocaleDateString('en-IN');
+                    const timeStr = currentDate.toLocaleTimeString('en-IN');
+                    
+                    // Use provided order data, or window.lastOrderData, or current cart
+                    const items = orderData?.items || window.lastOrderData?.items || cart;
+                    console.log('Items to use for receipt:', items);
+                    
+                    if (!items || items.length === 0) {
+                        console.error('No items found for receipt!');
+                        return '<div style="padding: 20px; text-align: center;"><p style="color: red;">Error: No order items found. Please try placing the order again.</p></div>';
+                    }
+                    
+                    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    const discount = subtotal > 500 ? subtotal * 0.05 : 0;
+                    const tax = 0; // Add tax calculation if needed
+                    const grandTotal = subtotal - discount + tax;
+                    
+                    console.log('Receipt totals:', {subtotal, discount, grandTotal});
+                    
+                    let itemsHtml = '';
+                    items.forEach(item => {
+                        const itemTotal = item.price * item.quantity;
+                        itemsHtml += `
+                            <div class="receipt-item">
+                                <span class="receipt-item-name">${item.name}</span>
+                                <span class="receipt-item-qty">${item.quantity}</span>
+                                <span class="receipt-item-price">₹${itemTotal.toFixed(2)}</span>
+                            </div>
+                        `;
+                    });
+
+                    const receiptHtml = `
+                        <div class="receipt-header">
+                            <h2>🏪 SHREE GAJANAN CANTEEN</h2>
+                            <p>123 College Road, Education City</p>
+                            <p>Phone: +91 98765 43210</p>
+                            <p>GSTIN: 27XXXXX1234X1ZX</p>
+                        </div>
+                        
+                        <div class="receipt-info">
+                            <div><span>Order No:</span><span>${orderNumber}</span></div>
+                            <div><span>Date:</span><span>${dateStr}</span></div>
+                            <div><span>Time:</span><span>${timeStr}</span></div>
+                            <div><span>Customer:</span><span>${currentUser}</span></div>
+                            <div><span>Payment:</span><span>${paymentMethod.toUpperCase()}</span></div>
+                            ${paymentId ? `<div><span>Payment ID:</span><span>${paymentId}</span></div>` : ''}
+                        </div>
+                        
+                        <div class="receipt-items">
+                            <div class="receipt-item" style="font-weight: bold; border-bottom: 1px solid #000; margin-bottom: 5px; padding-bottom: 3px;">
+                                <span class="receipt-item-name">ITEM</span>
+                                <span class="receipt-item-qty">QTY</span>
+                                <span class="receipt-item-price">AMOUNT</span>
+                            </div>
+                            ${itemsHtml}
+                        </div>
+                        
+                        <div class="receipt-totals">
+                            <div><span>Subtotal:</span><span>₹${subtotal.toFixed(2)}</span></div>
+                            ${discount > 0 ? `<div><span>Discount (5%):</span><span>-₹${discount.toFixed(2)}</span></div>` : ''}
+                            ${tax > 0 ? `<div><span>Tax:</span><span>₹${tax.toFixed(2)}</span></div>` : ''}
+                            <div class="receipt-total"><span>TOTAL:</span><span>₹${grandTotal.toFixed(2)}</span></div>
+                        </div>
+                        
+                        <div class="receipt-footer">
+                            <p>*** THANK YOU FOR YOUR ORDER ***</p>
+                            <p>Please collect your order from the counter</p>
+                            <p>Visit us again!</p>
+                            <p style="margin-top: 10px; font-size: 10px;">
+                                This is a computer generated receipt
+                            </p>
+                        </div>
+                    `;
+                    
+                    return receiptHtml;
+                }
+
+                // Show Receipt Modal
+                function showReceipt(paymentId, paymentMethod, orderData = null) {
+                    console.log('=== showReceipt called ===');
+                    console.log('paymentId:', paymentId);
+                    console.log('paymentMethod:', paymentMethod);
+                    console.log('orderData parameter:', orderData);
+                    console.log('window.lastOrderData:', window.lastOrderData);
+                    
+                    const receiptContent = document.getElementById('receipt-content');
+                    const receiptModal = document.getElementById('receipt-modal');
+                    
+                    if (!receiptContent || !receiptModal) {
+                        console.error('Receipt modal elements not found');
+                        alert('Receipt system not available. Please try again.');
+                        return;
+                    }
+                    
+                    // Use orderData parameter or fallback to window.lastOrderData
+                    const dataToUse = orderData || window.lastOrderData;
+                    console.log('Data to use for receipt:', dataToUse);
+                    
+                    try {
+                        receiptContent.innerHTML = generateReceipt(paymentId, paymentMethod, dataToUse);
+                        receiptModal.classList.add('visible');
+                        
+                        // Re-initialize handlers for this specific receipt
+                        initializeReceiptHandlers();
+                    } catch (error) {
+                        console.error('Error generating receipt:', error);
+                        alert('Error generating receipt. Please try again.');
+                    }
+                }
+
+                if (payUpiBtn) payUpiBtn.addEventListener('click', () => {
+                    if (cart.length === 0) {
+                        alert('Your cart is empty!');
+                        return;
+                    }
+                    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    const discount = total > 500 ? total * 0.05 : 0;
+                    const grandTotal = total - discount;
+                    initiateRazorpayPayment(grandTotal, 'upi');
+                });
+
+                if (payCardBtn) payCardBtn.addEventListener('click', () => {
+                    if (cart.length === 0) {
+                        alert('Your cart is empty!');
+                        return;
+                    }
+                    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    const discount = total > 500 ? total * 0.05 : 0;
+                    const grandTotal = total - discount;
+                    initiateRazorpayPayment(grandTotal, 'card');
+                });
+                if (payCashBtn) payCashBtn.addEventListener('click', () => {
+                    if (cart.length === 0) {
+                        alert('Your cart is empty!');
+                        return;
+                    }
+                    if (confirm('Confirm order? You will pay at the counter.')) {
+                        const orderNumber = `#${Date.now().toString().slice(-6)}`;
+                        
+                        // Save cart data BEFORE clearing
+                        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                        const discount = total > 500 ? total * 0.05 : 0;
+                        const grandTotal = total - discount;
+                        const orderData = {
+                            orderNumber: orderNumber,
+                            items: [...cart], // Create a copy of cart
+                            total: total,
+                            discount: discount,
+                            grandTotal: grandTotal,
+                            date: new Date().toISOString()
+                        };
+                        
+                        // Store order data temporarily for receipt with unique key
+                        const orderKey = 'order_' + orderNumber.replace('#', '');
+                        window[orderKey] = orderData;
+                        window.lastOrderData = orderData;
+                        
+                        console.log('Cash payment - Order data saved:', orderData);
+                        console.log('Stored in window.' + orderKey);
+                        
+                        // Show receipt immediately after order
+                        showReceipt(orderNumber, 'cash', orderData);
+                        
+                        // Also show success message
+                        setTimeout(() => {
+                            modalOrderItems.innerHTML = `
+                                <div class="success-animation">
+                                    <i class="fas fa-check-circle"></i>
+                                    <h3 style="color: var(--secondary-color); margin: 15px 0;">Order Placed!</h3>
+                                    <p style="color: var(--text-color); font-weight: 500;">Receipt has been generated!</p>
+                                    <p style="color: var(--light-text-color); margin-top: 10px; font-size: 0.9rem;">Order Number: ${orderNumber}</p>
+                                    <button id="view-receipt-btn-cash" class="receipt-action-btn print-btn" style="margin-top: 15px;">
+                                        <i class="fas fa-receipt"></i> View Receipt Again
+                                    </button>
+                                </div>
+                            `;
+                            
+                            // Add event listener to the receipt button
+                            const receiptBtn = document.getElementById('view-receipt-btn-cash');
+                            if (receiptBtn) {
+                                receiptBtn.addEventListener('click', () => {
+                                    console.log('Receipt button clicked, using orderData:', orderData);
+                                    showReceipt(orderNumber, 'cash', orderData);
+                                });
+                            }
+                        }, 500);
+                        
+                        totalsSummary.innerHTML = '';
+                        document.querySelector('.payment-method-section').style.display = 'none';
+                        if (redeemRewardBtn) redeemRewardBtn.classList.add('hidden');
+                        
+                        saveOrder('cash', 'pending', orderNumber);
+                        
+                        // Clear cart after successful order
+                        cart = [];
+                        updateUI();
+                        
+                        setTimeout(() => {
+                            orderModal.classList.remove('visible');
+                            document.querySelector('.payment-method-section').style.display = 'block';
+                        }, 5000);
+                    }
+                });
+
+                // Initialize receipt action handlers
+                function initializeReceiptHandlers() {
+                    const printBtn = document.getElementById('print-receipt-btn');
+                    const downloadBtn = document.getElementById('download-receipt-btn');
+                    const closeBtn = document.getElementById('close-receipt-btn');
+                    
+                    if (printBtn) {
+                        printBtn.addEventListener('click', () => {
+                            window.print();
+                        });
+                    }
+
+                    if (downloadBtn) {
+                        downloadBtn.addEventListener('click', () => {
+                            // Simple download as HTML file
+                            const receiptContent = document.getElementById('receipt-content').innerHTML;
+                            const fullHtml = `
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <title>Receipt</title>
+                                    <style>
+                                        body { font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.4; margin: 20px; }
+                                        .receipt-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+                                        .receipt-header h2 { margin: 0; font-size: 18px; font-weight: bold; }
+                                        .receipt-header p { margin: 2px 0; font-size: 11px; }
+                                        .receipt-info div { display: flex; justify-content: space-between; margin-bottom: 3px; }
+                                        .receipt-items { border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; margin: 15px 0; }
+                                        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                                        .receipt-item-name { flex: 1; }
+                                        .receipt-item-qty { width: 30px; text-align: center; }
+                                        .receipt-item-price { width: 60px; text-align: right; }
+                                        .receipt-totals div { display: flex; justify-content: space-between; margin-bottom: 3px; }
+                                        .receipt-total { font-weight: bold; border-top: 1px solid #000; padding-top: 5px; }
+                                        .receipt-footer { text-align: center; margin-top: 15px; border-top: 1px dashed #000; padding-top: 10px; }
+                                    </style>
+                                </head>
+                                <body>${receiptContent}</body>
+                                </html>
+                            `;
+                            
+                            const blob = new Blob([fullHtml], { type: 'text/html' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `receipt-${Date.now()}.html`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        });
+                    }
+
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', () => {
+                            document.getElementById('receipt-modal').classList.remove('visible');
+                        });
+                    }
+                }
+
+                // Call the initialization function
+                initializeReceiptHandlers();
+
+                renderCategories();
+                renderMenu();
+                checkAndDisplayRewardStatus();
+            }
+
+            if (localStorage.getItem('currentUser')) {
+                handleLogin(localStorage.getItem('currentUser'));
+            } else {
+                authContainer.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
