@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4CAF50">
+    <title>📱 Mobile Access Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .ip-box {
+            background: white;
+            color: #333;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .ip-address {
+            font-size: 3em;
+            font-weight: bold;
+            color: #4CAF50;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+        }
+        
+        .link-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        .link-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .link-url {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.1em;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        
+        .copy-btn {
+            background: white;
+            color: #4CAF50;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+        }
+        
+        .test-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .test-btn:hover {
+            background: #1976D2;
+            transform: scale(1.05);
+        }
+        
+        .qr-btn {
+            background: #FF9800;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .qr-btn:hover {
+            background: #F57C00;
+            transform: scale(1.05);
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            line-height: 2;
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .step::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .ip-address {
+                font-size: 2em;
+            }
+            
+            .link-url {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Mobile Access Links</h1>
+        <p style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">
+            Use these links to access from your phone
+        </p>
+        
+        <div class="ip-box">
+            <div style="font-size: 1.1em; color: #666; margin-bottom: 10px;">
+                Your Computer's IP Address:
+            </div>
+            <div class="ip-address">192.168.203.64</div>
+            <button class="copy-btn" onclick="copyIP()">📋 Copy IP</button>
+        </div>
+        
+        <div class="link-card">
+            <div class="link-title">🍽️ Customer Ordering App</div>
+            <div class="link-url">
+                http://192.168.203.64:8080/c3.html
+            </div>
+            <button class="copy-btn" onclick="copyLink(0)">📋 Copy Link</button>
+            <a href="http://192.168.203.64:8080/c3.html" class="test-btn" target="_blank">🧪 Test Now</a>
+        </div>
+        
+        <div class="link-card">
+            <div class="link-title">👨‍💼 Admin Portal</div>
+            <div class="link-url">
+                http://192.168.203.64:8080/admin_portal.html
+            </div>
+            <button class="copy-btn" onclick="copyLink(1)">📋 Copy Link</button>
+            <a href="http://192.168.203.64:8080/admin_portal.html" class="test-btn" target="_blank">🧪 Test Now</a>
+        </div>
+        
+        <div class="link-card">
+            <div class="link-title">🍽️ Table 1</div>
+            <div class="link-url">
+                http://192.168.203.64:8080/c3.html?table=1
+            </div>
+            <button class="copy-btn" onclick="copyLink(2)">📋 Copy Link</button>
+            <a href="http://192.168.203.64:8080/c3.html?table=1" class="test-btn" target="_blank">🧪 Test Now</a>
+        </div>
+        
+        <div class="link-card">
+            <div class="link-title">🍽️ Table 2</div>
+            <div class="link-url">
+                http://192.168.203.64:8080/c3.html?table=2
+            </div>
+            <button class="copy-btn" onclick="copyLink(3)">📋 Copy Link</button>
+            <a href="http://192.168.203.64:8080/c3.html?table=2" class="test-btn" target="_blank">🧪 Test Now</a>
+        </div>
+        
+        <div class="link-card">
+            <div class="link-title">🍽️ Table 3</div>
+            <div class="link-url">
+                http://192.168.203.64:8080/c3.html?table=3
+            </div>
+            <button class="copy-btn" onclick="copyLink(4)">📋 Copy Link</button>
+            <a href="http://192.168.203.64:8080/c3.html?table=3" class="test-btn" target="_blank">🧪 Test Now</a>
+        </div>
+        
+        <a href="TABLE_QR_CODES.html?ip=192.168.203.64" class="qr-btn" target="_blank">
+            📱 Generate QR Codes with This IP
+        </a>
+        
+        <div class="instructions">
+            <h2 style="margin-bottom: 20px;">📖 How to Use on Mobile</h2>
+            
+            <div class="step">
+                <strong>Ensure Same WiFi:</strong> Make sure your phone and computer are on the SAME WiFi network
+            </div>
+            
+            <div class="step">
+                <strong>Copy Link:</strong> Click "📋 Copy Link" on any link above
+            </div>
+            
+            <div class="step">
+                <strong>Open Phone Browser:</strong> Open Chrome, Safari, or any browser on your phone
+            </div>
+            
+            <div class="step">
+                <strong>Paste URL:</strong> Paste the copied link in the address bar
+            </div>
+            
+            <div class="step">
+                <strong>Access App:</strong> The website should load on your mobile!
+            </div>
+        </div>
+        
+        <div style="background: rgba(255, 152, 0, 0.3); border: 2px solid #FF9800; padding: 20px; border-radius: 15px; margin: 20px 0;">
+            <h3 style="margin-bottom: 15px;">⚠️ Still Not Working?</h3>
+            <p><strong>Windows Firewall might be blocking:</strong></p>
+            <p style="margin-top: 10px;">Open PowerShell as Administrator and run:</p>
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin: 15px 0; font-family: monospace; word-break: break-all;">
+                netsh advfirewall firewall add rule name="HTTP Server" dir=in action=allow protocol=TCP localport=8080
+            </div>
+            <p>Then try accessing again from your phone!</p>
+        </div>
+    </div>
+
+    <script>
+        const links = [
+            'http://192.168.203.64:8080/c3.html',
+            'http://192.168.203.64:8080/admin_portal.html',
+            'http://192.168.203.64:8080/c3.html?table=1',
+            'http://192.168.203.64:8080/c3.html?table=2',
+            'http://192.168.203.64:8080/c3.html?table=3'
+        ];
+        
+        function copyIP() {
+            navigator.clipboard.writeText('192.168.203.64').then(() => {
+                showNotification('✅ IP Address copied!');
+            });
+        }
+        
+        function copyLink(index) {
+            navigator.clipboard.writeText(links[index]).then(() => {
+                showNotification('✅ Link copied! Paste in mobile browser');
+            });
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                color: #4CAF50;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+                z-index: 10000;
+                font-weight: bold;
+                font-size: 1.1em;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

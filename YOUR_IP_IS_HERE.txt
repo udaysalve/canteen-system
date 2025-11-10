@@ -1,0 +1,65 @@
+🌐 YOUR COMPUTER'S IP ADDRESS
+================================
+
+IPv4 Address: 192.168.203.64
+
+USE THIS ON YOUR MOBILE PHONE:
+================================
+
+Customer App:
+http://192.168.203.64:8080/c3.html
+
+Admin Portal:
+http://192.168.203.64:8080/admin_portal.html
+
+Table 1:
+http://192.168.203.64:8080/c3.html?table=1
+
+Table 2:
+http://192.168.203.64:8080/c3.html?table=2
+
+Table 3:
+http://192.168.203.64:8080/c3.html?table=3
+
+Table 4:
+http://192.168.203.64:8080/c3.html?table=4
+
+Table 5:
+http://192.168.203.64:8080/c3.html?table=5
+
+
+IMPORTANT STEPS:
+================================
+
+1. ✅ Make sure your PHONE and COMPUTER are on the SAME WiFi network
+   
+2. ✅ Copy one of the URLs above
+
+3. ✅ Open browser on your PHONE
+
+4. ✅ Paste the URL and press Enter
+
+5. ✅ The website should load!
+
+
+GENERATE QR CODES WITH YOUR IP:
+================================
+
+Open this link on your computer:
+http://localhost:8080/TABLE_QR_CODES.html?ip=192.168.203.64
+
+This will generate QR codes that work on mobile!
+
+
+TROUBLESHOOTING:
+================================
+
+If it still doesn't work:
+
+1. Check both devices are on SAME WiFi
+2. Check Windows Firewall settings
+3. Make sure http-server is still running
+4. Try restarting the server
+
+Run this command if firewall blocks:
+netsh advfirewall firewall add rule name="HTTP Server" dir=in action=allow protocol=TCP localport=8080

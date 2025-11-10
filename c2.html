@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Gajanan Canteen</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #e53935;
+            --secondary-color: #4CAF50;
+            --text-color: #333;
+            --light-text-color: #777;
+            --border-color: #eee;
+            --background-color: #f9f9f9;
+            --white: #fff;
+            --green-veg: #008000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- Auth Page Styles --- */
+        #auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        #auth-container h2 { text-align: center; margin-bottom: 20px; color: var(--text-color); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--light-text-color); }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; }
+        .auth-btn { width: 100%; padding: 12px; border-radius: 5px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; background-color: var(--primary-color); color: var(--white); }
+        .auth-toggle { text-align: center; margin-top: 20px; color: var(--light-text-color); }
+        .auth-toggle span { color: var(--primary-color); cursor: pointer; text-decoration: underline; }
+        .auth-error { color: var(--primary-color); text-align: center; margin-top: 10px; font-size: 0.9rem; }
+
+
+        /* --- Main App Styles --- */
+        .mobile-container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--white);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            padding-bottom: 70px;
+        }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border-color); }
+        header .logo h2 { font-size: 1.2rem; color: var(--text-color); }
+        .header-actions { display: flex; gap: 15px; }
+        .header-btn { background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 1rem; }
+
+        .search-container { padding: 15px; display: flex; align-items: center; background-color: var(--background-color); border-bottom: 1px solid var(--border-color); }
+        .search-container input { border: none; outline: none; background: transparent; margin-left: 10px; font-size: 1rem; width: 100%; }
+        .search-container i { color: var(--light-text-color); }
+
+        .categories { padding: 10px 15px; display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid var(--border-color); }
+        .categories::-webkit-scrollbar { display: none; }
+        .category-btn { padding: 8px 15px; border: 1px solid var(--border-color); background: var(--white); border-radius: 20px; font-size: 0.9rem; cursor: pointer; }
+        .category-btn.active { background-color: var(--primary-color); color: var(--white); border-color: var(--primary-color); }
+
+        .menu { padding: 15px; }
+        .menu h3 { margin: 25px 0 15px 0; color: var(--text-color); padding-bottom: 5px; border-bottom: 2px solid var(--primary-color); }
+        .menu h3:first-child { margin-top: 0; }
+
+        .menu-item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .item-details { flex-grow: 1; padding-right: 10px; }
+        .veg-icon { color: var(--green-veg); border: 1px solid var(--green-veg); padding: 2px; font-size: 0.7rem;}
+        .item-details h4 { margin: 8px 0; font-size: 1rem; font-weight: 500; }
+        .item-details .price { font-weight: 500; margin-bottom: 5px; }
+        
+        .item-action { text-align: center; position: relative; width: 100px; }
+        .item-action img { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; background-color: #f0f0f0; }
+        .add-btn { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); background: var(--white); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 6px 25px; border-radius: 5px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .quantity-stepper { display: flex; justify-content: space-around; align-items: center; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); background: var(--primary-color); color: var(--white); width: 90px; padding: 6px 5px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .quantity-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; width: 25px; }
+        
+        .order-summary { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 450px; width: 100%; background-color: var(--primary-color); color: var(--white); padding: 15px; display: flex; justify-content: space-between; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .order-summary.visible { opacity: 1; visibility: visible; }
+        #view-order-btn { background-color: var(--white); color: var(--primary-color); border: none; padding: 10px 20px; border-radius: 5px; font-weight: 700; cursor: pointer; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1000;}
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--white); padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;}
+        .modal-header h3 { font-size: 1.2rem; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+        
+        .order-item, .history-order-item { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .order-item:last-child, .history-order-item:last-child { border-bottom: none; }
+        .order-item-details, .history-details { display: flex; flex-direction: column; }
+        .order-item-name { font-weight: 500; }
+        .order-item-price, .history-item-price { color: var(--light-text-color); font-size: 0.9rem; }
+        .order-item-total, .history-total { font-weight: 500; text-align: right; }
+        
+        .history-date { font-weight: bold; color: var(--text-color); margin-bottom: 5px; }
+
+        .modal-footer { border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px; }
+        .grand-total { font-size: 1.1rem; font-weight: 700; text-align: right; margin-bottom: 15px; }
+        .payment-options { display: flex; flex-direction: column; gap: 10px; }
+        .payment-btn { width: 100%; padding: 12px; border-radius: 5px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+        .online-btn { background-color: var(--secondary-color); color: var(--white); }
+        .cash-btn { background-color: #f0f0f0; color: var(--text-color); border: 1px solid #ddd;}
+        
+        .no-results { text-align: center; color: var(--light-text-color); padding: 40px 20px; }
+
+    </style>
+</head>
+<body>
+    
+    <div id="auth-container">
+        <div id="login-form">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" required>
+            </div>
+            <button id="login-btn" class="auth-btn">Login</button>
+            <p class="auth-toggle">Don't have an account? <span id="show-signup">Sign Up</span></p>
+            <p id="login-error" class="auth-error hidden"></p>
+        </div>
+
+        <div id="signup-form" class="hidden">
+            <h2>Sign Up</h2>
+            <div class="form-group">
+                <label for="signup-username">Username</label>
+                <input type="text" id="signup-username" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" required>
+            </div>
+            <button id="signup-btn" class="auth-btn">Sign Up</button>
+            <p class="auth-toggle">Already have an account? <span id="show-login">Login</span></p>
+            <p id="signup-error" class="auth-error hidden"></p>
+        </div>
+    </div>
+
+    <div class="mobile-container hidden">
+        <header>
+            <div class="logo"><h2>Shree Gajanan Canteen</h2></div>
+            <div class="header-actions">
+                <button id="history-btn" class="header-btn"><i class="fas fa-history"></i> History</button>
+                <button id="logout-btn" class="header-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <div class="search-container"><i class="fas fa-search"></i><input type="text" id="search-input" placeholder="Search item..."></div>
+        <nav class="categories" id="categories-nav"></nav>
+        <main class="menu" id="menu-container"></main>
+    </div>
+
+    <footer id="order-summary" class="order-summary">
+        <div id="order-details"><p>Your order is empty</p></div>
+        <button id="view-order-btn">View Order</button>
+    </footer>
+
+    <div id="order-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Your Order</h3><button id="close-order-modal-btn" class="close-btn">&times;</button></div>
+            <div id="modal-order-items" class="modal-body"></div>
+            <div class="modal-footer">
+                <p class="grand-total" id="modal-grand-total">Total: ₹ 0.00</p>
+                <div class="payment-options">
+                    <button id="pay-online-btn" class="payment-btn online-btn">Pay Online (UPI / Card)</button>
+                    <button id="pay-cash-btn" class="payment-btn cash-btn">Pay with Cash</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Order History</h3><button id="close-history-modal-btn" class="close-btn">&times;</button></div>
+            <div id="modal-history-items" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuData = [
+                { category: 'Tea, Coffee & Milk', name: 'Tea', price: 10 }, { category: 'Tea, Coffee & Milk', name: 'Special Tea', price: 15 }, { category: 'Tea, Coffee & Milk', name: 'Coffee', price: 15 }, { category: 'Tea, Coffee & Milk', name: 'Milk', price: 25 }, { category: 'Tea, Coffee & Milk', name: 'Cold Chocolate Milk', price: 25 }, { category: 'Tea, Coffee & Milk', name: 'Hot Chocolate Milk', price: 25 }, { category: 'Tea, Coffee & Milk', name: 'Buttermilk (Taak)', price: 15 }, { category: 'Tea, Coffee & Milk', name: 'Lassi', price: 25 }, { category: 'Tea, Coffee & Milk', name: 'Curd (Dahi)', price: 25 }, { category: 'Tea, Coffee & Milk', name: 'Lemon Water (Limbu Pani)', price: 10 }, { category: 'Tea, Coffee & Milk', name: 'Bread Butter', price: 30 }, { category: 'Tea, Coffee & Milk', name: 'Buttered Bun (Ban Maska)', price: 20 },
+                { category: 'Breakfast', name: 'Pohe (Flattened Rice)', price: 25 }, { category: 'Breakfast', name: 'Curd Pohe (Dahi Pohe)', price: 30 }, { category: 'Breakfast', name: 'Chickpea Pohe (Chana Pohe)', price: 30 }, { category: 'Breakfast', name: 'Tarri (Spicy Gravy)', price: 10 }, { category: 'Breakfast', name: 'Chana (Chickpea)', price: 30 }, { category: 'Breakfast', name: 'Upma', price: 30 }, { category: 'Breakfast', name: 'Onion Pohe', price: 30 }, { category: 'Breakfast', name: 'Bread Pakora', price: 25 }, { category: 'Breakfast', name: 'Aloo Bonda with Gravy', price: 35 }, { category: 'Breakfast', name: 'Kachori', price: 15 }, { category: 'Breakfast', name: 'Vada Pav', price: 15 }, { category: 'Breakfast', name: 'Dabeli Sandwich', price: 20 }, { category: 'Breakfast', name: 'Veg Sandwich', price: 50 }, { category: 'Breakfast', name: 'Cheese Jumbo Sandwich', price: 50 }, { category: 'Breakfast', name: 'Malai (Cream) Sandwich', price: 50 }, { category: 'Breakfast', name: 'Mix Pav', price: 50 }, { category: 'Breakfast', name: 'Pav (Bread Roll)', price: 7 }, { category: 'Breakfast', name: 'Dhokla', price: 20 }, { category: 'Breakfast', name: 'Sabudana Khichdi', price: 40 },
+                { category: 'Specials & Main Course', name: 'Shahi Piece (Sweet bread)', price: 40 }, { category: 'Specials & Main Course', name: 'Special Sabudana Pith', price: 40 }, { category: 'Specials & Main Course', name: 'Paneer Paratha', price: 50 }, { category: 'Specials & Main Course', name: 'Aloo Paratha', price: 40 }, { category: 'Specials & Main Course', name: 'Methi Paratha (Fenugreek)', price: 40 }, { category: 'Specials & Main Course', name: 'Special Paratha', price: 40 }, { category: 'Specials & Main Course', name: 'Plain Maggi', price: 40 }, { category: 'Specials & Main Course', name: 'Masala Maggi', price: 50 }, { category: 'Specials & Main Course', name: 'Cheese Maggi', price: 60 }, { category: 'Specials & Main Course', name: 'Idli Sambar', price: 40 }, { category: 'Specials & Main Course', name: 'Vada Sambar', price: 40 }, { category: 'Specials & Main Course', name: 'Potato Samosa (Mini)', price: 15 }, { category: 'Specials & Main Course', name: 'Chole (Chickpea Curry)', price: 45 }, { category: 'Specials & Main Course', name: 'Bhatura', price: 15 }, { category: 'Specials & Main Course', name: 'Bhel', price: 40 }, { category: 'Specials & Main Course', name: 'Dal Fry', price: 50 }, { category: 'Specials & Main Course', name: 'Paneer Masala', price: 120 }, { category: 'Specials & Main Course', name: 'Sev Bhaji', price: 90 }, { category: 'Specials & Main Course', name: 'Papad', price: 12 }, { category: 'Specials & Main Course', name: 'Plain Paratha', price: 12 }, { category: 'Specials & Main Course', name: 'Green Salad', price: 40 }, { category: 'Specials & Main Course', name: 'Poli Bhaji (Roti with Curry)', price: 50 }, { category: 'Specials & Main Course', name: 'Varan Khichdi (Dal Khichdi)', price: 60 }, { category: 'Specials & Main Course', name: 'Plain Rice', price: 40 }, { category: 'Specials & Main Course', name: 'Rice Plate', price: 80 }, { category: 'Specials & Main Course', name: 'Paneer Pulao', price: 120 }, { category: 'Specials & Main Course', name: 'Plain Pulao', price: 90 }, { category: 'Specials & Main Course', name: 'Plain Dosa', price: 50 }, { category: 'Specials & Main Course', name: 'Plain Curry (Sadhi Bhaji)', price: 40 }, { category: 'Specials & Main Course', name: 'Jeera Rice (Half)', price: 40 }, { category: 'Specials & Main Course', name: 'Jeera Rice (Full)', price: 60 }
+            ];
+
+            // --- DOM Elements ---
+            const authContainer = document.getElementById('auth-container');
+            const appContainer = document.querySelector('.mobile-container');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            // ... (rest of the elements)
+            
+            // --- App State ---
+            let cart = [];
+            let activeCategory = 'All';
+            let searchQuery = '';
+
+            // --- Authentication ---
+            const showSignupBtn = document.getElementById('show-signup');
+            const showLoginBtn = document.getElementById('show-login');
+            
+            showSignupBtn.addEventListener('click', () => {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+            });
+            showLoginBtn.addEventListener('click', () => {
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            });
+
+            function handleLogin(username) {
+                localStorage.setItem('currentUser', username);
+                authContainer.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                initializeMenuApp();
+            }
+
+            function handleLogout() {
+                localStorage.removeItem('currentUser');
+                appContainer.classList.add('hidden');
+                authContainer.classList.remove('hidden');
+                // Reset cart and UI for next user
+                cart = [];
+                updateUI();
+            }
+
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+            document.getElementById('login-btn').addEventListener('click', () => {
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                const errorEl = document.getElementById('login-error');
+                
+                if (!username || !password) {
+                    errorEl.textContent = 'Please fill in all fields.';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.username === username && u.password === password);
+
+                if (user) {
+                    handleLogin(username);
+                } else {
+                    errorEl.textContent = 'Invalid username or password.';
+                    errorEl.classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('signup-btn').addEventListener('click', () => {
+                const username = document.getElementById('signup-username').value;
+                const password = document.getElementById('signup-password').value;
+                const errorEl = document.getElementById('signup-error');
+
+                if (!username || !password) {
+                    errorEl.textContent = 'Please fill in all fields.';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                if (users.find(u => u.username === username)) {
+                    errorEl.textContent = 'Username already exists.';
+                    errorEl.classList.remove('hidden');
+                } else {
+                    users.push({ username, password });
+                    localStorage.setItem('users', JSON.stringify(users));
+                    handleLogin(username);
+                }
+            });
+
+
+            // --- Main Application Logic ---
+            function initializeMenuApp() {
+                const menuContainer = document.getElementById('menu-container');
+                const categoriesNav = document.getElementById('categories-nav');
+                const searchInput = document.getElementById('search-input');
+                const orderSummaryFooter = document.getElementById('order-summary');
+                const orderDetails = document.getElementById('order-details');
+                const viewOrderBtn = document.getElementById('view-order-btn');
+                const orderModal = document.getElementById('order-modal');
+                const closeOrderModalBtn = document.getElementById('close-order-modal-btn');
+                const modalOrderItems = document.getElementById('modal-order-items');
+                const modalGrandTotal = document.getElementById('modal-grand-total');
+                const payOnlineBtn = document.getElementById('pay-online-btn');
+                const payCashBtn = document.getElementById('pay-cash-btn');
+                const historyBtn = document.getElementById('history-btn');
+                const historyModal = document.getElementById('history-modal');
+                const closeHistoryModalBtn = document.getElementById('close-history-modal-btn');
+
+                function renderCategories() {
+                    const categories = ['All', ...new Set(menuData.map(item => item.category))];
+                    categoriesNav.innerHTML = categories.map(cat => `<button class="category-btn ${cat === activeCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>`).join('');
+                }
+
+                function renderMenu() {
+                    let filteredData = menuData;
+                    if (activeCategory !== 'All') filteredData = filteredData.filter(item => item.category === activeCategory);
+                    if (searchQuery) filteredData = filteredData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+                    menuContainer.innerHTML = '';
+                    if (filteredData.length === 0) {
+                        menuContainer.innerHTML = '<p class="no-results">No items match your search.</p>';
+                        return;
+                    }
+                    
+                    let currentCategory = '';
+                    filteredData.forEach(item => {
+                        if (item.category !== currentCategory && activeCategory === 'All' && !searchQuery) {
+                            currentCategory = item.category;
+                            menuContainer.innerHTML += `<h3>${currentCategory}</h3>`;
+                        }
+                        const itemInCart = cart.find(cartItem => cartItem.name === item.name);
+                        const quantity = itemInCart ? itemInCart.quantity : 0;
+                        menuContainer.insertAdjacentHTML('beforeend', `<div class="menu-item" data-name="${item.name}" data-price="${item.price}"><div class="item-details"><i class="fas fa-leaf veg-icon"></i><h4>${item.name}</h4><p class="price">₹ ${item.price.toFixed(2)}</p></div><div class="item-action"><img src="https://via.placeholder.com/100x100.png?text=${encodeURIComponent(item.name.split(' ')[0])}" alt="${item.name}"><button class="add-btn ${quantity > 0 ? 'hidden' : ''}">Add</button><div class="quantity-stepper ${quantity === 0 ? 'hidden' : ''}"><button class="quantity-btn minus-btn">-</button><span class="quantity-display">${quantity}</span><button class="quantity-btn plus-btn">+</button></div></div></div>`);
+                    });
+                }
+
+                function updateCart(name, price, change) {
+                    let itemInCart = cart.find(item => item.name === name);
+                    if (itemInCart) itemInCart.quantity += change;
+                    else if (change > 0) cart.push({ name, price, quantity: 1 });
+                    cart = cart.filter(item => item.quantity > 0);
+                    updateUI();
+                }
+
+                function updateUI() {
+                    renderMenu();
+                    updateOrderSummaryFooter();
+                    updateOrderModal();
+                }
+
+                function updateOrderSummaryFooter() {
+                    if (cart.length === 0) {
+                        orderSummaryFooter.classList.remove('visible');
+                        return;
+                    }
+                    let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                    let totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    orderDetails.innerHTML = `<p>${totalItems} Item${totalItems > 1 ? 's' : ''} | ₹ ${totalPrice.toFixed(2)}</p>`;
+                    orderSummaryFooter.classList.add('visible');
+                }
+
+                function updateOrderModal() {
+                    if (cart.length === 0) {
+                        modalOrderItems.innerHTML = '<p>Your order is empty.</p>';
+                        modalGrandTotal.textContent = 'Total: ₹ 0.00';
+                        return;
+                    }
+                    let totalPrice = 0;
+                    modalOrderItems.innerHTML = cart.map(item => {
+                        const itemTotal = item.price * item.quantity;
+                        totalPrice += itemTotal;
+                        return `<div class="order-item"><div class="order-item-details"><span class="order-item-name">${item.name}</span><span class="order-item-price">${item.quantity} &times; ₹ ${item.price.toFixed(2)}</span></div><span class="order-item-total">₹ ${itemTotal.toFixed(2)}</span></div>`;
+                    }).join('');
+                    modalGrandTotal.textContent = `Total: ₹ ${totalPrice.toFixed(2)}`;
+                }
+
+                function saveOrder() {
+                    if (cart.length === 0) return;
+                    const currentUser = localStorage.getItem('currentUser');
+                    if (!currentUser) return;
+
+                    const historyKey = `orders_${currentUser}`;
+                    let userHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
+                    
+                    const newOrder = {
+                        date: new Date().toISOString(),
+                        items: [...cart],
+                        total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+                    };
+
+                    userHistory.unshift(newOrder); // Add to the beginning
+                    localStorage.setItem(historyKey, JSON.stringify(userHistory));
+
+                    cart = []; // Clear cart
+                    updateUI();
+                    orderModal.classList.remove('visible');
+                }
+
+                function renderHistory() {
+                    const currentUser = localStorage.getItem('currentUser');
+                    const historyKey = `orders_${currentUser}`;
+                    const userHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
+                    const historyContainer = document.getElementById('modal-history-items');
+
+                    if (userHistory.length === 0) {
+                        historyContainer.innerHTML = '<p class="no-results">You have no past orders.</p>';
+                        return;
+                    }
+
+                    historyContainer.innerHTML = userHistory.map(order => {
+                        const orderDate = new Date(order.date).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                        const itemsHtml = order.items.map(item => `<div class="history-item-price">${item.quantity} &times; ${item.name}</div>`).join('');
+                        return `
+                            <div class="history-order-item">
+                                <div class="history-date">${orderDate}</div>
+                                ${itemsHtml}
+                                <div class="history-total">Total: ₹ ${order.total.toFixed(2)}</div>
+                            </div>`;
+                    }).join('');
+                }
+
+                menuContainer.addEventListener('click', (e) => {
+                    const menuItem = e.target.closest('.menu-item');
+                    if (!menuItem) return;
+                    const itemName = menuItem.dataset.name;
+                    const itemPrice = parseFloat(menuItem.dataset.price);
+                    if (e.target.matches('.add-btn, .plus-btn')) updateCart(itemName, itemPrice, 1);
+                    else if (e.target.matches('.minus-btn')) updateCart(itemName, itemPrice, -1);
+                });
+
+                categoriesNav.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('category-btn')) {
+                        activeCategory = e.target.dataset.category;
+                        renderCategories(); renderMenu();
+                    }
+                });
+
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value;
+                    renderMenu();
+                });
+
+                viewOrderBtn.addEventListener('click', () => orderModal.classList.add('visible'));
+                closeOrderModalBtn.addEventListener('click', () => orderModal.classList.remove('visible'));
+                orderModal.addEventListener('click', (e) => { if (e.target === orderModal) orderModal.classList.remove('visible'); });
+                
+                historyBtn.addEventListener('click', () => { renderHistory(); historyModal.classList.add('visible'); });
+                closeHistoryModalBtn.addEventListener('click', () => historyModal.classList.remove('visible'));
+                historyModal.addEventListener('click', (e) => { if (e.target === historyModal) historyModal.classList.remove('visible'); });
+
+                payOnlineBtn.addEventListener('click', () => {
+                    alert("This would normally redirect to a secure payment gateway.");
+                    saveOrder();
+                });
+                payCashBtn.addEventListener('click', () => {
+                    alert("Order Placed! Please pay at the counter.");
+                    saveOrder();
+                });
+
+                renderCategories();
+                renderMenu();
+            }
+
+            // --- Initial Page Load Check ---
+            if (localStorage.getItem('currentUser')) {
+                handleLogin(localStorage.getItem('currentUser'));
+            } else {
+                authContainer.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

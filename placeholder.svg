@@ -1,0 +1,7 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="200" height="200" fill="#F5F5F5"/>
+<rect x="60" y="80" width="80" height="40" fill="#D0D0D0" rx="4"/>
+<circle cx="100" cy="100" r="30" stroke="#D0D0D0" stroke-width="2" fill="none"/>
+<path d="M85 95L95 105L115 85" stroke="#D0D0D0" stroke-width="2" fill="none"/>
+<text x="100" y="140" text-anchor="middle" fill="#999" font-family="Arial" font-size="12">Food Image</text>
+</svg>

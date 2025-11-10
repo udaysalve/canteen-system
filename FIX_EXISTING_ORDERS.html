@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Existing Orders - Canteen System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .status-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 400px;
+        }
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .info { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix Existing Orders</h1>
+        
+        <div class="status-box">
+            <h2>Fix "[object Object]" Issue</h2>
+            <p>This tool will fix existing orders that show "[object Object]" instead of item names.</p>
+            <div style="text-align: center; margin: 20px 0;">
+                <button onclick="fixExistingOrders()">🔧 Fix All Orders</button>
+            </div>
+        </div>
+
+        <div class="status-box">
+            <h3>📝 Log</h3>
+            <div class="log" id="logContainer">
+                <p class="info">Ready to fix orders...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logDiv = document.createElement('div');
+            logDiv.className = type;
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logDiv);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+
+        function fixExistingOrders() {
+            log('Starting order fix process...', 'info');
+            
+            try {
+                // Get central orders
+                const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                log(`Found ${centralOrders.length} orders to check`, 'info');
+                
+                let fixedCount = 0;
+                
+                centralOrders.forEach((order, index) => {
+                    let needsFix = false;
+                    
+                    // Check if items field has [object Object] issue
+                    if (order.items && typeof order.items === 'string' && order.items.includes('[object')) {
+                        needsFix = true;
+                        log(`Order #${order.id} has [object Object] issue`, 'info');
+                        
+                        // Try to fix from itemsArray
+                        if (Array.isArray(order.itemsArray) && order.itemsArray.length > 0) {
+                            order.items = order.itemsArray.map(item => 
+                                `${item.quantity || 1}x ${item.name || item.itemName || 'Item'}`
+                            ).join(', ');
+                            log(`Fixed Order #${order.id}: ${order.items}`, 'success');
+                            fixedCount++;
+                        } else {
+                            log(`Order #${order.id} - No itemsArray to fix from`, 'error');
+                        }
+                    }
+                    
+                    // Check if items is an array (shouldn't be for display)
+                    if (Array.isArray(order.items)) {
+                        needsFix = true;
+                        log(`Order #${order.id} - items is an array, converting to string`, 'info');
+                        
+                        const itemsString = order.items.map(item => 
+                            `${item.quantity || 1}x ${item.name || item.itemName || 'Item'}`
+                        ).join(', ');
+                        
+                        // Save original array as itemsArray
+                        if (!order.itemsArray) {
+                            order.itemsArray = [...order.items];
+                        }
+                        
+                        order.items = itemsString;
+                        log(`Fixed Order #${order.id}: ${order.items}`, 'success');
+                        fixedCount++;
+                    }
+                });
+                
+                // Save back to localStorage
+                if (fixedCount > 0) {
+                    localStorage.setItem('canteen_orders', JSON.stringify(centralOrders));
+                    log(`✅ Successfully fixed ${fixedCount} orders!`, 'success');
+                    log('Please refresh the admin portal to see the changes', 'info');
+                } else {
+                    log('✓ No orders needed fixing - all good!', 'success');
+                }
+                
+                log('Fix process complete!', 'success');
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                console.error('Fix error:', error);
+            }
+        }
+
+        // Auto-run on load
+        log('Order fix tool loaded', 'info');
+        log('Click the button above to fix existing orders', 'info');
+    </script>
+</body>
+</html>

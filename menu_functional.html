@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gajanan Canteen | Client Login</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" 
+            integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" 
+            crossorigin="anonymous" />
+    
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* 🌟 NEW STRUCTURE: Use grid/flex on body for perfect centering */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center; 
+            align-items: center;    
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        
+        /* 🌟 NEW: Ensures only the required content is inside the centered box */
+        .main-wrapper {
+             /* Wrapper ensures the single login box is the only element taking space */
+             width: 100%;
+             display: flex;
+             justify-content: center;
+        }
+        
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px; /* Max width constraint */
+            text-align: center;
+        }
+        .canteen-title {
+            margin-bottom: 25px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .clr-red { color: #dc3545; }
+        .clr-green { color: #28a745; }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .btn-login:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="login-container">
+            <h1 class="canteen-title"><span class="clr-red">Gajanan</span> <span class="clr-green">Canteen</span></h1>
+            
+            <form id="client-login-form">
+                <div class="form-group">
+                    <label for="client-name"><i class="fas fa-user"></i> Name</label>
+                    <input type="text" id="client-name" name="client-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobile-number"><i class="fas fa-phone"></i> Mobile Number</label>
+                    <input type="tel" id="mobile-number" name="mobile-number" pattern="[0-9]{10}" maxlength="10" required>
+                </div>
+                <button type="submit" class="btn-login">Login and View Menu</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('client-login-form').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            
+            const nameInput = document.getElementById('client-name').value.trim();
+            const mobileInput = document.getElementById('mobile-number').value.trim();
+            
+            // --- 1. Validation Checks ---
+            if (nameInput === "") {
+                Swal.fire('Error', 'Please enter your name.', 'error');
+                return;
+            }
+
+            if (!mobileInput.match(/^[0-9]{10}$/)) {
+                Swal.fire('Error', 'Please enter a valid 10-digit mobile number.', 'error');
+                return;
+            }
+
+            // --- 2. Store Client Info (Simulated Login) ---
+            const clientData = {
+                name: nameInput,
+                mobile: mobileInput,
+                loggedIn: true
+            };
+            
+            localStorage.setItem('clientData', JSON.stringify(clientData));
+            
+            // --- 3. Redirect to Menu Page ---
+            Swal.fire({
+                title: 'Success!',
+                text: `Welcome, ${nameInput}! Redirecting to the menu...`,
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                // IMPORTANT: Ensure your main menu file is named 'menu_functional.html'
+                window.location.href = 'menu_functional.html'; 
+            });
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gajanan Canteen | Client Login</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" 
+            integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" 
+            crossorigin="anonymous" />
+    
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* 🌟 NEW STRUCTURE: Use grid/flex on body for perfect centering */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center; 
+            align-items: center;    
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        
+        /* 🌟 NEW: Ensures only the required content is inside the centered box */
+        .main-wrapper {
+             /* Wrapper ensures the single login box is the only element taking space */
+             width: 100%;
+             display: flex;
+             justify-content: center;
+        }
+        
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px; /* Max width constraint */
+            text-align: center;
+        }
+        .canteen-title {
+            margin-bottom: 25px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .clr-red { color: #dc3545; }
+        .clr-green { color: #28a745; }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .btn-login:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="login-container">
+            <h1 class="canteen-title"><span class="clr-red">Gajanan</span> <span class="clr-green">Canteen</span></h1>
+            
+            <form id="client-login-form">
+                <div class="form-group">
+                    <label for="client-name"><i class="fas fa-user"></i> Name</label>
+                    <input type="text" id="client-name" name="client-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobile-number"><i class="fas fa-phone"></i> Mobile Number</label>
+                    <input type="tel" id="mobile-number" name="mobile-number" pattern="[0-9]{10}" maxlength="10" required>
+                </div>
+                <button type="submit" class="btn-login">Login and View Menu</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('client-login-form').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            
+            const nameInput = document.getElementById('client-name').value.trim();
+            const mobileInput = document.getElementById('mobile-number').value.trim();
+            
+            // --- 1. Validation Checks ---
+            if (nameInput === "") {
+                Swal.fire('Error', 'Please enter your name.', 'error');
+                return;
+            }
+
+            if (!mobileInput.match(/^[0-9]{10}$/)) {
+                Swal.fire('Error', 'Please enter a valid 10-digit mobile number.', 'error');
+                return;
+            }
+
+            // --- 2. Store Client Info (Simulated Login) ---
+            const clientData = {
+                name: nameInput,
+                mobile: mobileInput,
+                loggedIn: true
+            };
+            
+            localStorage.setItem('clientData', JSON.stringify(clientData));
+            
+            // --- 3. Redirect to Menu Page ---
+            Swal.fire({
+                title: 'Success!',
+                text: `Welcome, ${nameInput}! Redirecting to the menu...`,
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                // IMPORTANT: Ensure your main menu file is named 'menu_functional.html'
+                window.location.href = 'menu_functional.html'; 
+            });
+        });
+    </script>
+</body>
+</html>

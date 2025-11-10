@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <title>🧪 Test Table Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .table-link {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        .table-link:hover {
+            transform: translateY(-10px);
+            border-color: white;
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        
+        .table-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .table-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .table-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .info-box p {
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        
+        .qr-gen-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .qr-gen-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Table Links</h1>
+        <p class="subtitle">Click any table to test the auto-fill feature</p>
+        
+        <div class="links-grid">
+            <a href="c3.html?table=1" class="table-link" target="_blank">
+                <div class="table-icon">🍽️</div>
+                <div class="table-number">Table 1</div>
+                <div class="table-desc">Click to order</div>
+            </a>
+            
+            <a href="c3.html?table=2" class="table-link" target="_blank">
+                <div class="table-icon">🍽️</div>
+                <div class="table-number">Table 2</div>
+                <div class="table-desc">Click to order</div>
+            </a>
+            
+            <a href="c3.html?table=3" class="table-link" target="_blank">
+                <div class="table-icon">🍽️</div>
+                <div class="table-number">Table 3</div>
+                <div class="table-desc">Click to order</div>
+            </a>
+            
+            <a href="c3.html?table=4" class="table-link" target="_blank">
+                <div class="table-icon">🍽️</div>
+                <div class="table-number">Table 4</div>
+                <div class="table-desc">Click to order</div>
+            </a>
+            
+            <a href="c3.html?table=5" class="table-link" target="_blank">
+                <div class="table-icon">🍽️</div>
+                <div class="table-number">Table 5</div>
+                <div class="table-desc">Click to order</div>
+            </a>
+        </div>
+        
+        <a href="TABLE_QR_CODES.html" class="qr-gen-btn" target="_blank">
+            📱 Generate QR Codes for Tables
+        </a>
+        
+        <div class="info-box">
+            <h3>📖 How to Test</h3>
+            <p><strong>1. Click any table link above</strong></p>
+            <p>   → Opens customer app with table number pre-filled</p>
+            
+            <p><strong>2. Look for table notice on login screen</strong></p>
+            <p>   → Shows "You're ordering for Table X"</p>
+            
+            <p><strong>3. Login and check header</strong></p>
+            <p>   → See "🍽️ Table X" badge in top-right</p>
+            
+            <p><strong>4. Place an order</strong></p>
+            <p>   → Table number automatically included</p>
+            
+            <p><strong>5. Check admin portal</strong></p>
+            <p>   → Order shows correct table number</p>
+            
+            <p><strong>6. Generate QR codes</strong></p>
+            <p>   → Print and test scanning with phone camera</p>
+        </div>
+        
+        <div class="info-box" style="margin-top: 20px;">
+            <h3>✅ What to Verify</h3>
+            <p>✔️ Login screen shows table notice</p>
+            <p>✔️ Header displays table badge after login</p>
+            <p>✔️ Table number appears in order confirmation</p>
+            <p>✔️ Admin portal shows table in Order Management</p>
+            <p>✔️ Transaction Records displays table column</p>
+            <p>✔️ QR codes scan correctly on mobile</p>
+        </div>
+    </div>
+</body>
+</html>

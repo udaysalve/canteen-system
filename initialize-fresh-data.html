@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initialize Fresh Data - Gajanan Canteen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 3px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .warning-box p {
+            color: #856404;
+            line-height: 1.6;
+        }
+        
+        .status-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-value {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .button-group {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 18px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+        
+        .btn-admin {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 233, 123, 0.3);
+        }
+        
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .success-message h3 {
+            margin-bottom: 10px;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .log-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        .log-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+        
+        .log-success {
+            color: #28a745;
+        }
+        
+        .log-error {
+            color: #dc3545;
+        }
+        
+        .log-info {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Clear Old Data & Initialize Fresh</h1>
+        <p class="subtitle">Gajanan Canteen Management System</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ WARNING: This Will Delete ALL Data!</h3>
+            <p>
+                This action will permanently remove:
+                <br>• All old users (Rajesh K., Priya G., etc.)
+                <br>• All orders and transaction history
+                <br>• All login/signup logs
+                <br>• All activity records
+                <br><br>
+                <strong>Fresh data will be created with empty users list and updated menu.</strong>
+            </p>
+        </div>
+        
+        <div id="successMessage" class="success-message"></div>
+        
+        <div class="status-box">
+            <h3 style="margin-bottom: 15px; color: #667eea;">📊 Current Data Status</h3>
+            <div class="status-item">
+                <span class="status-label">Menu Items:</span>
+                <span class="status-value" id="menuCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Users:</span>
+                <span class="status-value" id="userCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Orders:</span>
+                <span class="status-value" id="orderCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Login Logs:</span>
+                <span class="status-value" id="loginLogCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Signup Logs:</span>
+                <span class="status-value" id="signupLogCount">0</span>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-clear" onclick="clearAllAndInitialize()">
+                🗑️ CLEAR ALL OLD DATA & CREATE FRESH
+            </button>
+            <button class="btn-admin" onclick="openAdmin()">
+                🔧 Open Admin Portal
+            </button>
+        </div>
+        
+        <div class="log-box" id="logBox">
+            <div class="log-item log-info">System ready. Click the button above to clear old data.</div>
+        </div>
+    </div>
+    
+    <script>
+        // Complete fresh menu data with all items
+        const FRESH_MENU_DATA = [
+            // Tea, Coffee & Milk
+            { id: 1, category: "Tea, Coffee & Milk", name: "Tea", price: 10, imageStatus: "(Image Attached)" },
+            { id: 2, category: "Tea, Coffee & Milk", name: "Special Tea", price: 15, imageStatus: "(Image Attached)" },
+            { id: 3, category: "Tea, Coffee & Milk", name: "Coffee", price: 15, imageStatus: "(Image Attached)" },
+            { id: 4, category: "Tea, Coffee & Milk", name: "Milk", price: 20, imageStatus: "(Image Attached)" },
+            { id: 5, category: "Tea, Coffee & Milk", name: "Hot Chocolate Milk", price: 30, imageStatus: "(Image Attached)" },
+            { id: 6, category: "Tea, Coffee & Milk", name: "Cold Chocolate Milk", price: 30, imageStatus: "(Image Attached)" },
+            { id: 7, category: "Tea, Coffee & Milk", name: "Buttermilk", price: 15, imageStatus: "(Image Attached)" },
+            { id: 8, category: "Tea, Coffee & Milk", name: "Lassi", price: 25, imageStatus: "(Image Attached)" },
+            
+            // Breakfast
+            { id: 9, category: "Breakfast", name: "Pohe", price: 25, imageStatus: "(Image Attached)" },
+            { id: 10, category: "Breakfast", name: "Onion Pohe", price: 30, imageStatus: "(Image Attached)" },
+            { id: 11, category: "Breakfast", name: "Chickpea Pohe", price: 35, imageStatus: "(Image Attached)" },
+            { id: 12, category: "Breakfast", name: "Curd Pohe", price: 30, imageStatus: "(Image Attached)" },
+            { id: 13, category: "Breakfast", name: "Upma", price: 25, imageStatus: "(Image Attached)" },
+            { id: 14, category: "Breakfast", name: "Sabudana Khichdi", price: 30, imageStatus: "(Image Attached)" },
+            { id: 15, category: "Breakfast", name: "Special Sabudana Pith", price: 35, imageStatus: "(Image Attached)" },
+            { id: 16, category: "Breakfast", name: "Bread Butter", price: 20, imageStatus: "(Image Attached)" },
+            { id: 17, category: "Breakfast", name: "Bread Pakora", price: 25, imageStatus: "(Image Attached)" },
+            { id: 18, category: "Breakfast", name: "Buttered Bun", price: 25, imageStatus: "(Image Attached)" },
+            
+            // Parathas
+            { id: 19, category: "Parathas", name: "Plain Paratha", price: 30, imageStatus: "(Image Attached)" },
+            { id: 20, category: "Parathas", name: "Aloo Paratha", price: 35, imageStatus: "(Image Attached)" },
+            { id: 21, category: "Parathas", name: "Paneer Paratha", price: 45, imageStatus: "(Image Attached)" },
+            { id: 22, category: "Parathas", name: "Metti Paratha", price: 35, imageStatus: "(Image Attached)" },
+            { id: 23, category: "Parathas", name: "Special Paratha", price: 50, imageStatus: "(Image Attached)" },
+            
+            // Rice & Main Course
+            { id: 24, category: "Rice & Main Course", name: "Plain Rice", price: 30, imageStatus: "(Image Attached)" },
+            { id: 25, category: "Rice & Main Course", name: "Jeera Rice", price: 40, imageStatus: "(Image Attached)" },
+            { id: 26, category: "Rice & Main Course", name: "Jeera Rice Full", price: 60, imageStatus: "(Image Attached)" },
+            { id: 27, category: "Rice & Main Course", name: "Rice Plate", price: 50, imageStatus: "(Image Attached)" },
+            { id: 28, category: "Rice & Main Course", name: "Paneer Pulao", price: 70, imageStatus: "(Image Attached)" },
+            { id: 29, category: "Rice & Main Course", name: "Varan Khichdi", price: 45, imageStatus: "(Image Attached)" },
+            { id: 30, category: "Rice & Main Course", name: "Dal Fry", price: 40, imageStatus: "(Image Attached)" },
+            { id: 31, category: "Rice & Main Course", name: "Paneer Masala", price: 60, imageStatus: "(Image Attached)" },
+            
+            // Snacks & Street Food
+            { id: 32, category: "Snacks & Street Food", name: "Vada Pav", price: 20, imageStatus: "(Image Attached)" },
+            { id: 33, category: "Snacks & Street Food", name: "Dabeli", price: 25, imageStatus: "(Image Attached)" },
+            { id: 34, category: "Snacks & Street Food", name: "Bhel", price: 30, imageStatus: "(Image Attached)" },
+            { id: 35, category: "Snacks & Street Food", name: "Potato Samosa", price: 15, imageStatus: "(Image Attached)" },
+            { id: 36, category: "Snacks & Street Food", name: "Kachori", price: 20, imageStatus: "(Image Attached)" },
+            { id: 37, category: "Snacks & Street Food", name: "Aloo Bonda", price: 15, imageStatus: "(Image Attached)" },
+            { id: 38, category: "Snacks & Street Food", name: "Dokla", price: 25, imageStatus: "(Image Attached)" },
+            
+            // Maggi & Noodles
+            { id: 39, category: "Maggi & Noodles", name: "Plain Maggi", price: 30, imageStatus: "(Image Attached)" },
+            { id: 40, category: "Maggi & Noodles", name: "Masala Maggi", price: 40, imageStatus: "(Image Attached)" },
+            { id: 41, category: "Maggi & Noodles", name: "Cheese Maggi", price: 60, imageStatus: "(Image Attached)" },
+            
+            // South Indian
+            { id: 42, category: "South Indian", name: "Plain Dosa", price: 35, imageStatus: "(Image Attached)" },
+            { id: 43, category: "South Indian", name: "Idli Sambar", price: 40, imageStatus: "(Image Attached)" },
+            { id: 44, category: "South Indian", name: "Vada Sambar", price: 40, imageStatus: "(Image Attached)" },
+            
+            // Special Items
+            { id: 45, category: "Special Items", name: "Poli Bhaji", price: 45, imageStatus: "(Image Attached)" },
+            { id: 46, category: "Special Items", name: "Shev Bhaji", price: 40, imageStatus: "(Image Attached)" },
+            { id: 47, category: "Special Items", name: "Mix Pav", price: 35, imageStatus: "(Image Attached)" },
+            { id: 48, category: "Special Items", name: "Chole", price: 45, imageStatus: "(Image Attached)" },
+            { id: 49, category: "Special Items", name: "Chana", price: 40, imageStatus: "(Image Attached)" },
+            { id: 50, category: "Special Items", name: "Bhatura", price: 50, imageStatus: "(Image Attached)" },
+            
+            // Extras
+            { id: 51, category: "Extras", name: "Pav", price: 5, imageStatus: "(Image Attached)" },
+            { id: 52, category: "Extras", name: "Papad", price: 10, imageStatus: "(Image Attached)" },
+            { id: 53, category: "Extras", name: "Curd", price: 15, imageStatus: "(Image Attached)" },
+            { id: 54, category: "Extras", name: "Green Salad", price: 20, imageStatus: "(Image Attached)" },
+            { id: 55, category: "Extras", name: "Lemon Water", price: 10, imageStatus: "(Image Attached)" },
+            { id: 56, category: "Extras", name: "Plain Curry", price: 15, imageStatus: "(Image Attached)" },
+            { id: 57, category: "Extras", name: "Tarri", price: 20, imageStatus: "(Image Attached)" },
+            
+            // Sandwiches
+            { id: 58, category: "Sandwiches", name: "Veg Sandwich", price: 30, imageStatus: "(Image Attached)" },
+            { id: 59, category: "Sandwiches", name: "Cheese Jumbo", price: 50, imageStatus: "(Image Attached)" },
+            { id: 60, category: "Sandwiches", name: "Malai Sandwich", price: 35, imageStatus: "(Image Attached)" },
+            { id: 61, category: "Sandwiches", name: "Sahi Piece", price: 40, imageStatus: "(Image Attached)" }
+        ];
+        
+        function addLog(message, type = 'info') {
+            const logBox = document.getElementById('logBox');
+            const logItem = document.createElement('div');
+            logItem.className = `log-item log-${type}`;
+            logItem.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logBox.insertBefore(logItem, logBox.firstChild);
+        }
+        
+        function showSuccess(title, message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.innerHTML = `<h3>${title}</h3><p>${message}</p>`;
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 5000);
+        }
+        
+        function refreshStatus() {
+            try {
+                const menu = JSON.parse(localStorage.getItem('canteen_menu') || '[]');
+                const users = JSON.parse(localStorage.getItem('canteen_users') || '[]');
+                const orders = JSON.parse(localStorage.getItem('canteen_orders') || '[]');
+                const loginLog = JSON.parse(localStorage.getItem('loginLog') || '[]');
+                const signupLog = JSON.parse(localStorage.getItem('signupLog') || '[]');
+                
+                document.getElementById('menuCount').textContent = menu.length;
+                document.getElementById('userCount').textContent = users.length;
+                document.getElementById('orderCount').textContent = orders.length;
+                document.getElementById('loginLogCount').textContent = loginLog.length;
+                document.getElementById('signupLogCount').textContent = signupLog.length;
+                
+                addLog(`Status: ${menu.length} menu, ${users.length} users, ${orders.length} orders`, 'info');
+            } catch (error) {
+                addLog('Error refreshing status: ' + error.message, 'error');
+            }
+        }
+        
+        function clearAllAndInitialize() {
+            const confirmed = confirm(
+                '⚠️ FINAL WARNING ⚠️\n\n' +
+                'This will PERMANENTLY DELETE:\n' +
+                '• All users (Rajesh K., Priya G., etc.)\n' +
+                '• All orders and transactions\n' +
+                '• All login/signup history\n' +
+                '• All activity logs\n\n' +
+                'Fresh data will be created.\n\n' +
+                'Are you absolutely sure?'
+            );
+            
+            if (!confirmed) {
+                addLog('Operation cancelled by user', 'info');
+                return;
+            }
+            
+            try {
+                addLog('Starting complete data wipe...', 'info');
+                
+                // Get all localStorage keys
+                const allKeys = Object.keys(localStorage);
+                addLog(`Found ${allKeys.length} localStorage keys`, 'info');
+                
+                // Remove ALL canteen-related data
+                const keysToRemove = [
+                    'canteen_menu',
+                    'canteen_users',
+                    'canteen_orders',
+                    'canteen_nextItemId',
+                    'canteen_nextOrderId',
+                    'canteen_nextUserId',
+                    'loginLog',
+                    'signupLog',
+                    'activityLog',
+                    'adminAuthenticated',
+                    'adminUser',
+                    'adminRole',
+                    'lastCustomerSync',
+                    'currentUser',
+                    'userToken',
+                    'cart',
+                    'orderHistory'
+                ];
+                
+                // Also remove any keys that start with canteen_ or user_
+                allKeys.forEach(key => {
+                    if (key.startsWith('canteen_') || key.startsWith('user_') || 
+                        key.includes('admin') || key.includes('login') || 
+                        key.includes('signup') || key.includes('order') ||
+                        key.includes('cart')) {
+                        keysToRemove.push(key);
+                    }
+                });
+                
+                // Remove duplicates
+                const uniqueKeys = [...new Set(keysToRemove)];
+                
+                addLog(`Removing ${uniqueKeys.length} data items...`, 'info');
+                
+                uniqueKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                    addLog(`✓ Removed: ${key}`, 'success');
+                });
+                
+                addLog('All old data cleared!', 'success');
+                
+                // Initialize fresh data
+                addLog('Initializing fresh data...', 'info');
+                
+                // Set fresh menu (61 items)
+                localStorage.setItem('canteen_menu', JSON.stringify(FRESH_MENU_DATA));
+                addLog(`✓ Created ${FRESH_MENU_DATA.length} fresh menu items`, 'success');
+                
+                // Set empty users array (no old users)
+                localStorage.setItem('canteen_users', JSON.stringify([]));
+                addLog('✓ Created empty users list (no old users)', 'success');
+                
+                // Set empty orders
+                localStorage.setItem('canteen_orders', JSON.stringify([]));
+                addLog('✓ Created empty orders list', 'success');
+                
+                // Set empty logs
+                localStorage.setItem('loginLog', JSON.stringify([]));
+                localStorage.setItem('signupLog', JSON.stringify([]));
+                addLog('✓ Created empty login/signup logs', 'success');
+                
+                // Set ID counters
+                localStorage.setItem('canteen_nextItemId', '62');
+                localStorage.setItem('canteen_nextOrderId', '1001');
+                localStorage.setItem('canteen_nextUserId', '1001');
+                addLog('✓ Set ID counters', 'success');
+                
+                // Set admin authentication
+                localStorage.setItem('adminAuthenticated', 'true');
+                localStorage.setItem('adminUser', 'admin');
+                localStorage.setItem('adminRole', 'admin');
+                addLog('✓ Admin authentication configured', 'success');
+                
+                addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'success');
+                addLog('🎉 SUCCESS! All old data removed!', 'success');
+                addLog('🎉 Fresh data initialized!', 'success');
+                addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'success');
+                
+                showSuccess(
+                    '✅ Success!',
+                    `All old data removed! Fresh system initialized with ${FRESH_MENU_DATA.length} menu items and 0 users. You can now open the admin portal.`
+                );
+                
+                refreshStatus();
+                
+            } catch (error) {
+                addLog('❌ Error: ' + error.message, 'error');
+                alert('Error clearing data: ' + error.message);
+            }
+        }
+        
+        function openAdmin() {
+            addLog('Opening admin portal...', 'info');
+            window.open('admin_portal.html', '_blank');
+        }
+        
+        // Auto-refresh on load
+        window.addEventListener('load', () => {
+            refreshStatus();
+            addLog('Fresh Data Initializer loaded', 'info');
+        });
+        
+        // Auto-refresh every 3 seconds
+        setInterval(refreshStatus, 3000);
+    </script>
+</body>
+</html>

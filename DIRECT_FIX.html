@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Fix - Applying Now</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .status {
+            font-size: 1.3em;
+            margin: 30px 0;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            min-height: 150px;
+            line-height: 2;
+        }
+        .success { color: #4CAF50; font-weight: bold; }
+        .orders-table {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th {
+            background: rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        .old { color: #f44336; text-decoration: line-through; }
+        .new { color: #4CAF50; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Applying Sequential Fix</h1>
+        <div class="status" id="status">
+            <div style="font-size: 2em;">⏳</div>
+            Processing...
+        </div>
+        <div class="orders-table" id="ordersPreview" style="display: none;">
+        </div>
+    </div>
+
+    <script>
+        function fixOrderNumbers() {
+            const statusDiv = document.getElementById('status');
+            const previewDiv = document.getElementById('ordersPreview');
+            
+            try {
+                // Get orders from localStorage
+                let centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                
+                statusDiv.innerHTML = `
+                    <div style="font-size: 2em;">📊</div>
+                    Found ${centralOrders.length} orders<br>
+                    Sorting and renumbering...
+                `;
+
+                if (centralOrders.length === 0) {
+                    statusDiv.innerHTML = `
+                        <div style="font-size: 2em; color: #f44336;">❌</div>
+                        No orders found in database
+                    `;
+                    return;
+                }
+
+                // Create backup
+                localStorage.setItem('canteen_orders_backup_' + Date.now(), JSON.stringify(centralOrders));
+
+                // Sort by timestamp (oldest first for proper sequencing)
+                centralOrders.sort((a, b) => {
+                    const dateA = new Date(a.timestamp || a.created_at || 0);
+                    const dateB = new Date(b.timestamp || b.created_at || 0);
+                    return dateA - dateB;
+                });
+
+                // Show preview
+                let previewHTML = '<table><tr><th>Old Number</th><th>→</th><th>New Number</th><th>Date</th><th>Customer</th></tr>';
+
+                // Renumber sequentially
+                centralOrders.forEach((order, index) => {
+                    const oldNumber = order.order_number || 'N/A';
+                    const newId = index + 1;
+                    const newNumber = `ORD${newId.toString().padStart(6, '0')}`;
+                    
+                    previewHTML += `
+                        <tr>
+                            <td class="old">${oldNumber}</td>
+                            <td>→</td>
+                            <td class="new">${newNumber}</td>
+                            <td><small>${new Date(order.timestamp).toLocaleDateString()}</small></td>
+                            <td>${order.customer || order.userName || 'Guest'}</td>
+                        </tr>
+                    `;
+                    
+                    order.id = newId;
+                    order.order_number = newNumber;
+                });
+
+                previewHTML += '</table>';
+                previewDiv.innerHTML = previewHTML;
+                previewDiv.style.display = 'block';
+
+                // Save updated orders
+                localStorage.setItem('canteen_orders', JSON.stringify(centralOrders));
+                
+                console.log('✅ Fixed orders:', centralOrders);
+
+                statusDiv.innerHTML = `
+                    <div class="success" style="font-size: 2em;">✅</div>
+                    <div class="success">SUCCESS!</div>
+                    <br>
+                    Updated ${centralOrders.length} orders<br>
+                    Range: ORD000001 to ORD${centralOrders.length.toString().padStart(6, '0')}<br>
+                    <br>
+                    <small style="color: #2196F3;">Redirecting to Transaction Records in 3 seconds...</small>
+                `;
+
+                // Redirect to transaction records after 3 seconds
+                setTimeout(() => {
+                    window.location.href = 'http://localhost:8080/admin_transactions.html';
+                }, 3000);
+
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div style="font-size: 2em; color: #f44336;">❌</div>
+                    Error: ${error.message}
+                `;
+                console.error('Fix error:', error);
+            }
+        }
+
+        // Execute immediately on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(fixOrderNumbers, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instant Fix - Sequential Order Numbers</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 30px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .big-button {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 25px 60px;
+            border-radius: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            margin: 30px auto;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+            display: inline-block;
+        }
+        .big-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.7);
+        }
+        .status {
+            font-size: 1.3em;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            min-height: 100px;
+        }
+        .success { color: #4CAF50; font-weight: bold; }
+        .error { color: #f44336; font-weight: bold; }
+        .info { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Instant Fix</h1>
+        <p style="font-size: 1.3em; margin: 20px 0;">
+            Fix all order numbers to sequential format
+        </p>
+        
+        <button class="big-button" onclick="instantFix()">
+            🔧 FIX NOW
+        </button>
+        
+        <div class="status" id="status">
+            Click the button above to fix all order numbers
+        </div>
+    </div>
+
+    <script>
+        function instantFix() {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                statusDiv.innerHTML = '<div class="info">🔄 Processing...</div>';
+                
+                // Get orders
+                const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                
+                if (centralOrders.length === 0) {
+                    statusDiv.innerHTML = '<div class="error">❌ No orders found</div>';
+                    return;
+                }
+
+                statusDiv.innerHTML = `<div class="info">📊 Found ${centralOrders.length} orders<br>🔄 Fixing...</div>`;
+
+                // Create backup
+                localStorage.setItem('canteen_orders_backup', JSON.stringify(centralOrders));
+
+                // Sort by timestamp (oldest first)
+                const sortedOrders = centralOrders.sort((a, b) => 
+                    new Date(a.timestamp || a.created_at) - new Date(b.timestamp || b.created_at)
+                );
+
+                // Assign sequential numbers
+                sortedOrders.forEach((order, index) => {
+                    order.id = index + 1;
+                    order.order_number = `ORD${(index + 1).toString().padStart(6, '0')}`;
+                });
+
+                // Save updated orders
+                localStorage.setItem('canteen_orders', JSON.stringify(sortedOrders));
+                
+                statusDiv.innerHTML = `
+                    <div class="success">
+                        ✅ SUCCESS!<br><br>
+                        Fixed ${sortedOrders.length} orders<br>
+                        New range: ORD000001 to ORD${sortedOrders.length.toString().padStart(6, '0')}<br><br>
+                        <small style="color: white;">Refreshing Transaction Records in 2 seconds...</small>
+                    </div>
+                `;
+
+                // Close this window and refresh transaction records
+                setTimeout(() => {
+                    // Force reload transaction records by closing all tabs and opening fresh
+                    localStorage.setItem('force_refresh_transactions', Date.now().toString());
+                    window.location.href = 'http://localhost:8080/admin_transactions.html';
+                }, 2000);
+
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('Fix error:', error);
+            }
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            // Check if we should auto-fix
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('autofix') === 'true') {
+                setTimeout(instantFix, 500);
+            }
+        });
+    </script>
+</body>
+</html>

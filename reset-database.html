@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Database - Gajanan Canteen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .status-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-value {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-reset {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+        
+        .btn-refresh {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+        
+        .btn-admin {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            grid-column: 1 / -1;
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 233, 123, 0.3);
+        }
+        
+        .btn-customer {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            grid-column: 1 / -1;
+        }
+        
+        .btn-customer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(250, 112, 154, 0.3);
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .info-box li {
+            margin: 5px 0;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .log-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        .log-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ Database Manager</h1>
+        <p class="subtitle">Gajanan Canteen Management System</p>
+        
+        <div id="successMessage" class="success-message"></div>
+        
+        <div class="status-box">
+            <h3 style="margin-bottom: 15px; color: #667eea;">📊 Current Database Status</h3>
+            <div class="status-item">
+                <span class="status-label">Menu Items:</span>
+                <span class="status-value" id="menuCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Users:</span>
+                <span class="status-value" id="userCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Orders:</span>
+                <span class="status-value" id="orderCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Total Storage Used:</span>
+                <span class="status-value" id="storageSize">0 KB</span>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>⚠️ Why is my data missing?</h3>
+            <ul>
+                <li>The system uses browser localStorage to store all data</li>
+                <li>If you cleared browser cache, all data was deleted</li>
+                <li>Each browser has separate data (Chrome data ≠ Edge data)</li>
+                <li>Incognito/Private mode doesn't save data permanently</li>
+            </ul>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-reset" onclick="resetDatabase()">🔄 Reset & Initialize</button>
+            <button class="btn-refresh" onclick="refreshStatus()">♻️ Refresh Status</button>
+            <button class="btn-admin" onclick="openAdmin()">🔧 Open Admin Portal</button>
+            <button class="btn-customer" onclick="openCustomer()">📱 Open Customer App</button>
+        </div>
+        
+        <div class="log-box" id="logBox">
+            <div class="log-item">System ready. Click "Refresh Status" to check current data.</div>
+        </div>
+    </div>
+    
+    <script>
+        // Initial sample data
+        const SAMPLE_MENU = [
+            { id: 1, category: "Tea, Coffee & Milk", name: "Tea", price: 10, imageStatus: "(Image Attached)" },
+            { id: 2, category: "Tea, Coffee & Milk", name: "Special Tea", price: 15, imageStatus: "(Image Attached)" },
+            { id: 3, category: "Tea, Coffee & Milk", name: "Coffee", price: 15, imageStatus: "(Image Attached)" },
+            { id: 4, category: "Tea, Coffee & Milk", name: "Milk", price: 20, imageStatus: "(Image Attached)" },
+            { id: 5, category: "Tea, Coffee & Milk", name: "Hot Chocolate Milk", price: 30, imageStatus: "(Image Attached)" },
+            { id: 6, category: "Breakfast", name: "Pohe", price: 25, imageStatus: "(Image Attached)" },
+            { id: 7, category: "Breakfast", name: "Upma", price: 25, imageStatus: "(Image Attached)" },
+            { id: 8, category: "Breakfast", name: "Sabudana Khichdi", price: 30, imageStatus: "(Image Attached)" },
+            { id: 9, category: "Breakfast", name: "Aloo Paratha", price: 35, imageStatus: "(Image Attached)" },
+            { id: 10, category: "Breakfast", name: "Bread Butter", price: 20, imageStatus: "(Image Attached)" }
+        ];
+        
+        const SAMPLE_USERS = [
+            { id: 'E1001', name: 'Rajesh K.', role: 'Employee', balance: 120.00, spent: 0, orders: 0, logins: 0, signupDate: '2024-01-15' },
+            { id: 'S005', name: 'Priya G.', role: 'Student', balance: 50.00, spent: 0, orders: 0, logins: 0, signupDate: '2024-02-10' }
+        ];
+        
+        function addLog(message) {
+            const logBox = document.getElementById('logBox');
+            const logItem = document.createElement('div');
+            logItem.className = 'log-item';
+            logItem.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logBox.insertBefore(logItem, logBox.firstChild);
+        }
+        
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = message;
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+        
+        function calculateStorageSize() {
+            let total = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    total += localStorage[key].length + key.length;
+                }
+            }
+            return (total / 1024).toFixed(2);
+        }
+        
+        function refreshStatus() {
+            try {
+                const menu = JSON.parse(localStorage.getItem('canteen_menu') || '[]');
+                const users = JSON.parse(localStorage.getItem('canteen_users') || '[]');
+                const orders = JSON.parse(localStorage.getItem('canteen_orders') || '[]');
+                
+                document.getElementById('menuCount').textContent = menu.length;
+                document.getElementById('userCount').textContent = users.length;
+                document.getElementById('orderCount').textContent = orders.length;
+                document.getElementById('storageSize').textContent = calculateStorageSize() + ' KB';
+                
+                addLog(`Status refreshed: ${menu.length} menu items, ${users.length} users, ${orders.length} orders`);
+            } catch (error) {
+                addLog('Error refreshing status: ' + error.message);
+            }
+        }
+        
+        function resetDatabase() {
+            if (!confirm('This will reset all data and initialize with sample data. Continue?')) {
+                return;
+            }
+            
+            try {
+                addLog('Starting database reset...');
+                
+                // Clear all canteen-related data
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('canteen_') || key.includes('admin') || key.includes('login') || key.includes('signup')) {
+                        keysToRemove.push(key);
+                    }
+                }
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                    addLog(`Removed: ${key}`);
+                });
+                
+                // Initialize with sample data
+                localStorage.setItem('canteen_menu', JSON.stringify(SAMPLE_MENU));
+                addLog(`✅ Initialized ${SAMPLE_MENU.length} menu items`);
+                
+                localStorage.setItem('canteen_users', JSON.stringify(SAMPLE_USERS));
+                addLog(`✅ Initialized ${SAMPLE_USERS.length} users`);
+                
+                localStorage.setItem('canteen_orders', JSON.stringify([]));
+                addLog('✅ Initialized empty orders list');
+                
+                // Set counters
+                localStorage.setItem('canteen_nextItemId', '11');
+                localStorage.setItem('canteen_nextOrderId', '1001');
+                localStorage.setItem('canteen_nextUserId', '1003');
+                
+                addLog('✅ Set ID counters');
+                
+                // Set admin authentication
+                localStorage.setItem('adminAuthenticated', 'true');
+                localStorage.setItem('adminUser', 'admin');
+                localStorage.setItem('adminRole', 'admin');
+                
+                addLog('✅ Admin authentication configured');
+                
+                showSuccess('✅ Database reset successfully! All sample data initialized.');
+                refreshStatus();
+                
+                addLog('🎉 Database reset complete! You can now use the admin portal.');
+                
+            } catch (error) {
+                addLog('❌ Error during reset: ' + error.message);
+                alert('Error resetting database: ' + error.message);
+            }
+        }
+        
+        function openAdmin() {
+            addLog('Opening admin portal...');
+            window.open('admin_portal.html', '_blank');
+        }
+        
+        function openCustomer() {
+            addLog('Opening customer app...');
+            window.open('c3.html', '_blank');
+        }
+        
+        // Auto-refresh on load
+        window.addEventListener('load', () => {
+            refreshStatus();
+            addLog('Database Manager loaded successfully');
+        });
+        
+        // Auto-refresh every 5 seconds
+        setInterval(refreshStatus, 5000);
+    </script>
+</body>
+</html>

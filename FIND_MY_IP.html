@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <title>🌐 Find My IP Address</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .ip-display {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .ip-address {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+        
+        .copy-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .qr-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .qr-btn:hover {
+            background: #1976D2;
+            transform: scale(1.05);
+        }
+        
+        .steps {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .step {
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .step-number {
+            background: #4CAF50;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .warning {
+            background: rgba(255, 152, 0, 0.3);
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .success {
+            background: rgba(76, 175, 80, 0.3);
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .url-example {
+            background: #f5f5f5;
+            color: #333;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        
+        .device-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        
+        .info-value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .ip-address {
+                font-size: 1.5em;
+            }
+            
+            .step {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Find My IP Address</h1>
+        <p style="text-align: center; font-size: 1.2em; margin-bottom: 30px;">
+            Use this IP to access from your mobile phone
+        </p>
+        
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">📱 Your Computer's IP Address</h2>
+            
+            <div class="warning">
+                <strong>⚠️ Important:</strong> Make sure your phone and computer are on the SAME WiFi network!
+            </div>
+            
+            <div class="ip-display">
+                <div style="font-size: 1.1em; color: #666; margin-bottom: 10px;">
+                    Your Local IP Address:
+                </div>
+                <div class="ip-address" id="ipAddress">
+                    Detecting...
+                </div>
+                <button class="copy-btn" onclick="copyIP()">📋 Copy IP Address</button>
+            </div>
+            
+            <div class="device-info">
+                <div class="info-box">
+                    <div class="info-label">Browser</div>
+                    <div class="info-value" id="browser">-</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">Platform</div>
+                    <div class="info-value" id="platform">-</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">Connection Type</div>
+                    <div class="info-value" id="connectionType">WiFi</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">📖 How to Access from Mobile</h2>
+            
+            <div class="steps">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Find Your IP:</strong> Your IP address is shown above. Copy it!
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Check Network:</strong> Ensure your phone and PC are on the same WiFi network
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Open on Phone:</strong> Open your phone browser and type:
+                    <div class="url-example" id="mobileUrl">
+                        http://YOUR_IP:8080/c3.html
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Generate QR Codes:</strong> Click the button below to create QR codes with your IP
+                    <br><br>
+                    <button class="qr-btn" onclick="openQRGenerator()">📱 Generate Mobile QR Codes</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">🔧 Quick Links (Use These URLs on Mobile)</h2>
+            
+            <div style="line-height: 2.5;">
+                <div><strong>Customer App:</strong></div>
+                <div class="url-example">
+                    <a href="#" id="customerLink" style="color: #667eea; text-decoration: none;">
+                        http://YOUR_IP:8080/c3.html
+                    </a>
+                    <button class="copy-btn" onclick="copyCustomerLink()" style="margin-left: 10px; padding: 6px 15px; font-size: 0.9em;">Copy</button>
+                </div>
+                
+                <div style="margin-top: 15px;"><strong>Admin Portal:</strong></div>
+                <div class="url-example">
+                    <a href="#" id="adminLink" style="color: #667eea; text-decoration: none;">
+                        http://YOUR_IP:8080/admin_portal.html
+                    </a>
+                    <button class="copy-btn" onclick="copyAdminLink()" style="margin-left: 10px; padding: 6px 15px; font-size: 0.9em;">Copy</button>
+                </div>
+                
+                <div style="margin-top: 15px;"><strong>Table 1 (Example):</strong></div>
+                <div class="url-example">
+                    <a href="#" id="table1Link" style="color: #667eea; text-decoration: none;">
+                        http://YOUR_IP:8080/c3.html?table=1
+                    </a>
+                    <button class="copy-btn" onclick="copyTable1Link()" style="margin-left: 10px; padding: 6px 15px; font-size: 0.9em;">Copy</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">❓ Troubleshooting</h2>
+            
+            <div style="line-height: 2;">
+                <p><strong>Still can't connect?</strong></p>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>✅ Check both devices are on the SAME WiFi network</li>
+                    <li>✅ Check Windows Firewall allows port 8080</li>
+                    <li>✅ Ensure the server is running (http-server should be active)</li>
+                    <li>✅ Try using your computer's full URL instead of localhost</li>
+                    <li>✅ Restart http-server if needed</li>
+                </ul>
+                
+                <div class="warning" style="margin-top: 20px;">
+                    <strong>🔥 Firewall Fix (If needed):</strong><br>
+                    Run this command in PowerShell (as Administrator):
+                    <div class="url-example" style="margin-top: 10px;">
+                        netsh advfirewall firewall add rule name="HTTP Server" dir=in action=allow protocol=TCP localport=8080
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let detectedIP = '';
+        
+        // Detect browser
+        const ua = navigator.userAgent;
+        let browser = 'Unknown';
+        if (ua.includes('Firefox')) browser = 'Firefox';
+        else if (ua.includes('Chrome')) browser = 'Chrome';
+        else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+        else if (ua.includes('Edge')) browser = 'Edge';
+        document.getElementById('browser').textContent = browser;
+        
+        // Detect platform
+        let platform = 'Unknown';
+        if (ua.includes('Windows')) platform = 'Windows';
+        else if (ua.includes('Mac')) platform = 'macOS';
+        else if (ua.includes('Linux')) platform = 'Linux';
+        document.getElementById('platform').textContent = platform;
+        
+        // Try to get IP address using WebRTC
+        function getLocalIP() {
+            return new Promise((resolve, reject) => {
+                const pc = new RTCPeerConnection({
+                    iceServers: []
+                });
+                
+                pc.createDataChannel('');
+                pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) return;
+                    
+                    const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+                    const match = ipRegex.exec(ice.candidate.candidate);
+                    
+                    if (match && match[1]) {
+                        const ip = match[1];
+                        // Filter out non-local IPs
+                        if (ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.')) {
+                            pc.close();
+                            resolve(ip);
+                        }
+                    }
+                };
+                
+                setTimeout(() => {
+                    pc.close();
+                    reject('Could not detect IP');
+                }, 3000);
+            });
+        }
+        
+        // Get IP and update UI
+        getLocalIP()
+            .then(ip => {
+                detectedIP = ip;
+                document.getElementById('ipAddress').textContent = ip;
+                updateLinks(ip);
+            })
+            .catch(error => {
+                console.error('IP detection failed:', error);
+                document.getElementById('ipAddress').innerHTML = `
+                    <div style="color: #FF9800;">
+                        Auto-detection failed<br>
+                        <span style="font-size: 0.6em; font-weight: normal;">
+                            Please run: <code>ipconfig</code> in Command Prompt<br>
+                            Look for "IPv4 Address" under your WiFi adapter
+                        </span>
+                    </div>
+                `;
+                showManualInstructions();
+            });
+        
+        function updateLinks(ip) {
+            const baseUrl = `http://${ip}:8080`;
+            
+            document.getElementById('mobileUrl').textContent = `${baseUrl}/c3.html`;
+            
+            document.getElementById('customerLink').href = `${baseUrl}/c3.html`;
+            document.getElementById('customerLink').textContent = `${baseUrl}/c3.html`;
+            
+            document.getElementById('adminLink').href = `${baseUrl}/admin_portal.html`;
+            document.getElementById('adminLink').textContent = `${baseUrl}/admin_portal.html`;
+            
+            document.getElementById('table1Link').href = `${baseUrl}/c3.html?table=1`;
+            document.getElementById('table1Link').textContent = `${baseUrl}/c3.html?table=1`;
+        }
+        
+        function copyIP() {
+            if (detectedIP) {
+                navigator.clipboard.writeText(detectedIP).then(() => {
+                    showNotification('✅ IP Address copied!');
+                });
+            }
+        }
+        
+        function copyCustomerLink() {
+            const link = document.getElementById('customerLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                showNotification('✅ Customer link copied!');
+            });
+        }
+        
+        function copyAdminLink() {
+            const link = document.getElementById('adminLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                showNotification('✅ Admin link copied!');
+            });
+        }
+        
+        function copyTable1Link() {
+            const link = document.getElementById('table1Link').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                showNotification('✅ Table link copied!');
+            });
+        }
+        
+        function openQRGenerator() {
+            if (detectedIP) {
+                window.open(`TABLE_QR_CODES.html?ip=${detectedIP}`, '_blank');
+            } else {
+                alert('Please wait for IP detection or enter your IP manually');
+            }
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-weight: bold;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 3000);
+        }
+        
+        function showManualInstructions() {
+            const ipDisplay = document.querySelector('.ip-display');
+            ipDisplay.innerHTML += `
+                <div style="margin-top: 20px; text-align: left; background: #f5f5f5; color: #333; padding: 15px; border-radius: 8px;">
+                    <strong>To find your IP manually:</strong><br><br>
+                    1. Open Command Prompt (cmd)<br>
+                    2. Type: <code style="background: #e0e0e0; padding: 2px 6px;">ipconfig</code><br>
+                    3. Look for "IPv4 Address" under your WiFi adapter<br>
+                    4. It will look like: 192.168.1.XXX or 10.0.0.XXX
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

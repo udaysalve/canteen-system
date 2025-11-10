@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Problem Diagnosis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        .error-box {
+            background: rgba(220, 53, 69, 0.2);
+            border: 2px solid #dc3545;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .solution-box {
+            background: rgba(40, 167, 69, 0.2);
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .test-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .checking { background: #ffc107; color: #000; }
+        .success { background: #28a745; }
+        .error { background: #dc3545; }
+        button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #26d0ce;
+        }
+        .big-button {
+            background: #ff6b6b;
+            padding: 20px 40px;
+            font-size: 1.3em;
+            display: block;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4ecdc4;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Problem Diagnosis & Fix</h1>
+        
+        <div class="error-box">
+            <h2>❌ Error Detected: "localhost refused to connect"</h2>
+            <p style="font-size: 1.2em;">This means the servers are NOT running yet.</p>
+            <p>The browser tried to access http://localhost:8080/c3.html but there's no server listening on that port.</p>
+        </div>
+
+        <div class="solution-box">
+            <h2>✅ SOLUTION: Start the Servers First!</h2>
+            <p style="font-size: 1.2em; margin: 15px 0;">
+                You need to run the startup script BEFORE opening the browser.
+            </p>
+            <button class="big-button" onclick="alert('Please find and double-click:\n\nFIX_AND_START.bat\n\nin your cms folder.\n\nThis will start both servers and then open the browser automatically.')">
+                📂 Click for Instructions
+            </button>
+        </div>
+
+        <div class="test-box">
+            <h2>🔍 Automatic Server Detection</h2>
+            <p>Testing if servers are running...</p>
+            
+            <div style="margin: 20px 0;">
+                <h3>Backend Server (Port 3000):</h3>
+                <span id="backend-status" class="status checking">Testing...</span>
+                <div id="backend-result" class="result" style="display: none;"></div>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <h3>Frontend Server (Port 8080):</h3>
+                <span id="frontend-status" class="status checking">Testing...</span>
+                <div id="frontend-result" class="result" style="display: none;"></div>
+            </div>
+
+            <button onclick="testServers()">🔄 Test Again</button>
+        </div>
+
+        <div class="solution-box">
+            <h2>📋 Step-by-Step Fix</h2>
+            
+            <div class="step">
+                <h3>Step 1: Close the Browser Tab</h3>
+                <p>Close the tab showing the "can't reach this page" error.</p>
+            </div>
+
+            <div class="step">
+                <h3>Step 2: Run the Startup Script</h3>
+                <p>Go to your cms folder and double-click:</p>
+                <p style="font-size: 1.3em; font-weight: bold; color: #ffc107; margin: 10px 0;">
+                    FIX_AND_START.bat
+                </p>
+                <p>This will:</p>
+                <ul>
+                    <li>✓ Check for Node.js</li>
+                    <li>✓ Install dependencies</li>
+                    <li>✓ Start backend server</li>
+                    <li>✓ Start frontend server</li>
+                    <li>✓ Open browser automatically</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>Step 3: Wait for Servers</h3>
+                <p>Two command windows will open. Wait until you see:</p>
+                <ul>
+                    <li>"BACKEND SERVER" - Status: RUNNING</li>
+                    <li>"FRONTEND SERVER" - Status: RUNNING</li>
+                </ul>
+                <p><strong>This takes about 30-60 seconds</strong></p>
+            </div>
+
+            <div class="step">
+                <h3>Step 4: Browser Opens Automatically</h3>
+                <p>The script will automatically open:</p>
+                <ul>
+                    <li>Customer App: http://localhost:8080/c3.html</li>
+                    <li>Admin Portal: http://localhost:8080/admin_portal.html</li>
+                </ul>
+                <p>If pages don't load immediately, wait 10 seconds and refresh (F5)</p>
+            </div>
+        </div>
+
+        <div class="error-box">
+            <h2>⚠️ If FIX_AND_START.bat Shows Error</h2>
+            <p><strong>Error: "Node.js not found"</strong></p>
+            <p>Solution:</p>
+            <ol style="line-height: 2;">
+                <li>Close all windows</li>
+                <li><strong>Restart your computer</strong> (this is required!)</li>
+                <li>After restart, run FIX_AND_START.bat again</li>
+            </ol>
+        </div>
+
+        <div class="solution-box" style="text-align: center;">
+            <h2>🚀 Quick Actions</h2>
+            <button onclick="window.location.href='http://localhost:8080/c3.html'">
+                Try Customer App
+            </button>
+            <button onclick="window.location.href='http://localhost:8080/admin_portal.html'">
+                Try Admin Portal
+            </button>
+            <button onclick="window.location.href='http://localhost:3000/api/health'">
+                Check Backend
+            </button>
+        </div>
+    </div>
+
+    <script>
+        async function testBackend() {
+            const statusEl = document.getElementById('backend-status');
+            const resultEl = document.getElementById('backend-result');
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status checking';
+            resultEl.style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/health');
+                const data = await response.json();
+                
+                if (data.status === 'OK') {
+                    statusEl.textContent = '✅ RUNNING';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = 'Backend is working! Response: ' + JSON.stringify(data);
+                    resultEl.style.display = 'block';
+                    return true;
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ NOT RUNNING';
+                statusEl.className = 'status error';
+                resultEl.textContent = 'Backend server is not running. Please run FIX_AND_START.bat';
+                resultEl.style.display = 'block';
+                return false;
+            }
+        }
+
+        async function testFrontend() {
+            const statusEl = document.getElementById('frontend-status');
+            const resultEl = document.getElementById('frontend-result');
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status checking';
+            resultEl.style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:8080/c3.html', {
+                    method: 'HEAD'
+                });
+                
+                if (response.ok) {
+                    statusEl.textContent = '✅ RUNNING';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = 'Frontend is working! You can now access the apps.';
+                    resultEl.style.display = 'block';
+                    return true;
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ NOT RUNNING';
+                statusEl.className = 'status error';
+                resultEl.textContent = 'Frontend server is not running. Please run FIX_AND_START.bat';
+                resultEl.style.display = 'block';
+                return false;
+            }
+        }
+
+        async function testServers() {
+            const backendOk = await testBackend();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const frontendOk = await testFrontend();
+            
+            if (backendOk && frontendOk) {
+                setTimeout(() => {
+                    if (confirm('✅ Both servers are running!\n\nWould you like to open the Customer App now?')) {
+                        window.location.href = 'http://localhost:8080/c3.html';
+                    }
+                }, 1000);
+            }
+        }
+
+        // Auto-test on page load
+        setTimeout(testServers, 1000);
+
+        // Auto-refresh test every 5 seconds
+        setInterval(testServers, 5000);
+    </script>
+</body>
+</html>

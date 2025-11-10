@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Order Numbers - Sequential Numbering</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .info-box {
+            background: rgba(33, 150, 243, 0.3);
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .warning-box {
+            background: rgba(255, 152, 0, 0.3);
+            border-left: 5px solid #FF9800;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .success-box {
+            background: rgba(76, 175, 80, 0.3);
+            border-left: 5px solid #4CAF50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        button {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px auto;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 500px;
+            display: block;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+        }
+        .log-container {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .success { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+        .error { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+        .info { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+        .warning { background: rgba(255, 152, 0, 0.2); color: #FF9800; }
+        
+        .preview-table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .preview-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .preview-table th {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .preview-table td {
+            padding: 10px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .old-number { color: #f44336; text-decoration: line-through; }
+        .new-number { color: #4CAF50; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix Order Numbers</h1>
+        <p style="text-align: center; font-size: 1.2em; margin-bottom: 30px;">
+            Convert timestamp-based order numbers to sequential numbers
+        </p>
+        
+        <div class="info-box">
+            <h3>📋 What This Tool Does:</h3>
+            <ul style="line-height: 1.8; margin-top: 10px;">
+                <li>✅ Converts random order numbers to sequential format</li>
+                <li>✅ Maintains chronological order (oldest = lowest number)</li>
+                <li>✅ Updates all orders in the database</li>
+                <li>✅ Format: ORD000001, ORD000002, ORD000003...</li>
+            </ul>
+        </div>
+
+        <div class="warning-box">
+            <h3>⚠️ Important:</h3>
+            <ul style="line-height: 1.8; margin-top: 10px;">
+                <li>This will permanently change order numbers</li>
+                <li>Backup is created automatically</li>
+                <li>Refresh admin portal after fixing</li>
+            </ul>
+        </div>
+
+        <div id="previewSection" style="display: none;">
+            <h3>📊 Preview Changes:</h3>
+            <div class="preview-table">
+                <table id="previewTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Old Number</th>
+                            <th>→</th>
+                            <th>New Number</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="previewBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button onclick="previewFix()">👁️ Preview Changes</button>
+            <button onclick="fixOrderNumbers()" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);">
+                🔧 Fix Order Numbers Now
+            </button>
+        </div>
+
+        <div class="log-container" id="logContainer">
+            <div class="log-entry info">Ready to fix order numbers...</div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logDiv = document.createElement('div');
+            logDiv.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logDiv);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+
+        function previewFix() {
+            try {
+                const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                
+                if (centralOrders.length === 0) {
+                    log('❌ No orders found to preview', 'error');
+                    return;
+                }
+
+                log(`📥 Found ${centralOrders.length} orders`, 'info');
+
+                // Sort by timestamp (oldest first for sequential numbering)
+                const sortedOrders = [...centralOrders].sort((a, b) => 
+                    new Date(a.timestamp || a.created_at) - new Date(b.timestamp || b.created_at)
+                );
+
+                // Show preview
+                const previewBody = document.getElementById('previewBody');
+                previewBody.innerHTML = '';
+
+                sortedOrders.slice(0, 10).forEach((order, index) => {
+                    const newOrderNumber = `ORD${(index + 1).toString().padStart(6, '0')}`;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#${order.id}</td>
+                        <td class="old-number">${order.order_number || 'N/A'}</td>
+                        <td>→</td>
+                        <td class="new-number">${newOrderNumber}</td>
+                        <td>${order.customer || order.userName || 'Guest'}</td>
+                        <td><small>${new Date(order.timestamp).toLocaleString()}</small></td>
+                    `;
+                    previewBody.appendChild(row);
+                });
+
+                if (sortedOrders.length > 10) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="6" style="text-align: center; color: #999;">
+                            ... and ${sortedOrders.length - 10} more orders
+                        </td>
+                    `;
+                    previewBody.appendChild(row);
+                }
+
+                document.getElementById('previewSection').style.display = 'block';
+                log(`✅ Preview generated - showing first ${Math.min(10, sortedOrders.length)} orders`, 'success');
+
+            } catch (error) {
+                log(`❌ Error generating preview: ${error.message}`, 'error');
+            }
+        }
+
+        function fixOrderNumbers() {
+            if (!confirm('Are you sure you want to fix all order numbers?\n\nThis will:\n- Sort orders by date (oldest first)\n- Assign sequential numbers starting from ORD000001\n- Update all orders permanently')) {
+                log('❌ Fix cancelled by user', 'warning');
+                return;
+            }
+
+            try {
+                log('🔄 Starting fix process...', 'info');
+                
+                // Get orders
+                const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                
+                if (centralOrders.length === 0) {
+                    log('❌ No orders found to fix', 'error');
+                    return;
+                }
+
+                log(`📥 Found ${centralOrders.length} orders`, 'info');
+
+                // Create backup
+                const backup = JSON.stringify(centralOrders);
+                localStorage.setItem('canteen_orders_backup', backup);
+                log('💾 Backup created', 'success');
+
+                // Sort by timestamp (oldest first for sequential numbering)
+                const sortedOrders = centralOrders.sort((a, b) => 
+                    new Date(a.timestamp || a.created_at) - new Date(b.timestamp || b.created_at)
+                );
+
+                log('📊 Orders sorted by date (oldest first)', 'info');
+
+                // Assign sequential numbers and update IDs
+                let fixedCount = 0;
+                sortedOrders.forEach((order, index) => {
+                    const newId = index + 1;
+                    const newOrderNumber = `ORD${newId.toString().padStart(6, '0')}`;
+                    
+                    const oldNumber = order.order_number;
+                    order.id = newId;
+                    order.order_number = newOrderNumber;
+                    
+                    if (oldNumber !== newOrderNumber) {
+                        log(`  ${oldNumber} → ${newOrderNumber} (${order.customer || 'Guest'})`, 'success');
+                        fixedCount++;
+                    }
+                });
+
+                // Save updated orders
+                localStorage.setItem('canteen_orders', JSON.stringify(sortedOrders));
+                
+                log(`✅ Successfully fixed ${fixedCount} order numbers!`, 'success');
+                log(`📊 Orders now numbered from ORD000001 to ORD${sortedOrders.length.toString().padStart(6, '0')}`, 'success');
+                log('', 'info');
+                log('💾 Backup saved to: canteen_orders_backup', 'info');
+                log('', 'info');
+                log('🔄 Auto-refreshing Transaction Records page in 3 seconds...', 'warning');
+                
+                // Auto-refresh Transaction Records page
+                setTimeout(() => {
+                    // Try to refresh if the page is open in another tab
+                    try {
+                        window.opener?.location.reload();
+                    } catch (e) {
+                        // If that fails, open the page
+                        window.open('http://localhost:8080/admin_transactions.html', '_blank');
+                    }
+                    log('✅ Transaction Records page refreshed!', 'success');
+                }, 3000);
+
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                console.error('Fix error:', error);
+            }
+        }
+
+        // Auto-load preview on page load
+        window.addEventListener('load', () => {
+            log('🚀 Order Number Fix Tool loaded', 'info');
+            setTimeout(previewFix, 500);
+        });
+    </script>
+</body>
+</html>

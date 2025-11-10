@@ -1,0 +1,46 @@
+NGROK SETUP GUIDE - GET SECURE HTTPS URL
+=========================================
+
+WHAT IS NGROK?
+--------------
+Ngrok creates a secure HTTPS tunnel to your local server.
+You get a URL like: https://abc123.ngrok.io
+
+QUICK SETUP (5 MINUTES)
+-----------------------
+
+Step 1: Download ngrok
+- Visit: https://ngrok.com/download
+- Download Windows version
+- Extract to C:\ngrok\
+
+Step 2: Start the tunnel
+- Open Command Prompt in ngrok folder
+- Run: ngrok http 8080
+
+Step 3: Copy the HTTPS URL
+- Look for: https://abc123.ngrok.io
+- Use this URL on your mobile phone!
+
+MOBILE ACCESS URLS:
+-------------------
+Customer App: https://abc123.ngrok.io/c3.html
+Admin Portal: https://abc123.ngrok.io/admin_portal.html
+Table 1: https://abc123.ngrok.io/c3.html?table=1
+
+CUSTOM SUBDOMAIN (OPTIONAL):
+----------------------------
+1. Create free account at ngrok.com
+2. Get your auth token
+3. Run: ngrok authtoken YOUR_TOKEN
+4. Run: ngrok http 8080 --subdomain=shree-gajanan-canteen
+5. Your URL: https://shree-gajanan-canteen.ngrok.io
+
+This URL stays the same every time!
+
+TROUBLESHOOTING:
+----------------
+- Keep terminal window open (don't close!)
+- Make sure http-server is running on port 8080
+- Both devices need internet connection
+- No need for same WiFi network

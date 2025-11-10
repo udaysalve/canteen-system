@@ -1,0 +1,416 @@
+/* ============================================
+   RESPONSIVE STYLES FOR DESKTOP & MOBILE
+   ============================================ */
+
+/* Desktop Optimization (1200px and above) */
+@media (min-width: 1200px) {
+    #auth-container {
+        max-width: 500px;
+    }
+    
+    .category-items {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    .menu-item {
+        max-width: 280px;
+    }
+}
+
+/* Tablet Landscape (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+    #auth-container {
+        max-width: 450px;
+    }
+    
+    .category-items {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* Tablet Portrait (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    body {
+        padding: 20px;
+    }
+    
+    #auth-container {
+        max-width: 400px;
+        padding: 40px 35px;
+    }
+    
+    .category-items {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px;
+    }
+    
+    .menu-item {
+        padding: 15px;
+    }
+}
+
+/* Mobile Landscape (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+    body {
+        padding: 15px;
+    }
+    
+    #auth-container {
+        max-width: 100%;
+        padding: 35px 30px;
+    }
+    
+    .auth-logo {
+        width: 70px;
+        height: 70px;
+        font-size: 2.2em;
+    }
+    
+    #auth-container h2 {
+        font-size: 2em;
+    }
+    
+    .category-items {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px;
+    }
+    
+    .menu-item {
+        padding: 12px;
+    }
+    
+    .item-image-container img {
+        height: 140px;
+    }
+}
+
+/* Mobile Portrait (up to 575px) */
+@media (max-width: 575px) {
+    body {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+    
+    /* Auth Container Mobile */
+    #auth-container {
+        max-width: 100%;
+        width: 100%;
+        padding: 30px 25px;
+        margin: 10px;
+    }
+    
+    .auth-logo {
+        width: 60px;
+        height: 60px;
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+    
+    #auth-container h2 {
+        font-size: 1.8em;
+        margin-bottom: 8px;
+    }
+    
+    .auth-subtitle {
+        font-size: 0.95em;
+        margin-bottom: 25px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        font-size: 0.95em;
+        margin-bottom: 8px;
+    }
+    
+    .form-group input {
+        padding: 14px 18px;
+        font-size: 1em;
+    }
+    
+    .auth-btn {
+        padding: 14px 25px;
+        font-size: 1.05em;
+    }
+    
+    .auth-toggle {
+        font-size: 0.9em;
+        margin-top: 15px;
+    }
+    
+    .admin-login-btn {
+        padding: 12px 20px;
+        font-size: 0.95em;
+    }
+    
+    /* Menu Grid Mobile */
+    .category-items {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+        padding: 0 5px;
+    }
+    
+    .menu-item {
+        padding: 15px;
+        max-width: 100%;
+    }
+    
+    .item-image-container {
+        height: 180px;
+    }
+    
+    .item-image-container img {
+        height: 180px;
+    }
+    
+    .item-details h4 {
+        font-size: 1.1em;
+    }
+    
+    .price {
+        font-size: 1.3em;
+    }
+    
+    .add-btn, .quantity-btn {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+    
+    /* Categories Navigation Mobile */
+    #categories-nav {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding: 10px 5px;
+    }
+    
+    .category-btn {
+        display: inline-block;
+        padding: 10px 18px;
+        font-size: 0.95em;
+        margin-right: 8px;
+    }
+    
+    /* Search Bar Mobile */
+    #search-input {
+        padding: 12px 15px;
+        font-size: 1em;
+    }
+    
+    /* Order Summary Footer Mobile */
+    #order-summary {
+        padding: 15px 20px;
+    }
+    
+    #order-details p {
+        font-size: 1.1em;
+    }
+    
+    #view-order-btn {
+        padding: 12px 25px;
+        font-size: 1em;
+    }
+    
+    /* Modal Mobile */
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        margin: 5% auto;
+        padding: 20px;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.5em;
+    }
+    
+    .close-modal-btn {
+        font-size: 1.8em;
+    }
+    
+    .order-item {
+        padding: 12px 0;
+    }
+    
+    .order-item-name {
+        font-size: 1em;
+    }
+    
+    .order-item-price {
+        font-size: 0.9em;
+    }
+    
+    .order-item-total {
+        font-size: 1.1em;
+    }
+    
+    /* Payment Buttons Mobile */
+    .payment-btn {
+        padding: 14px 20px;
+        font-size: 1em;
+        margin: 8px 0;
+    }
+    
+    /* History Modal Mobile */
+    .history-item {
+        padding: 15px;
+    }
+    
+    .history-item-header {
+        font-size: 1em;
+    }
+    
+    .history-item-details {
+        font-size: 0.9em;
+    }
+}
+
+/* Extra Small Mobile (up to 375px) */
+@media (max-width: 375px) {
+    #auth-container {
+        padding: 25px 20px;
+    }
+    
+    #auth-container h2 {
+        font-size: 1.6em;
+    }
+    
+    .auth-logo {
+        width: 55px;
+        height: 55px;
+        font-size: 1.8em;
+    }
+    
+    .form-group input {
+        padding: 12px 15px;
+        font-size: 0.95em;
+    }
+    
+    .auth-btn {
+        padding: 12px 20px;
+        font-size: 1em;
+    }
+    
+    .menu-item {
+        padding: 12px;
+    }
+    
+    .item-image-container {
+        height: 160px;
+    }
+    
+    .item-image-container img {
+        height: 160px;
+    }
+    
+    .item-details h4 {
+        font-size: 1em;
+    }
+    
+    .price {
+        font-size: 1.2em;
+    }
+    
+    .category-btn {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+}
+
+/* Landscape Orientation Fix */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        align-items: flex-start;
+        padding-top: 10px;
+    }
+    
+    #auth-container {
+        margin: 10px auto;
+    }
+    
+    .auth-logo {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+    
+    #auth-container h2 {
+        font-size: 1.5em;
+        margin-bottom: 5px;
+    }
+    
+    .auth-subtitle {
+        font-size: 0.9em;
+        margin-bottom: 15px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch targets */
+    .category-btn,
+    .add-btn,
+    .quantity-btn,
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .menu-item:hover {
+        transform: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .category-btn:hover {
+        transform: none;
+    }
+    
+    .add-btn:hover,
+    .quantity-btn:hover {
+        transform: none;
+    }
+}
+
+/* High DPI Displays (Retina) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .item-image-container img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    /* Can be implemented if needed */
+}
+
+/* Print Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .receipt-content,
+    .receipt-content * {
+        visibility: visible;
+    }
+    
+    .receipt-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    
+    .receipt-actions {
+        display: none !important;
+    }
+}

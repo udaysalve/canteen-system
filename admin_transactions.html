@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#E74C3C">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Transaction Records - Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="admin-responsive.css">
+    
+    <style>
+        :root {
+            --primary-color: #E74C3C;
+            --secondary-color: #333;
+            --success-color: #2ECC71;
+            --info-color: #3498DB;
+            --warning-color: #f1c40f;
+            --background-color: #F4F7F6;
+            --white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            font-size: 2em;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background-color: var(--info-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-color), #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, var(--success-color), #27ae60);
+        }
+
+        .stat-card.info {
+            background: linear-gradient(135deg, var(--info-color), #2980b9);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, var(--warning-color), #f39c12);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95em;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            align-self: flex-end;
+        }
+
+        .filter-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .transaction-table th {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .transaction-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge.complete {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .export-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .refresh-btn {
+            padding: 10px 20px;
+            background-color: var(--info-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .refresh-btn:hover {
+            background-color: #2980b9;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .transaction-table {
+                font-size: 0.85em;
+            }
+
+            .transaction-table th,
+            .transaction-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-receipt"></i> Transaction Records</h1>
+            <div>
+                <button class="refresh-btn" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="export-btn" onclick="exportData()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <a href="admin_portal.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </header>
+
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('orders')">
+                <i class="fas fa-shopping-cart"></i> Order Transactions
+            </button>
+            <button class="tab-btn" onclick="switchTab('payments')">
+                <i class="fas fa-credit-card"></i> Payment Transactions
+            </button>
+            <button class="tab-btn" onclick="switchTab('combined')">
+                <i class="fas fa-list"></i> All Transactions
+            </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>From Date</label>
+                <input type="date" id="fromDate">
+            </div>
+            <div class="filter-group">
+                <label>To Date</label>
+                <input type="date" id="toDate">
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="NEW">New</option>
+                    <option value="COMPLETE">Complete</option>
+                    <option value="success">Success</option>
+                    <option value="pending">Pending</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>User</label>
+                <input type="text" id="userFilter" placeholder="Search by user...">
+            </div>
+            <button class="filter-btn" onclick="applyFilters()">
+                <i class="fas fa-filter"></i> Apply Filters
+            </button>
+        </div>
+
+        <!-- Order Transactions Tab -->
+        <div id="orders-tab" class="tab-content active">
+            <h2>Order Transaction Records</h2>
+            <div id="orderTableContainer"></div>
+        </div>
+
+        <!-- Payment Transactions Tab -->
+        <div id="payments-tab" class="tab-content">
+            <h2>Payment Transaction Records</h2>
+            <div id="paymentTableContainer"></div>
+        </div>
+
+        <!-- Combined Transactions Tab -->
+        <div id="combined-tab" class="tab-content">
+            <h2>All Transaction Records</h2>
+            <div id="combinedTableContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAllData();
+            setDefaultDates();
+        });
+
+        // Set default date range (last 30 days)
+        function setDefaultDates() {
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+            
+            document.getElementById('toDate').valueAsDate = today;
+            document.getElementById('fromDate').valueAsDate = thirtyDaysAgo;
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+            
+            // Reload data for the selected tab
+            loadAllData();
+        }
+
+        // Load all data
+        function loadAllData() {
+            // Check if we need to force refresh after fix
+            const forceRefresh = localStorage.getItem('force_refresh_transactions');
+            if (forceRefresh) {
+                localStorage.removeItem('force_refresh_transactions');
+                console.log('🔄 Force refresh detected after order number fix');
+            }
+            
+            const orderTransactions = JSON.parse(localStorage.getItem('order_transactions')) || [];
+            const paymentTransactions = JSON.parse(localStorage.getItem('payment_transactions')) || [];
+            
+            // Read from both old and new order storage locations
+            const oldOrders = JSON.parse(localStorage.getItem('GajananCMS_orders')) || [];
+            const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+            
+            // Merge orders (prioritize central orders)
+            const orders = centralOrders.length > 0 ? centralOrders : oldOrders;
+            
+            const payments = JSON.parse(localStorage.getItem('payment_history')) || [];
+
+            console.log(`📊 Loaded ${orders.length} orders from ${centralOrders.length > 0 ? 'central' : 'legacy'} storage`);
+            
+            // Log order numbers for verification
+            if (orders.length > 0) {
+                console.log(`📋 Order numbers: ${orders.slice(0, 3).map(o => o.order_number).join(', ')}...`);
+            }
+
+            // Statistics removed as requested
+
+            // Render tables
+            renderOrderTable(orderTransactions.length > 0 ? orderTransactions : orders);
+            renderPaymentTable(paymentTransactions.length > 0 ? paymentTransactions : payments);
+            renderCombinedTable(orderTransactions, paymentTransactions);
+        }
+
+        // Update statistics (removed - no longer needed)
+        function updateStatistics(orders, payments) {
+            // Statistics cards removed as requested
+        }
+
+        // Function to format order items properly
+        function formatOrderItems(items) {
+            if (!items) return 'N/A';
+            
+            // If items is already a string, return it
+            if (typeof items === 'string') {
+                return items;
+            }
+            
+            // If items is an array of objects
+            if (Array.isArray(items)) {
+                return items.map(item => {
+                    if (typeof item === 'object' && item.name) {
+                        return `${item.quantity || 1}x ${item.name}`;
+                    }
+                    return item.toString();
+                }).join(', ');
+            }
+            
+            // If items is an object
+            if (typeof items === 'object') {
+                if (items.name) {
+                    return `${items.quantity || 1}x ${items.name}`;
+                }
+                // Try to extract meaningful data from object
+                return Object.values(items).join(', ');
+            }
+            
+            return items.toString();
+        }
+
+        // Render order transactions table
+        function renderOrderTable(transactions) {
+            const container = document.getElementById('orderTableContainer');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<div class="no-data"><i class="fas fa-inbox"></i><br>No order transactions found</div>';
+                return;
+            }
+
+            let html = '<table class="transaction-table"><thead><tr>';
+            html += '<th>Transaction ID</th>';
+            html += '<th>Order Number</th>';
+            html += '<th>User</th>';
+            html += '<th>Items</th>';
+            html += '<th>Amount</th>';
+            html += '<th>Status</th>';
+            html += '<th>Date</th>';
+            html += '</tr></thead><tbody>';
+
+            transactions.sort((a, b) => new Date(b.timestamp || b.created_at || Date.now()) - new Date(a.timestamp || a.created_at || Date.now()));
+
+            transactions.forEach((txn, index) => {
+                const statusClass = (txn.status === 'COMPLETE' || txn.status === 'completed') ? 'complete' : 
+                                   (txn.status === 'NEW' || txn.status === 'READY') ? 'pending' : 'failed';
+                
+                // Generate transaction ID if not present
+                const transactionId = txn.transaction_id || `OTXN${Date.now().toString().slice(-8)}${txn.id || Math.floor(Math.random() * 1000)}`;
+                
+                // Generate proper order number
+                let orderNumber;
+                if (txn.order_number) {
+                    // Use existing order number
+                    orderNumber = txn.order_number;
+                } else if (txn.id) {
+                    // Generate from ID
+                    orderNumber = `ORD${txn.id.toString().padStart(6, '0')}`;
+                } else {
+                    // Generate sequential number
+                    orderNumber = `ORD${(index + 1).toString().padStart(6, '0')}`;
+                }
+                
+                html += '<tr>';
+                html += `<td><small>${transactionId}</small></td>`;
+                html += `<td><strong>${orderNumber}</strong></td>`;
+                html += `<td>${txn.customer || txn.user_name || txn.userName || txn.userId || 'Guest'}</td>`;
+                html += `<td>${formatOrderItems(txn.items)}</td>`;
+                html += `<td><strong>₹${(txn.totalAmount || txn.total_amount || txn.total || 0).toFixed(2)}</strong></td>`;
+                html += `<td><span class="badge ${statusClass}">${txn.status || 'NEW'}</span></td>`;
+                html += `<td>${new Date(txn.timestamp || txn.created_at || Date.now()).toLocaleString()}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Render payment transactions table
+        function renderPaymentTable(transactions) {
+            const container = document.getElementById('paymentTableContainer');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<div class="no-data"><i class="fas fa-inbox"></i><br>No payment transactions found</div>';
+                return;
+            }
+
+            let html = '<table class="transaction-table"><thead><tr>';
+            html += '<th>Transaction ID</th>';
+            html += '<th>Order Number</th>';
+            html += '<th>User</th>';
+            html += '<th>Payment Method</th>';
+            html += '<th>Gateway ID</th>';
+            html += '<th>Amount</th>';
+            html += '<th>Status</th>';
+            html += '<th>Date</th>';
+            html += '</tr></thead><tbody>';
+
+            transactions.sort((a, b) => new Date(b.timestamp || b.payment_date) - new Date(a.timestamp || a.payment_date));
+
+            transactions.forEach(txn => {
+                const statusClass = (txn.status === 'success' || txn.payment_status === 'success') ? 'success' : 
+                                   (txn.status === 'pending' || txn.payment_status === 'pending') ? 'pending' : 'failed';
+                
+                html += '<tr>';
+                html += `<td>${txn.transaction_id || 'N/A'}</td>`;
+                html += `<td><strong>${txn.order_number || 'N/A'}</strong></td>`;
+                html += `<td>${txn.user_name || txn.user_id || 'Guest'}</td>`;
+                html += `<td><i class="fas fa-${getPaymentIcon(txn.payment_method)}"></i> ${txn.payment_method || 'N/A'}</td>`;
+                html += `<td><small>${txn.gateway_payment_id || txn.razorpay_payment_id || 'N/A'}</small></td>`;
+                html += `<td><strong>₹${(txn.amount || 0).toFixed(2)}</strong></td>`;
+                html += `<td><span class="badge ${statusClass}">${txn.status || txn.payment_status || 'N/A'}</span></td>`;
+                html += `<td>${new Date(txn.timestamp || txn.payment_date).toLocaleString()}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Render combined transactions table
+        function renderCombinedTable(orderTxns, paymentTxns) {
+            const container = document.getElementById('combinedTableContainer');
+            
+            const combined = [
+                ...orderTxns.map(t => ({...t, type: 'ORDER'})),
+                ...paymentTxns.map(t => ({...t, type: 'PAYMENT'}))
+            ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            if (combined.length === 0) {
+                container.innerHTML = '<div class="no-data"><i class="fas fa-inbox"></i><br>No transactions found</div>';
+                return;
+            }
+
+            let html = '<table class="transaction-table"><thead><tr>';
+            html += '<th>Type</th>';
+            html += '<th>Transaction ID</th>';
+            html += '<th>Order Number</th>';
+            html += '<th>User</th>';
+            html += '<th>Amount</th>';
+            html += '<th>Status</th>';
+            html += '<th>Date</th>';
+            html += '</tr></thead><tbody>';
+
+            combined.forEach(txn => {
+                const typeClass = txn.type === 'ORDER' ? 'info' : 'success';
+                const statusClass = (txn.status === 'COMPLETE' || txn.status === 'success') ? 'success' : 
+                                   (txn.status === 'NEW' || txn.status === 'pending') ? 'pending' : 'failed';
+                
+                html += '<tr>';
+                html += `<td><span class="badge ${typeClass}">${txn.type}</span></td>`;
+                html += `<td>${txn.transaction_id || txn.id || 'N/A'}</td>`;
+                html += `<td><strong>${txn.order_number || 'N/A'}</strong></td>`;
+                html += `<td>${txn.user_name || txn.user_id || 'Guest'}</td>`;
+                html += `<td><strong>₹${(txn.total_amount || txn.amount || 0).toFixed(2)}</strong></td>`;
+                html += `<td><span class="badge ${statusClass}">${txn.status || 'N/A'}</span></td>`;
+                html += `<td>${new Date(txn.timestamp).toLocaleString()}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Get payment method icon
+        function getPaymentIcon(method) {
+            const icons = {
+                'upi': 'mobile-alt',
+                'card': 'credit-card',
+                'cash': 'money-bill-wave',
+                'wallet': 'wallet'
+            };
+            return icons[method?.toLowerCase()] || 'money-bill';
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const userFilter = document.getElementById('userFilter').value.toLowerCase();
+            
+            // Read from both storage locations
+            const oldOrders = JSON.parse(localStorage.getItem('GajananCMS_orders')) || [];
+            const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+            const orders = centralOrders.length > 0 ? centralOrders : oldOrders;
+            
+            const payments = JSON.parse(localStorage.getItem('payment_history')) || [];
+            
+            // Filter orders
+            let filteredOrders = orders.filter(order => {
+                const orderDate = new Date(order.timestamp || order.created_at || Date.now());
+                const matchesDate = (!fromDate || orderDate >= new Date(fromDate)) && 
+                                   (!toDate || orderDate <= new Date(toDate + 'T23:59:59'));
+                const matchesStatus = !statusFilter || order.status === statusFilter;
+                const matchesUser = !userFilter || 
+                                   (order.userId && order.userId.toLowerCase().includes(userFilter)) ||
+                                   (order.user_name && order.user_name.toLowerCase().includes(userFilter));
+                
+                return matchesDate && matchesStatus && matchesUser;
+            });
+            
+            // Filter payments
+            let filteredPayments = payments.filter(payment => {
+                const paymentDate = new Date(payment.timestamp || payment.payment_date || Date.now());
+                const matchesDate = (!fromDate || paymentDate >= new Date(fromDate)) && 
+                                   (!toDate || paymentDate <= new Date(toDate + 'T23:59:59'));
+                const matchesStatus = !statusFilter || payment.status === statusFilter || payment.payment_status === statusFilter;
+                const matchesUser = !userFilter || 
+                                   (payment.user_id && payment.user_id.toLowerCase().includes(userFilter)) ||
+                                   (payment.user_name && payment.user_name.toLowerCase().includes(userFilter));
+                
+                return matchesDate && matchesStatus && matchesUser;
+            });
+            
+            // Statistics removed as requested
+            
+            // Render filtered tables
+            renderOrderTable(filteredOrders);
+            renderPaymentTable(filteredPayments);
+            renderCombinedTable([], []); // Combined will show filtered results
+            
+            // Show notification
+            showNotification(`Filters applied! Found ${filteredOrders.length} orders and ${filteredPayments.length} payments.`, 'info');
+        }
+        
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+            `;
+            
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                warning: '#ffc107',
+                info: '#17a2b8'
+            };
+            
+            notification.style.background = colors[type] || colors.info;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Refresh data
+        function refreshData() {
+            loadAllData();
+            showNotification('Data refreshed successfully!', 'success');
+        }
+
+        // Export data to CSV
+        function exportData() {
+            // Read from both storage locations
+            const oldOrders = JSON.parse(localStorage.getItem('GajananCMS_orders')) || [];
+            const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+            const orders = centralOrders.length > 0 ? centralOrders : oldOrders;
+            
+            const payments = JSON.parse(localStorage.getItem('payment_history')) || [];
+            
+            let csv = 'Type,Transaction ID,Order Number,User,Items,Amount,Status,Date\n';
+            
+            // Export orders
+            orders.forEach((order, index) => {
+                const transactionId = `OTXN${Date.now().toString().slice(-8)}${order.id || Math.floor(Math.random() * 1000)}`;
+                
+                // Generate proper order number
+                let orderNumber;
+                if (order.order_number) {
+                    orderNumber = order.order_number;
+                } else if (order.id) {
+                    orderNumber = `ORD${order.id.toString().padStart(6, '0')}`;
+                } else {
+                    orderNumber = `ORD${(index + 1).toString().padStart(6, '0')}`;
+                }
+                
+                const items = formatOrderItems(order.items).replace(/,/g, ';'); // Replace commas to avoid CSV issues
+                csv += `ORDER,${transactionId},${orderNumber},${order.customer || order.userId || 'Guest'},"${items}",${order.totalAmount || order.total || 0},${order.status || 'NEW'},${new Date(order.timestamp || Date.now()).toISOString()}\n`;
+            });
+            
+            // Export payments
+            payments.forEach(payment => {
+                csv += `PAYMENT,${payment.transaction_id || 'N/A'},${payment.order_number || 'N/A'},${payment.user_name || payment.user_id || 'Guest'},"Payment Transaction",${payment.amount || 0},${payment.status || payment.payment_status || 'N/A'},${new Date(payment.timestamp || payment.payment_date || Date.now()).toISOString()}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            
+            showNotification('Transaction data exported successfully!', 'success');
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadAllData();
+        }, 30000);
+    </script>
+</body>
+</html>

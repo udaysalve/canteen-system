@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#667eea">
+    <title>📱 Mobile Responsiveness Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        
+        .status-value {
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .success {
+            background: #4CAF50 !important;
+            color: white;
+        }
+        
+        .warning {
+            background: #ff9800 !important;
+            color: white;
+        }
+        
+        .info {
+            background: #2196F3 !important;
+            color: white;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .link-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .link-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+        }
+        
+        .link-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .link-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .link-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .features-list {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-icon {
+            margin-right: 15px;
+            font-size: 1.5em;
+            color: #4CAF50;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .status-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .status-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Mobile Responsiveness Test</h1>
+        
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">📊 Device Information</h2>
+            <div class="status-item">
+                <span class="status-label">🖥️ Screen Width:</span>
+                <span class="status-value" id="screenWidth">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">📏 Screen Height:</span>
+                <span class="status-value" id="screenHeight">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">📱 Device Type:</span>
+                <span class="status-value success" id="deviceType">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">🔄 Orientation:</span>
+                <span class="status-value info" id="orientation">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">🎨 Pixel Ratio:</span>
+                <span class="status-value" id="pixelRatio">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">👆 Touch Support:</span>
+                <span class="status-value" id="touchSupport">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">🌐 Browser:</span>
+                <span class="status-value" id="browser">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">📲 Platform:</span>
+                <span class="status-value" id="platform">-</span>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">✅ Responsive Features</h2>
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span><strong>Mobile-First Design:</strong> Optimized layouts for all screen sizes</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span><strong>Touch-Friendly:</strong> 44px minimum touch targets for easy tapping</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span><strong>Scrollable Tables:</strong> Horizontal scroll for data tables on mobile</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span><strong>Responsive Navigation:</strong> Mobile-friendly sidebar and menus</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span><strong>iOS & Android Compatible:</strong> Works perfectly on all platforms</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span><strong>Landscape Support:</strong> Adapts to all orientations</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span><strong>Retina Ready:</strong> Sharp graphics on high-DPI displays</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span><strong>Fast Performance:</strong> Optimized for mobile networks</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">🔗 Test Pages</h2>
+            <div class="links-grid">
+                <a href="c3.html" class="link-card">
+                    <div class="link-icon">🍽️</div>
+                    <div class="link-title">Customer App</div>
+                    <div class="link-desc">Mobile ordering interface</div>
+                </a>
+                <a href="admin_portal.html" class="link-card">
+                    <div class="link-icon">👨‍💼</div>
+                    <div class="link-title">Admin Portal</div>
+                    <div class="link-desc">Management dashboard</div>
+                </a>
+                <a href="admin_transactions.html" class="link-card">
+                    <div class="link-icon">💳</div>
+                    <div class="link-title">Transactions</div>
+                    <div class="link-desc">Order records & reports</div>
+                </a>
+                <a href="CHECK_STATUS.html" class="link-card">
+                    <div class="link-icon">📊</div>
+                    <div class="link-title">Order Status</div>
+                    <div class="link-desc">Check order numbers</div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2 style="margin-bottom: 15px;">📖 Testing Guide</h2>
+            <div style="line-height: 1.8; opacity: 0.95;">
+                <p><strong>Desktop (1024px+):</strong> Full layout with sidebar navigation</p>
+                <p><strong>Tablet (768px-1023px):</strong> Horizontal scrolling sidebar, adjusted layout</p>
+                <p><strong>Mobile (320px-767px):</strong> Fixed header nav, stacked layout, touch-optimized</p>
+                <br>
+                <p><strong>How to Test:</strong></p>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li>Resize your browser window to test different sizes</li>
+                    <li>Use browser DevTools (F12) → Device Toolbar</li>
+                    <li>Test on actual mobile devices for best results</li>
+                    <li>Try both portrait and landscape orientations</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateDeviceInfo() {
+            // Screen dimensions
+            document.getElementById('screenWidth').textContent = window.innerWidth + 'px';
+            document.getElementById('screenHeight').textContent = window.innerHeight + 'px';
+            
+            // Device type
+            const width = window.innerWidth;
+            let deviceType = '';
+            if (width <= 480) deviceType = '📱 Mobile (Small)';
+            else if (width <= 767) deviceType = '📱 Mobile';
+            else if (width <= 1024) deviceType = '💻 Tablet';
+            else deviceType = '🖥️ Desktop';
+            document.getElementById('deviceType').textContent = deviceType;
+            
+            // Orientation
+            const orientation = window.innerWidth > window.innerHeight ? '↔️ Landscape' : '↕️ Portrait';
+            document.getElementById('orientation').textContent = orientation;
+            
+            // Pixel ratio
+            document.getElementById('pixelRatio').textContent = window.devicePixelRatio + 'x';
+            
+            // Touch support
+            const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            const touchEl = document.getElementById('touchSupport');
+            touchEl.textContent = hasTouch ? '✅ Yes' : '❌ No';
+            touchEl.className = 'status-value ' + (hasTouch ? 'success' : 'warning');
+            
+            // Browser
+            const ua = navigator.userAgent;
+            let browser = 'Unknown';
+            if (ua.includes('Firefox')) browser = '🦊 Firefox';
+            else if (ua.includes('Chrome')) browser = '🟢 Chrome';
+            else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = '🧭 Safari';
+            else if (ua.includes('Edge')) browser = '🌊 Edge';
+            document.getElementById('browser').textContent = browser;
+            
+            // Platform
+            let platform = 'Unknown';
+            if (ua.includes('Android')) platform = '🤖 Android';
+            else if (ua.includes('iPhone') || ua.includes('iPad')) platform = '🍎 iOS';
+            else if (ua.includes('Windows')) platform = '🪟 Windows';
+            else if (ua.includes('Mac')) platform = '🍎 macOS';
+            else if (ua.includes('Linux')) platform = '🐧 Linux';
+            document.getElementById('platform').textContent = platform;
+        }
+        
+        // Update on load
+        updateDeviceInfo();
+        
+        // Update on resize
+        window.addEventListener('resize', updateDeviceInfo);
+        
+        // Update on orientation change
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateDeviceInfo, 100);
+        });
+    </script>
+</body>
+</html>

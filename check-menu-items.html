@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Menu Items</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-name {
+            font-weight: 600;
+            color: #333;
+        }
+        .item-category {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .item-image {
+            color: #999;
+            font-size: 0.85em;
+            font-family: monospace;
+        }
+        .missing {
+            border-left-color: #e74c3c;
+        }
+        .has-image {
+            border-left-color: #2ecc71;
+        }
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Menu Items Analysis</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number" id="totalItems">0</div>
+                <div class="stat-label">Total Items</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="hasImage">0</div>
+                <div class="stat-label">Has Images</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="missingImage">0</div>
+                <div class="stat-label">Missing Images</div>
+            </div>
+        </div>
+        
+        <button onclick="checkImages()">🔍 Check Images</button>
+        <button onclick="generateMapping()">📝 Generate Mapping</button>
+        <button onclick="copyMapping()">📋 Copy Mapping</button>
+        
+        <div id="output"></div>
+        <div id="mapping" style="display:none;"></div>
+    </div>
+    
+    <script>
+        const availableImages = [
+            'aloo_bonda.jpg',
+            'aloo_paratha.jpg',
+            'bhatura.jpg',
+            'bhel.jpg',
+            'bread_butter.jpg',
+            'bread_pakora.jpg',
+            'buttered_bun.jpg',
+            'buttermilk.jpg',
+            'chai.jpg',
+            'chana.jpg',
+            'cheese_jumbo.jpg',
+            'cheese_maggi.jpg',
+            'chickpea_pohe.jpg',
+            'chole.jpg',
+            'coffee.jpg',
+            'cold_chocolate_milk.jpg',
+            'curd.jpg',
+            'curd_pohe.jpg',
+            'dabeli.jpg',
+            'dal_fry.jpg',
+            'dokla.jpg',
+            'green_salad.jpg',
+            'gulab_jamun.jpg',
+            'hot_chocolate_milk.jpg',
+            'idli_sambar.jpg',
+            'jalebi.jpg',
+            'jeera_rice.jpg',
+            'jeera_rice_full.jpg',
+            'kachori.jpg',
+            'lassi.jpg',
+            'lemon_water.jpg',
+            'malai_sandwich.jpg',
+            'masala_maggie.jpg',
+            'metti_paratha.jpg',
+            'milk.jpg',
+            'mix_pav.jpg',
+            'onion_pohe.jpg',
+            'paneer_masala.jpg',
+            'paneer_paratha.jpg',
+            'paneer_pulao.jpg',
+            'papad.jpg',
+            'pav.jpg',
+            'placeholder.jpg',
+            'plain_curry.jpg',
+            'plain_dosa.jpg',
+            'plain_maggie.jpg',
+            'plain_paratha.jpg',
+            'plain_rice.jpg',
+            'pohe.jpg',
+            'poli_bhaji.jpg',
+            'potato_samosa.jpg',
+            'rasgulla.jpg',
+            'rice_plate.jpg',
+            'sabudana_khichdi.jpg',
+            'sahi_piece.jpg',
+            'shev_bhaji.jpg',
+            'special_chai.jpg',
+            'special_paratha.jpg',
+            'special_sabudana_pith.jpg',
+            'tarri.jpg',
+            'upma.jpg',
+            'vada_pav.jpg',
+            'vada_sambar.jpg',
+            'varan_khichdi.jpg',
+            'veg_sandwich.jpg'
+        ];
+        
+        function findBestMatch(itemName) {
+            const name = itemName.toLowerCase();
+            
+            // Try exact match first
+            const exactMatch = availableImages.find(img => {
+                const imgName = img.replace('.jpg', '').replace(/_/g, ' ');
+                return imgName === name;
+            });
+            if (exactMatch) return exactMatch;
+            
+            // Try partial match
+            const partialMatch = availableImages.find(img => {
+                const imgName = img.replace('.jpg', '').replace(/_/g, ' ');
+                return name.includes(imgName) || imgName.includes(name);
+            });
+            if (partialMatch) return partialMatch;
+            
+            // Try keyword match
+            const keywords = name.split(' ');
+            for (const keyword of keywords) {
+                const match = availableImages.find(img => 
+                    img.toLowerCase().includes(keyword)
+                );
+                if (match) return match;
+            }
+            
+            return 'placeholder.jpg';
+        }
+        
+        function checkImages() {
+            const menu = JSON.parse(localStorage.getItem('canteen_menu') || '[]');
+            const output = document.getElementById('output');
+            
+            let html = '<h2>Menu Items:</h2>';
+            let hasImageCount = 0;
+            let missingCount = 0;
+            
+            menu.forEach(item => {
+                const suggestedImage = findBestMatch(item.name);
+                const hasSuggestion = suggestedImage !== 'placeholder.jpg';
+                
+                if (hasSuggestion) hasImageCount++;
+                else missingCount++;
+                
+                html += `
+                    <div class="item ${hasSuggestion ? 'has-image' : 'missing'}">
+                        <div>
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-category">${item.category}</div>
+                        </div>
+                        <div class="item-image">${suggestedImage}</div>
+                    </div>
+                `;
+            });
+            
+            output.innerHTML = html;
+            
+            document.getElementById('totalItems').textContent = menu.length;
+            document.getElementById('hasImage').textContent = hasImageCount;
+            document.getElementById('missingImage').textContent = missingCount;
+        }
+        
+        function generateMapping() {
+            const menu = JSON.parse(localStorage.getItem('canteen_menu') || '[]');
+            let mapping = {};
+            
+            menu.forEach(item => {
+                const suggestedImage = findBestMatch(item.name);
+                mapping[item.name] = suggestedImage;
+            });
+            
+            const mappingDiv = document.getElementById('mapping');
+            let code = 'const imageMap = {\n';
+            
+            Object.entries(mapping).forEach(([name, image]) => {
+                code += `    '${name}': '${image}',\n`;
+            });
+            
+            code += '};';
+            
+            mappingDiv.textContent = code;
+            mappingDiv.style.display = 'block';
+            mappingDiv.style.background = '#f5f5f5';
+            mappingDiv.style.padding = '20px';
+            mappingDiv.style.borderRadius = '5px';
+            mappingDiv.style.marginTop = '20px';
+            mappingDiv.style.fontFamily = 'monospace';
+            mappingDiv.style.whiteSpace = 'pre';
+            mappingDiv.style.overflow = 'auto';
+        }
+        
+        function copyMapping() {
+            const mappingDiv = document.getElementById('mapping');
+            if (mappingDiv.style.display === 'none') {
+                generateMapping();
+            }
+            
+            const text = mappingDiv.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Mapping copied to clipboard!');
+            });
+        }
+        
+        // Auto-check on load
+        window.addEventListener('load', checkImages);
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "orders": [
+    {
+      "date": "2025-11-09T09:45:29.650Z",
+      "items": "1x Paratha, 1x Biryani",
+      "total": 75,
+      "payment_method": "card",
+      "payment_status": "completed",
+      "table_number": "N/A",
+      "customer": "golu",
+      "userId": "golu",
+      "userName": "golu",
+      "totalAmount": 75,
+      "tableNumber": "N/A",
+      "id": 3,
+      "timestamp": "2025-11-09T09:45:29.961Z",
+      "status": "NEW"
+    },
+    {
+      "date": "2025-11-09T09:41:57.339Z",
+      "items": "1x Masala Dosa, 1x Fried Rice, 1x Rasgulla",
+      "total": 113,
+      "payment_method": "cash",
+      "payment_status": "pending",
+      "table_number": "N/A",
+      "customer": "joy",
+      "userId": "joy",
+      "userName": "joy",
+      "totalAmount": 113,
+      "tableNumber": "N/A",
+      "id": 2,
+      "timestamp": "2025-11-09T09:41:57.668Z",
+      "status": "NEW"
+    },
+    {
+      "date": "2025-11-09T09:30:57.159Z",
+      "items": "1x Buttermilk, 1x Coconut Water, 1x Bhel Puri",
+      "total": 60,
+      "payment_method": "card",
+      "payment_status": "completed",
+      "table_number": "N/A",
+      "customer": "uday",
+      "userId": "uday",
+      "userName": "uday",
+      "totalAmount": 60,
+      "tableNumber": "N/A",
+      "id": 1,
+      "timestamp": "2025-11-09T09:30:57.210Z",
+      "status": "NEW"
+    }
+  ],
+  "lastUpdate": "2025-11-09T09:45:29.961Z"
+}

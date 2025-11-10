@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Order Sync - Canteen System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .status-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .order-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .status-new { border-left-color: #ff9800; }
+        .status-ready { border-left-color: #4CAF50; }
+        .status-complete { border-left-color: #2196F3; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        .refresh-btn {
+            background: #2196F3;
+        }
+        .test-btn {
+            background: #ff9800;
+        }
+        .clear-btn {
+            background: #f44336;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .log-success { color: #4CAF50; }
+        .log-error { color: #f44336; }
+        .log-info { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Order Sync Test Dashboard</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div>Total Orders</div>
+                <div class="stat-value" id="totalOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <div>New Orders</div>
+                <div class="stat-value" id="newOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <div>Ready Orders</div>
+                <div class="stat-value" id="readyOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <div>Complete Orders</div>
+                <div class="stat-value" id="completeOrders">0</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
+            <button class="test-btn" onclick="createTestOrder()">➕ Create Test Order</button>
+            <button class="clear-btn" onclick="clearAllOrders()">🗑️ Clear All Orders</button>
+        </div>
+
+        <div class="status-box">
+            <h2>📊 Orders in Central Database</h2>
+            <div id="ordersList"></div>
+        </div>
+
+        <div class="status-box">
+            <h2>📝 System Log</h2>
+            <div class="log" id="logContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        let logEntries = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = `[${timestamp}] ${message}`;
+            logEntries.unshift(entry);
+            if (logEntries.length > 50) logEntries.pop();
+            
+            const logContainer = document.getElementById('logContainer');
+            const logDiv = document.createElement('div');
+            logDiv.className = `log-entry log-${type}`;
+            logDiv.textContent = entry;
+            logContainer.insertBefore(logDiv, logContainer.firstChild);
+            
+            console.log(message);
+        }
+
+        function loadOrders() {
+            try {
+                const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                
+                log(`✅ Loaded ${centralOrders.length} orders from central database`, 'success');
+                
+                // Update stats
+                document.getElementById('totalOrders').textContent = centralOrders.length;
+                document.getElementById('newOrders').textContent = centralOrders.filter(o => o.status === 'NEW').length;
+                document.getElementById('readyOrders').textContent = centralOrders.filter(o => o.status === 'READY').length;
+                document.getElementById('completeOrders').textContent = centralOrders.filter(o => o.status === 'COMPLETE').length;
+                
+                // Display orders
+                const ordersList = document.getElementById('ordersList');
+                if (centralOrders.length === 0) {
+                    ordersList.innerHTML = '<p style="text-align: center; padding: 20px;">No orders yet. Place an order in the customer app or create a test order.</p>';
+                } else {
+                    ordersList.innerHTML = centralOrders.map((order, index) => `
+                        <div class="order-item status-${order.status.toLowerCase()}">
+                            <strong>Order #${order.id}</strong> - ${order.order_number || 'N/A'}<br>
+                            <strong>Customer:</strong> ${order.customer || order.userName}<br>
+                            <strong>Items:</strong> ${order.items}<br>
+                            <strong>Total:</strong> ₹${order.totalAmount || order.total}<br>
+                            <strong>Status:</strong> ${order.status}<br>
+                            <strong>Time:</strong> ${new Date(order.timestamp).toLocaleString()}<br>
+                            <strong>Table:</strong> ${order.table_number || order.tableNumber || 'N/A'}
+                        </div>
+                    `).join('');
+                }
+                
+            } catch (error) {
+                log(`❌ Error loading orders: ${error.message}`, 'error');
+            }
+        }
+
+        function createTestOrder() {
+            try {
+                const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                
+                const orderId = centralOrders.length > 0 
+                    ? Math.max(...centralOrders.map(o => o.id || 0)) + 1 
+                    : 1;
+                
+                const testOrder = {
+                    id: orderId,
+                    userId: 'TestUser',
+                    userName: 'Test Customer',
+                    customer: 'Test Customer',
+                    items: '2x Tea, 1x Samosa',
+                    itemsArray: [
+                        { name: 'Tea', quantity: 2, price: 10 },
+                        { name: 'Samosa', quantity: 1, price: 12 }
+                    ],
+                    totalAmount: 32,
+                    total: 32,
+                    status: 'NEW',
+                    payment_method: 'cash',
+                    payment_status: 'completed',
+                    timestamp: new Date().toISOString(),
+                    created_at: new Date().toISOString(),
+                    table_number: Math.floor(Math.random() * 20) + 1,
+                    tableNumber: Math.floor(Math.random() * 20) + 1,
+                    order_number: `ORD${Date.now().toString().slice(-6)}`
+                };
+                
+                centralOrders.unshift(testOrder);
+                localStorage.setItem('canteen_orders', JSON.stringify(centralOrders));
+                
+                log(`✅ Created test order #${orderId}`, 'success');
+                loadOrders();
+                
+            } catch (error) {
+                log(`❌ Error creating test order: ${error.message}`, 'error');
+            }
+        }
+
+        function clearAllOrders() {
+            if (confirm('Are you sure you want to clear ALL orders? This cannot be undone!')) {
+                localStorage.setItem('canteen_orders', JSON.stringify([]));
+                log('🗑️ All orders cleared', 'info');
+                loadOrders();
+            }
+        }
+
+        // Auto-refresh every 3 seconds
+        setInterval(loadOrders, 3000);
+
+        // Initial load
+        log('🚀 Order Sync Test Dashboard loaded', 'info');
+        loadOrders();
+    </script>
+</body>
+</html>

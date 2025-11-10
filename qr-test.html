@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .qr-card {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .table-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 3em;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .qr-code {
+            margin: 20px 0;
+        }
+        
+        .qr-code img {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+        }
+        
+        .scan-text {
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        
+        .url-text {
+            font-size: 0.9em;
+            color: #666;
+            word-break: break-all;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .warning h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .warning p {
+            color: #856404;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍽️ QR Code Generator</h1>
+        <p class="subtitle">Gajanan Canteen - Table Ordering System</p>
+        
+        <div class="warning">
+            <h3>⚠️ Important: Network Configuration</h3>
+            <p><strong>For mobile access to work:</strong></p>
+            <p>1. Your mobile must be on the SAME WiFi network as this computer</p>
+            <p>2. Windows Firewall must allow connections (ports 8080, 3000, 3001)</p>
+            <p>3. Your router must allow device-to-device communication</p>
+            <p><br><strong>If mobile can't connect:</strong> Use ngrok (see SETUP_MOBILE_ACCESS.md)</p>
+        </div>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="ipAddress">Enter Your Computer's IP Address:</label>
+                <input type="text" id="ipAddress" value="10.199.240.223" placeholder="e.g., 192.168.1.100">
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    To find your IP: Open Command Prompt → Type "ipconfig" → Look for IPv4 Address
+                </small>
+            </div>
+            
+            <div class="input-group">
+                <label for="port">Port:</label>
+                <input type="text" id="port" value="8080" placeholder="8080">
+            </div>
+            
+            <button onclick="generateQRCodes()">🔄 Generate QR Codes</button>
+        </div>
+        
+        <div id="qrContainer" class="qr-grid"></div>
+    </div>
+    
+    <script>
+        function generateQRCodes() {
+            const ip = document.getElementById('ipAddress').value;
+            const port = document.getElementById('port').value;
+            const baseURL = `http://${ip}:${port}`;
+            const tables = [1, 2, 3, 4, 5];
+            
+            const container = document.getElementById('qrContainer');
+            container.innerHTML = '';
+            
+            tables.forEach(tableNum => {
+                const url = `${baseURL}/c3.html?table=${tableNum}`;
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+                
+                const card = document.createElement('div');
+                card.className = 'qr-card';
+                card.innerHTML = `
+                    <div class="table-number">TABLE ${tableNum}</div>
+                    <div class="qr-code">
+                        <img src="${qrApiUrl}" alt="QR Code for Table ${tableNum}">
+                    </div>
+                    <div class="scan-text">📱 Scan to Order</div>
+                    <div class="url-text">${url}</div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        // Generate QR codes on page load
+        window.addEventListener('load', generateQRCodes);
+    </script>
+</body>
+</html>

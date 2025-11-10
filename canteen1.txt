@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitoo's appe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #e53935;
+            --text-color: #333;
+            --light-text-color: #777;
+            --border-color: #eee;
+            --background-color: #f9f9f9;
+            --white: #fff;
+            --green-veg: #008000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--white);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            padding-bottom: 70px; /* Space for footer */
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        header .logo { display: flex; align-items: center; gap: 10px; }
+        header h2 { font-size: 1.2rem; color: var(--text-color); }
+        header .actions { font-weight: 500; color: var(--primary-color); }
+
+        /* Search */
+        .search-container {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            background-color: var(--background-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .search-container input {
+            border: none;
+            outline: none;
+            background: transparent;
+            margin-left: 10px;
+            font-size: 1rem;
+            width: 100%;
+        }
+        .search-container i { color: var(--light-text-color); }
+
+        /* Categories */
+        .categories {
+            padding: 10px 15px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .categories::-webkit-scrollbar { display: none; } /* Hide scrollbar */
+        .category-btn {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .category-btn.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        /* Menu */
+        .menu { padding: 15px; }
+        .menu h3 { margin-bottom: 15px; color: var(--text-color); }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .item-details { flex-grow: 1; }
+        .veg-icon { color: var(--green-veg); border: 1px solid var(--green-veg); padding: 2px; font-size: 0.7rem;}
+        .item-details h4 { margin: 8px 0; font-size: 1rem; font-weight: 500; }
+        .item-details .price { font-weight: 500; margin-bottom: 5px; }
+        .item-details .description { font-size: 0.8rem; color: var(--light-text-color); }
+
+        .item-action { text-align: center; position: relative; }
+        .item-action img { width: 100px; height: 100px; border-radius: 8px; object-fit: cover;}
+        .add-btn {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--white);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 6px 25px;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Order Summary Footer */
+        .order-summary {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        #view-order-btn {
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <header>
+            <div class="logo">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <h2>kittosappe</h2>
+            </div>
+            <div class="actions">
+                <i class="fas fa-users"></i> Group Order
+            </div>
+        </header>
+
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search item">
+        </div>
+        
+        <nav class="categories">
+            <button class="category-btn active">Appe</button>
+            <button class="category-btn">Idli</button>
+            <button class="category-btn">Uttapam</button>
+            <button class="category-btn">Plain Dosa</button>
+            <button class="category-btn">Masala Dosa</button>
+        </nav>
+
+        <main class="menu">
+            <h3>Appe (2)</h3>
+            <div class="menu-item" data-name="Rice Appe" data-price="50">
+                <div class="item-details">
+                    <i class="fas fa-leaf veg-icon"></i>
+                    <h4>Rice Appe</h4>
+                    <p class="price">₹ 50.00</p>
+                    <p class="description">A classic South Indian snack made with a fermented batter.</p>
+                </div>
+                <div class="item-action">
+                    <img src="https://via.placeholder.com/100x100.png?text=Appe" alt="Rice Appe">
+                    <button class="add-btn">Add</button>
+                </div>
+            </div>
+
+            <div class="menu-item" data-name="Kitoos Special Appe" data-price="50">
+                <div class="item-details">
+                    <i class="fas fa-leaf veg-icon"></i>
+                    <h4>Kitoos Special Appe</h4>
+                    <p class="price">₹ 50.00</p>
+                    <p class="description">A savory South Indian snack made with a batter of lentils.</p>
+                </div>
+                <div class="item-action">
+                    <img src="https://via.placeholder.com/100x100.png?text=Special+Appe" alt="Kitoos Special Appe">
+                    <button class="add-btn">Add</button>
+                </div>
+            </div>
+
+             <h3>Idli (5)</h3>
+             <p style="text-align: center; color: #888; margin-top: 20px;">More items would go here...</p>
+        </main>
+
+        <footer class="order-summary">
+            <div id="order-details">
+                <p>Your order is empty</p>
+            </div>
+            <button id="view-order-btn" class="hidden">View Order</button>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const addButtons = document.querySelectorAll('.add-btn');
+            const orderDetails = document.getElementById('order-details');
+            const viewOrderBtn = document.getElementById('view-order-btn');
+
+            let cart = [];
+
+            addButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const menuItem = event.target.closest('.menu-item');
+                    const itemName = menuItem.dataset.name;
+                    const itemPrice = parseFloat(menuItem.dataset.price);
+
+                    addToCart(itemName, itemPrice);
+                });
+            });
+
+            function addToCart(name, price) {
+                // Check if item already exists in cart to increase quantity, or add it as a new item
+                const existingItem = cart.find(item => item.name === name);
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    cart.push({ name, price, quantity: 1 });
+                }
+                
+                updateOrderSummary();
+            }
+
+            function updateOrderSummary() {
+                if (cart.length === 0) {
+                    orderDetails.innerHTML = '<p>Your order is empty</p>';
+                    viewOrderBtn.classList.add('hidden');
+                    return;
+                }
+
+                let totalItems = 0;
+                let totalPrice = 0;
+
+                cart.forEach(item => {
+                    totalItems += item.quantity;
+                    totalPrice += item.price * item.quantity;
+                });
+
+                orderDetails.innerHTML = `
+                    <p>${totalItems} Item${totalItems > 1 ? 's' : ''} | ₹ ${totalPrice.toFixed(2)}</p>
+                `;
+                viewOrderBtn.classList.remove('hidden');
+            }
+
+        });
+    </script>
+</body>
+</html>

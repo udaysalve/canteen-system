@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#E74C3C">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Gajanan Canteen - Admin Portal (Persistent DB)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin-responsive.css">
+    
+    <style>
+        /* CSS STYLES (Optimized and Polished) */
+        :root {
+            --color-primary: #E74C3C; /* Red */
+            --color-secondary: #333; /* Dark Contrast */
+            --color-background: #F4F7F6;
+            --color-white: #FFFFFF;
+            --color-sidebar: #34495e; /* Dark Slate for Sidebar */
+            --color-alert-low: #E74C3C;
+            --color-alert-warning: #f1c40f;
+            --color-success: #2ECC71;
+            --color-info: #3498DB; /* Blue for Orders List */
+        }
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; display: flex; background-color: var(--color-background); color: var(--color-secondary); min-height: 100vh; overflow-x: hidden; }
+        .sidebar { width: 280px; background-color: var(--color-sidebar); color: var(--color-white); padding: 25px 0; height: 100vh; box-shadow: 2px 0 15px rgba(0,0,0,0.15); position: fixed; overflow-y: auto; z-index: 1000; }
+        .logo { font-size: 1.8em; font-weight: 700; text-align: center; padding: 15px 0 35px; color: var(--color-primary); letter-spacing: 0.5px; }
+        .tab-link { display: block; padding: 15px 25px; text-decoration: none; color: var(--color-white); cursor: pointer; transition: all 0.3s ease; font-size: 1.05em; border-left: 5px solid transparent; margin: 2px 0; }
+        .tab-link:hover { background-color: #49637c; padding-left: 30px; border-left-color: var(--color-primary); }
+        .tab-link.active { background-color: var(--color-primary); color: var(--color-white); border-left: 5px solid var(--color-white); font-weight: 700; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .tab-link.unique { border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 20px; padding-top: 20px; font-style: italic; color: var(--color-alert-warning); }
+        .main-content { margin-left: 280px; flex-grow: 1; padding: 30px 40px; width: calc(100% - 280px); min-height: 100vh; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0 20px; border-bottom: 3px solid var(--color-primary); margin-bottom: 30px; }
+        header h1 { font-size: 2.2em; margin: 0; color: var(--color-secondary); }
+        .user-profile { display: flex; align-items: center; gap: 15px; }
+        .user-profile span { margin-right: 15px; font-weight: 500; font-size: 1.05em; }
+        .logout-btn { padding: 10px 20px; background-color: var(--color-secondary); color: var(--color-white); border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 1em; font-weight: 500; }
+        .logout-btn:hover { background-color: var(--color-primary); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .tab-content { display: none; padding: 30px; background-color: var(--color-white); border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); min-height: 600px; }
+        .tab-content.active { display: block; }
+        .tab-content h2 { font-size: 1.8em; margin-bottom: 25px; }
+        .tab-content h2 { color: var(--color-secondary); border-bottom: 2px solid var(--color-primary); padding-bottom: 10px; margin-bottom: 20px; }
+        .feature-box-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 35px; }
+        .feature-box { 
+            background: linear-gradient(135deg, #FFF3F3 0%, #FFE8E8 100%);
+            padding: 25px; 
+            border-radius: 12px;
+            border-left: 6px solid var(--color-primary); 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+        .feature-box h3 { margin-top: 0; margin-bottom: 15px; color: var(--color-primary); font-size: 1.1em; font-weight: 600; }
+        .feature-box p { font-size: 2.5em; font-weight: 700; margin: 10px 0; color: var(--color-primary); }
+        .order-list-container { 
+            margin-top: 20px; 
+            background-color: var(--color-white); 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            padding: 0; 
+        }
+        .order-list-header { 
+            background-color: var(--color-info); 
+            color: var(--color-white); 
+            padding: 12px 20px; /* Increased padding */
+            border-radius: 8px 8px 0 0; 
+            font-weight: 700; 
+            display: flex; 
+            justify-content: space-between; 
+        }
+        .order-list-body { max-height: 400px; overflow-y: auto; padding: 0 20px 20px; }
+        
+        /* New/Updated Order Item Style */
+        .order-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 10px 0; 
+            border-bottom: 1px solid #eee; 
+            cursor: pointer; 
+            transition: background-color 0.2s;
+        }
+        .order-item-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .order-item-header {
+             font-weight: 600;
+        }
+        .order-item-meta {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 500;
+        }
+        .order-item:hover:not(.status-complete) {
+            background-color: #f7f7f7;
+        }
+        
+        .order-status { font-weight: 700; padding: 4px 8px; border-radius: 3px; font-size: 0.85em; }
+        .status-new { background-color: var(--color-primary); color: var(--color-white); }
+        .status-ready { background-color: var(--color-success); color: var(--color-white); }
+        .status-complete { background-color: #BDC3C7; color: var(--color-secondary); }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 25px; overflow-x: auto; display: block; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: 8px; }
+        .data-table th, .data-table td { border: 1px solid #e0e0e0; padding: 15px 18px; text-align: left; white-space: nowrap; }
+        .data-table th { background: linear-gradient(135deg, var(--color-primary) 0%, #c0392b 100%); color: var(--color-white); font-size: 1.05em; font-weight: 600; letter-spacing: 0.3px; position: sticky; top: 0; z-index: 10; }
+        .data-table tr:nth-child(even) { background-color: #f9f9f9; }
+        .data-table tr:hover { background-color: #f0f0f0; transition: background-color 0.2s ease; }
+        .data-table tr.new-item { background-color: #ffe0b2; }
+        .data-table tr.saved-item { animation: flash-save 1s ease-out; }
+        @keyframes flash-save { 0% { background-color: var(--color-success); } 100% { background-color: initial; } }
+        .data-table td .upload-btn { background-color: var(--color-info); padding: 8px 14px; border-radius: 5px; color: white; cursor: pointer; border: none; font-size: 0.95em; font-weight: 500; transition: all 0.3s; }
+        .data-table td .upload-btn:hover { background-color: #2980b9; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .data-table td input[type="text"], .data-table td input[type="number"], .data-table td select { border: 1px solid #ccc; padding: 8px 10px; border-radius: 5px; width: 100px; font-size: 0.95em; }
+        .data-table td input[type="text"].item-name { width: 180px; }
+        .data-table button { padding: 7px 14px; background-color: var(--color-secondary); color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 8px; font-size: 0.95em; font-weight: 500; transition: all 0.3s; }
+        .data-table button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .data-table button.save-btn { background-color: var(--color-success); }
+        .data-table button.save-btn:hover { background-color: #27ae60; }
+        .data-table button.delete-btn { background-color: var(--color-alert-low); }
+        .data-table button.delete-btn:hover { background-color: #c0392b; }
+        .small-action-btn { font-size: 0.85em !important; padding: 5px 8px !important; margin-right: 5px !important; white-space: nowrap; background-color: #3498db; }
+        .recharge-btn { background-color: var(--color-success) !important; }
+        .reset-pin-btn { background-color: var(--color-alert-warning) !important; color: var(--color-secondary) !important; }
+        .edit-btn { background-color: var(--color-info) !important; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; position: relative; }
+        .modal-content input, .modal-content select { width: 95%; padding: 10px; margin: 8px 0 16px 0; display: inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+        .close-btn:hover, .close-btn:focus { color: #000; text-decoration: none; cursor: pointer; }
+        .action-btn { padding: 12px 25px; background-color: var(--color-primary); color: var(--color-white); border: none; border-radius: 6px; cursor: pointer; margin-right: 12px; margin-bottom: 10px; transition: all 0.3s ease; font-size: 1.05em; font-weight: 600; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); }
+        .action-btn:hover { background-color: #c0392b; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4); }
+        .action-btn:active { transform: translateY(-1px); }
+        .forecast-alert { padding: 25px; background: linear-gradient(135deg, var(--color-alert-warning) 0%, #f39c12 100%); color: var(--color-secondary); border-radius: 8px; font-size: 1.15em; font-weight: 700; box-shadow: 0 6px 15px rgba(241, 196, 15, 0.3); }
+        @media (max-width: 768px) { body { flex-direction: column; } .sidebar { width: 100%; height: 60px; position: sticky; top: 0; display: flex; flex-wrap: nowrap; overflow-x: auto; box-shadow: 0 4px 5px rgba(0,0,0,0.1); } .logo { display: none; } .main-content { margin-left: 0; margin-top: 60px; padding: 20px 10px; width: 100%; } .tab-link.active { border-left: none; border-bottom: 3px solid var(--color-white); } .feature-box-container { flex-direction: column; } .data-table th, .data-table td { white-space: normal; } .data-table td input[type="text"], .data-table td input[type="number"], .data-table td select { width: 100%; box-sizing: border-box; } .modal-content { margin: 20% auto; width: 95%;} }
+    </style>
+</head>
+<body>
+
+    <input type="file" id="imageUploader" accept="image/*" style="display:none;">
+
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3 id="modalTitle">Add New User</h3>
+            <form id="userForm">
+                <label for="userName">Name:</label>
+                <input type="text" id="userName" required>
+
+                <label for="userId">User ID:</label>
+                <input type="text" id="userId" required>
+
+                <label for="userRole">Role:</label>
+                <select id="userRole">
+                    <option value="Employee">Employee</option>
+                    <option value="Student">Student</option>
+                    <option value="Canteen Staff">Canteen Staff</option>
+                </select>
+
+                <label for="userBalance">Initial Balance (₹):</label>
+                <input type="number" id="userBalance" value="0" required>
+                
+                <br>
+                <button type="submit" class="action-btn" style="background-color: var(--color-success);">Save User</button>
+            </form>
+        </div>
+    </div>
+    <div class="sidebar">
+        <div class="logo">Gajanan Canteen Admin</div>
+        <a class="tab-link active" data-tab="dashboard">📊 Dashboard</a>
+        <a class="tab-link" data-tab="menu-pricing">🍔 Menu & Pricing</a>
+        <a class="tab-link" data-tab="user-management">🧑‍💻 User Management</a>
+        <a class="tab-link" data-tab="order-management">🧾 Order Management</a>
+        <a href="admin_transactions.html" style="display: block; padding: 12px 20px; text-decoration: none; color: var(--color-white); cursor: pointer; transition: background-color 0.3s, padding-left 0.3s; font-size: 1em; border-left: 5px solid transparent;">🧾 Transaction Records</a>
+        <a class="tab-link" data-tab="financials-reports">📈 Financials & Reports</a>
+        <a class="tab-link unique" data-tab="ai-forecasting">💡 AI Forecasting</a>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Admin Control Panel</h1>
+            <div class="user-profile">
+                <span>Welcome, Admin</span>
+                <button class="logout-btn" id="back-to-app-btn" style="background-color: var(--color-info); margin-right: 10px;">← Back to App</button>
+                <button class="logout-btn" id="admin-logout-btn">Logout</button>
+            </div>
+        </header>
+
+        <div id="dashboard" class="tab-content active">
+            <h2>📊 Dashboard - Operational Hub</h2>
+            
+            <div class="feature-box-container">
+                <div class="feature-box">
+                    <h3>Total Orders Today</h3>
+                    <p style="font-size: 2em; color: var(--color-primary); margin: 0;" id="dashboardTotalOrders">0</p>
+                    <p id="ordersComparison">Loading comparison...</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Total Users</h3>
+                    <p style="font-size: 2em; color: var(--color-primary); margin: 0;" id="dashboardTotalUsers">0</p>
+                    <p id="newSignupsToday">New signups today: 0</p>
+                </div>
+                <div class="feature-box">
+                    <h3>Peak Hour Analysis</h3>
+                    <p style="font-size: 2em; color: var(--color-primary); margin: 0;" id="peakHourOrders">0</p>
+                    <p id="queueStatus">Orders in queue: 0</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <button class="action-btn" id="syncCustomerDataBtn" style="background-color: var(--color-info);">
+                    <i class="fas fa-sync-alt"></i> Sync Customer Data
+                </button>
+                <button class="action-btn" id="refreshDashboardBtn" style="background-color: var(--color-success);">
+                    <i class="fas fa-refresh"></i> Refresh Dashboard
+                </button>
+                <button class="action-btn" id="resetDataBtn" style="background-color: #dc3545;">
+                    🗑️ Reset All Database Data
+                </button>
+                <button class="action-btn" id="initializeDataBtn" style="background-color: #17a2b8;">
+                    <i class="fas fa-database"></i> Initialize Sample Data
+                </button>
+            </div>
+
+            <div class="order-list-container">
+                <div class="order-list-header">
+                    <span>Recent Orders (Click to Mark Complete)</span>
+                    <span id="dashboardPendingOrders">Total Pending Orders: 0</span>
+                </div>
+                <div class="order-list-body" id="dashboardOrderList">
+                    </div>
+            </div>
+
+            <div class="order-list-container" style="margin-top: 20px;">
+                <div class="order-list-header" style="background: #17a2b8;">
+                    <span>🔔 Real-Time Activity Log</span>
+                    <button onclick="document.getElementById('activityLogBody').innerHTML = ''; localStorage.removeItem('loginLog'); localStorage.removeItem('signupLog');" 
+                            style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer;">
+                        Clear Log
+                    </button>
+                </div>
+                <div class="order-list-body" id="activityLogBody" style="max-height: 300px; overflow-y: auto;">
+                    <p style="text-align: center; color: #999; padding: 20px;">Waiting for customer activity...</p>
+                </div>
+            </div>
+            
+            <p style="text-align: center; margin-top: 15px; font-style: italic;">Activity updates in real-time when customers signup, login, or place orders.</p>
+        </div>
+
+        <div id="menu-pricing" class="tab-content">
+            <h2>🍔 Menu & Pricing - Shree Gajanan Canteen</h2>
+            <p>Comprehensive menu management system. Add, edit, and delete categories & menu items. Update prices and manage images.</p>
+            <button class="action-btn" id="addItemBtn">+ Add New Item</button>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Item Name</th>
+                        <th>Price (₹)</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="menuTableBody">
+                    </tbody>
+            </table>
+            <br>
+            <button class="action-btn">Save All Menu Changes (Finalize)</button>
+        </div>
+
+        <div id="user-management" class="tab-content">
+            <h2>🧑‍💻 User Management</h2>
+            <p>Manage user accounts, view real customer data from signups/logins, and track user activity.</p>
+            
+            <div class="user-stats-summary" style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <div class="stat-card" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; padding: 15px; border-radius: 8px; flex: 1; text-align: center;">
+                    <h4 style="margin: 0; font-size: 0.9em;">Real Customers</h4>
+                    <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold;" id="realCustomersCount">0</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); color: white; padding: 15px; border-radius: 8px; flex: 1; text-align: center;">
+                    <h4 style="margin: 0; font-size: 0.9em;">Active Users</h4>
+                    <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold;" id="activeUsersCount">0</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #212529; padding: 15px; border-radius: 8px; flex: 1; text-align: center;">
+                    <h4 style="margin: 0; font-size: 0.9em;">Total Signups Today</h4>
+                    <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold;" id="todaySignupsCount">0</p>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content: space-between; margin-bottom: 15px;">
+                <input type="text" id="userSearch" placeholder="Search by Name or ID..." style="padding: 10px; width: 60%; border: 1px solid #ccc; border-radius: 4px;">
+                <button class="action-btn" id="openAddUserModal"> + Add New User</button>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Balance (₹)</th>
+                        <th>Login Stats</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="order-management" class="tab-content">
+            <h2>🧾 Order Management - Kitchen Display System</h2>
+            <p>Real-time kitchen display system for managing orders and tracking preparation status.</p>
+            
+            <!-- Order Statistics -->
+            <div class="feature-box-container">
+                <div class="feature-box" style="border-left: 5px solid #ff9800;">
+                    <h3 id="newOrdersCount">New Orders: 0</h3>
+                    <p style="font-size: 0.9em; color: #666;">Waiting to be prepared</p>
+                </div>
+                <div class="feature-box" style="border-left: 5px solid #2196F3;">
+                    <h3 id="preparingOrdersCount">In Preparation: 0</h3>
+                    <p id="avgPrepTime">Avg prep time: 0 mins</p>
+                </div>
+                <div class="feature-box" style="border-left: 5px solid #4CAF50;">
+                    <h3 id="readyOrdersCount">Ready for Pickup: 0</h3>
+                    <p id="waitingTime">Avg Wait: 0 min</p>
+                </div>
+                <div class="feature-box" style="border-left: 5px solid #9C27B0;">
+                    <h3 id="completeOrdersCount">Complete: 0</h3>
+                    <p style="font-size: 0.9em; color: #666;">Delivered to customers</p>
+                </div>
+            </div>
+            
+            <!-- Control Buttons -->
+            <div class="order-management-controls" style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="action-btn" id="refreshOrdersBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh Orders
+                </button>
+                <button class="action-btn" id="markAllReadyBtn" style="background-color: var(--color-success);">
+                    <i class="fas fa-check-circle"></i> Mark All Ready
+                </button>
+                <button class="action-btn" id="printKitchenTicketsBtn" style="background-color: var(--color-info);">
+                    <i class="fas fa-print"></i> Print Kitchen Tickets
+                </button>
+            </div>
+            
+            <!-- Live Orders List -->
+            <div style="margin-top: 30px;">
+                <h3 style="margin-bottom: 15px;">📋 Live Orders</h3>
+                <div id="liveOrdersList" style="display: grid; gap: 15px;">
+                    <!-- Orders will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="financials-reports" class="tab-content">
+            <h2>📈 Financials & Reports</h2>
+            <p>Real-time financial analytics based on actual transactions and sales data.</p>
+            
+            <div class="feature-box-container" style="margin-bottom: 20px;">
+                <div class="feature-box" style="border-left: 5px solid var(--color-primary);">
+                    <h3>Today's Sales</h3>
+                    <p style="font-size: 2em; color: var(--color-primary); margin: 5px 0;" id="todaySales">₹ 0.00</p>
+                    <small id="todayOrderCount">0 orders</small>
+                </div>
+                <div class="feature-box" style="border-left: 5px solid var(--color-success);">
+                    <h3>Total Revenue</h3>
+                    <p style="font-size: 2em; color: var(--color-success); margin: 5px 0;" id="totalRevenue">₹ 0.00</p>
+                    <small id="totalOrderCount">0 orders</small>
+                </div>
+                <div class="feature-box" style="border-left: 5px solid var(--color-alert-warning);">
+                    <h3>Average Order Value</h3>
+                    <p style="font-size: 2em; color: var(--color-alert-warning); margin: 5px 0;" id="avgOrderValue">₹ 0.00</p>
+                    <small>Per transaction</small>
+                </div>
+            </div>
+
+            <div class="report-controls" style="margin-bottom: 20px;">
+                <label for="start-date">Select Date Range:</label>
+                <input type="date" id="start-date"> to <input type="date" id="end-date">
+                <button class="action-btn" id="generateReportBtn">Generate Report</button>
+            </div>
+            
+            <div id="financialReport" class="feature-box" style="border-left: 5px solid var(--color-success); background-color: #f0fff0; display: none;">
+                <h3>Financial Report (Selected Period)</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                    <div>
+                        <p><strong>Total Sales:</strong> <span id="reportSales" style="color: var(--color-primary); font-size: 1.3em;">₹ 0.00</span></p>
+                        <p><strong>Total Orders:</strong> <span id="reportOrders">0</span></p>
+                        <p><strong>Completed Orders:</strong> <span id="reportCompleted">0</span></p>
+                    </div>
+                    <div>
+                        <p><strong>Average Order Value:</strong> <span id="reportAvg">₹ 0.00</span></p>
+                        <p><strong>Estimated Profit (30%):</strong> <span id="reportProfit" style="color: var(--color-success); font-size: 1.3em;">₹ 0.00</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>Sales by Category</h3>
+                <div id="categoryBreakdown" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <!-- Category breakdown will be inserted here -->
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>Top Selling Items</h3>
+                <table class="data-table" id="topItemsTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topItemsBody">
+                        <tr><td colspan="5" style="text-align: center; color: #999;">No sales data available</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="ai-forecasting" class="tab-content unique">
+            <h2>💡 AI Forecasting (Unique Feature)</h2>
+            <p><strong>'Gajanan Predict' Module:</strong> Predict the quantity of food items needed for tomorrow based on actual sales data and order patterns.</p>
+            
+            <div class="feature-box-container" style="margin-bottom: 20px;">
+                <div class="feature-box" style="border-left: 5px solid var(--color-secondary);">
+                    <h3>Today's Analysis</h3>
+                    <p id="todayAnalysis" style="font-size: 1.1em; color: #666;">Analyzing order patterns...</p>
+                </div>
+                <div class="feature-box" style="border-left: 5px solid var(--color-primary);">
+                    <h3>Prediction Accuracy</h3>
+                    <p style="font-size: 2em; color: var(--color-primary); margin: 5px 0;">85%</p>
+                    <small>Based on 7-day average</small>
+                </div>
+            </div>
+
+            <div class="forecast-alert" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: white;">📊 Prediction for Tomorrow's Orders</h3>
+                <div id="forecastPrediction" style="font-size: 1.2em; line-height: 1.8;">
+                    Loading predictions...
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>Top Selling Items (Last 7 Days)</h3>
+                <table class="data-table" id="forecastTopItems">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Avg Daily Orders</th>
+                            <th>Total Orders</th>
+                            <th>Predicted Tomorrow</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forecastTopItemsBody">
+                        <tr><td colspan="5" style="text-align: center; color: #999;">Analyzing sales data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/order-sync.js"></script>
+    <script>
+        // ======================================================
+        // I. MOCK DATABASE (Persistent using localStorage)
+        // ======================================================
+        // Initial clean data used when localStorage is empty
+        const MOCK_MENU_DATA = [
+            // Tea, Coffee & Milk
+            { id: 1, category: "Tea, Coffee & Milk", name: "Tea", price: 10, imageStatus: "(Image Attached)" },
+            { id: 2, category: "Tea, Coffee & Milk", name: "Special Tea", price: 15, imageStatus: "(Image Attached)" },
+            { id: 3, category: "Tea, Coffee & Milk", name: "Coffee", price: 15, imageStatus: "(Image Attached)" },
+            { id: 4, category: "Tea, Coffee & Milk", name: "Milk", price: 25, imageStatus: "(Image Attached)" },
+            { id: 5, category: "Tea, Coffee & Milk", name: "Cold Chocolate Milk", price: 25, imageStatus: "(Image Attached)" },
+            { id: 6, category: "Tea, Coffee & Milk", name: "Hot Chocolate Milk", price: 25, imageStatus: "(Image Attached)" },
+            { id: 7, category: "Tea, Coffee & Milk", name: "Buttermilk (Taak)", price: 15, imageStatus: "(Image Attached)" },
+            { id: 8, category: "Tea, Coffee & Milk", name: "Lassi", price: 25, imageStatus: "(Image Attached)" },
+            { id: 9, category: "Tea, Coffee & Milk", name: "Curd (Dahi)", price: 25, imageStatus: "(Image Attached)" },
+            { id: 10, category: "Tea, Coffee & Milk", name: "Lemon Water (Limbu Pani)", price: 10, imageStatus: "(Image Attached)" },
+            { id: 11, category: "Tea, Coffee & Milk", name: "Bread Butter", price: 30, imageStatus: "(Image Attached)" },
+            { id: 12, category: "Tea, Coffee & Milk", name: "Buttered Bun (Ban Maska)", price: 20, imageStatus: "(Image Attached)" },
+            
+            // Breakfast
+            { id: 13, category: "Breakfast", name: "Pohe (Flattened Rice)", price: 25, imageStatus: "(Image Attached)" },
+            { id: 14, category: "Breakfast", name: "Curd Pohe (Dahi Pohe)", price: 30, imageStatus: "(Image Attached)" },
+            { id: 15, category: "Breakfast", name: "Chickpea Pohe (Chana Pohe)", price: 30, imageStatus: "(Image Attached)" },
+            { id: 16, category: "Breakfast", name: "Tarri (Spicy Gravy)", price: 10, imageStatus: "(Image Attached)" },
+            { id: 17, category: "Breakfast", name: "Chana (Chickpea)", price: 30, imageStatus: "(Image Attached)" },
+            { id: 18, category: "Breakfast", name: "Upma", price: 30, imageStatus: "(Image Attached)" },
+            { id: 19, category: "Breakfast", name: "Onion Pohe", price: 30, imageStatus: "(Image Attached)" },
+            { id: 20, category: "Breakfast", name: "Bread Pakora", price: 25, imageStatus: "(Image Attached)" },
+            { id: 21, category: "Breakfast", name: "Aloo Bonda with Gravy", price: 35, imageStatus: "(Image Attached)" },
+            { id: 22, category: "Breakfast", name: "Kachori", price: 15, imageStatus: "(Image Attached)" },
+            { id: 23, category: "Breakfast", name: "Vada Pav", price: 15, imageStatus: "(Image Attached)" },
+            { id: 24, category: "Breakfast", name: "Dabeli Sandwich", price: 20, imageStatus: "(Image Attached)" },
+            { id: 25, category: "Breakfast", name: "Veg Sandwich", price: 50, imageStatus: "(Image Attached)" },
+            { id: 26, category: "Breakfast", name: "Cheese Jumbo Sandwich", price: 50, imageStatus: "(Image Attached)" },
+            { id: 27, category: "Breakfast", name: "Malai (Cream) Sandwich", price: 50, imageStatus: "(Image Attached)" },
+            { id: 28, category: "Breakfast", name: "Mix Pav", price: 50, imageStatus: "(Image Attached)" },
+            { id: 29, category: "Breakfast", name: "Pav (Bread Roll)", price: 7, imageStatus: "(Image Attached)" },
+            { id: 30, category: "Breakfast", name: "Dhokla", price: 20, imageStatus: "(Image Attached)" },
+            { id: 31, category: "Breakfast", name: "Sabudana Khichdi", price: 40, imageStatus: "(Image Attached)" },
+            
+            // Specials & Main Course
+            { id: 32, category: "Specials & Main Course", name: "Shahi Piece (Sweet bread)", price: 40, imageStatus: "(Image Attached)" },
+            { id: 33, category: "Specials & Main Course", name: "Special Sabudana Pith", price: 40, imageStatus: "(Image Attached)" },
+            { id: 34, category: "Specials & Main Course", name: "Paneer Paratha", price: 50, imageStatus: "(Image Attached)" },
+            { id: 35, category: "Specials & Main Course", name: "Aloo Paratha", price: 40, imageStatus: "(Image Attached)" },
+            { id: 36, category: "Specials & Main Course", name: "Methi Paratha (Fenugreek)", price: 40, imageStatus: "(Image Attached)" },
+            { id: 37, category: "Specials & Main Course", name: "Special Paratha", price: 40, imageStatus: "(Image Attached)" },
+            { id: 38, category: "Specials & Main Course", name: "Plain Maggi", price: 40, imageStatus: "(Image Attached)" },
+            { id: 39, category: "Specials & Main Course", name: "Masala Maggi", price: 50, imageStatus: "(Image Attached)" },
+            { id: 40, category: "Specials & Main Course", name: "Cheese Maggi", price: 60, imageStatus: "(Image Attached)" },
+            { id: 41, category: "Specials & Main Course", name: "Idli Sambar", price: 40, imageStatus: "(Image Attached)" },
+            { id: 42, category: "Specials & Main Course", name: "Vada Sambar", price: 40, imageStatus: "(Image Attached)" },
+            { id: 43, category: "Specials & Main Course", name: "Potato Samosa (Mini)", price: 15, imageStatus: "(Image Attached)" },
+            { id: 44, category: "Specials & Main Course", name: "Chole (Chickpea Curry)", price: 45, imageStatus: "(Image Attached)" },
+            { id: 45, category: "Specials & Main Course", name: "Bhatura", price: 15, imageStatus: "(Image Attached)" },
+            { id: 46, category: "Specials & Main Course", name: "Bhel", price: 40, imageStatus: "(Image Attached)" },
+            { id: 47, category: "Specials & Main Course", name: "Dal Fry", price: 50, imageStatus: "(Image Attached)" },
+            { id: 48, category: "Specials & Main Course", name: "Paneer Masala", price: 120, imageStatus: "(Image Attached)" },
+            { id: 49, category: "Specials & Main Course", name: "Sev Bhaji", price: 90, imageStatus: "(Image Attached)" },
+            { id: 50, category: "Specials & Main Course", name: "Papad", price: 12, imageStatus: "(Image Attached)" },
+            { id: 51, category: "Specials & Main Course", name: "Plain Paratha", price: 12, imageStatus: "(Image Attached)" },
+            { id: 52, category: "Specials & Main Course", name: "Green Salad", price: 40, imageStatus: "(Image Attached)" },
+            { id: 53, category: "Specials & Main Course", name: "Poli Bhaji (Roti with Curry)", price: 50, imageStatus: "(Image Attached)" },
+            { id: 54, category: "Specials & Main Course", name: "Varan Khichdi (Dal Khichdi)", price: 60, imageStatus: "(Image Attached)" },
+            { id: 55, category: "Specials & Main Course", name: "Plain Rice", price: 40, imageStatus: "(Image Attached)" },
+            { id: 56, category: "Specials & Main Course", name: "Rice Plate", price: 80, imageStatus: "(Image Attached)" },
+            { id: 57, category: "Specials & Main Course", name: "Paneer Pulao", price: 120, imageStatus: "(Image Attached)" },
+            { id: 58, category: "Specials & Main Course", name: "Plain Pulao", price: 90, imageStatus: "(Image Attached)" },
+        ];
+
+        const MOCK_USER_DATA = [
+            { id: 'E1001', name: 'Rajesh K.', role: 'Employee', balance: 120.00, signupDate: '2024-01-15' },
+            { id: 'S005', name: 'Priya G.', role: 'Student', balance: -50.00, signupDate: '2024-02-10' },
+            { id: 'C205', name: 'Vijay S.', role: 'Canteen Staff', balance: 0.00, signupDate: '2024-01-20' },
+            { id: 'E1002', name: 'Amit V.', role: 'Employee', balance: 500.00, signupDate: '2024-03-05' },
+            { id: 'C206', name: 'Kiran R.', role: 'Canteen Staff', balance: 0.00, signupDate: '2024-02-28' },
+        ];
+        
+        // ADDED tableNumber field
+        const MOCK_ORDER_DATA = [
+            { id: 1, userId: 'E1005', items: '2 Coffee, 1 Sandwich', status: 'NEW', tableNumber: 5 },
+            { id: 2, userId: 'E1001', items: '1 Full Thali (Pre-Booked)', status: 'READY', tableNumber: 1 },
+            { id: 3, userId: 'Guest', items: '3 Vada Pav', status: 'COMPLETE', tableNumber: 8 },
+            { id: 4, userId: 'S203', items: '1 Tea, 1 Samosa', status: 'NEW', tableNumber: 12 },
+            { id: 5, userId: 'E1001', items: '1 Tea, 1 Samosa', status: 'NEW', tableNumber: 1 },
+            { id: 6, userId: 'E1010', items: '2 Chicken Rolls', status: 'NEW', tableNumber: 2 },
+        ];
+        
+        let NEXT_USER_ID_COUNTER = 1000;
+        const USER_NAMES = ['Anjali', 'Kunal', 'Zoya', 'Ramesh', 'Shreya', 'Ganesh', 'Isha', 'Pranav'];
+        const USER_ROLES = ['Employee', 'Student', 'Employee', 'Student'];
+
+        // Core Canteen Database/State Object
+        const CanteenDB = {
+            get: function(key) {
+                // Special handling for orders - read from all users
+                if (key === 'orders') {
+                    return CanteenDB.getAllUserOrders();
+                }
+                
+                const data = localStorage.getItem('GajananCMS_' + key);
+                if (data) {
+                    return JSON.parse(data);
+                }
+                // Initialize localStorage with mock data on first load
+                if (key === 'menu') return MOCK_MENU_DATA;
+                if (key === 'users') return MOCK_USER_DATA;
+                if (key === 'orders') return MOCK_ORDER_DATA;
+                return [];
+            },
+            // Get all orders from all users
+            getAllUserOrders: () => {
+                const allOrders = [];
+                let orderId = 1;
+                
+                // ============================================
+                // FIRST: Read from central orders database
+                // ============================================
+                try {
+                    const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                    if (Array.isArray(centralOrders) && centralOrders.length > 0) {
+                        console.log(`📥 Loading ${centralOrders.length} orders from central database`);
+                        allOrders.push(...centralOrders);
+                    }
+                } catch (e) {
+                    console.error('Error reading central orders:', e);
+                }
+                
+                // ============================================
+                // SECOND: Read from user-specific order keys (legacy support)
+                // ============================================
+                // Iterate through all localStorage keys
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    
+                    // Check if key is a user order key (orders_username)
+                    if (key && key.startsWith('orders_')) {
+                        try {
+                            const userOrders = JSON.parse(localStorage.getItem(key));
+                            const username = key.replace('orders_', '');
+                            
+                            if (Array.isArray(userOrders)) {
+                                userOrders.forEach(order => {
+                                    // Check if order already exists in central orders
+                                    const exists = allOrders.some(o => 
+                                        o.timestamp === order.date && 
+                                        o.customer === username
+                                    );
+                                    
+                                    if (!exists) {
+                                        // Add order with proper structure
+                                        allOrders.push({
+                                            id: orderId++,
+                                            username: username,
+                                            customer: username,
+                                            userId: username,
+                                            items: order.items || [],
+                                            totalAmount: order.total || 0,
+                                            payment_method: order.payment_method || 'cash',
+                                            payment_status: order.payment_status || 'completed',
+                                            status: order.status || (order.payment_status === 'completed' ? 'COMPLETE' : 'PENDING'),
+                                            timestamp: order.date || new Date().toISOString(),
+                                            orderNumber: order.orderNumber || `#${orderId}`
+                                        });
+                                    }
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Error parsing orders for key:', key, e);
+                        }
+                    }
+                }
+                
+                // Sort by timestamp (newest first)
+                allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                const userCount = new Set(allOrders.map(o => o.username || o.customer)).size;
+                console.log(`📊 Loaded ${allOrders.length} orders from ${userCount} users (${allOrders.filter(o => o.status === 'NEW').length} new orders)`);
+                return allOrders;
+            },
+            set: (key, data) => {
+                localStorage.setItem('GajananCMS_' + key, JSON.stringify(data));
+            },
+            // Simulate unique ID counter across reloads (Menu Items)
+            getNextItemId: () => {
+                let id = parseInt(localStorage.getItem('GajananCMS_NextItemId') || '200');
+                localStorage.setItem('GajananCMS_NextItemId', id + 1);
+                return id;
+            },
+            getNextOrderId: () => {
+                const orders = CanteenDB.get('orders');
+                const maxId = orders.reduce((max, order) => Math.max(max, order.id || 0), 0);
+                return maxId + 1;
+            },
+            getNextUserId: () => {
+                 let counter = parseInt(localStorage.getItem('GajananCMS_NextUserIdCounter') || NEXT_USER_ID_COUNTER);
+                 localStorage.setItem('GajananCMS_NextUserIdCounter', counter + 1);
+                 return 'U' + counter;
+            },
+            resetAll: () => {
+                localStorage.clear(); // Clear all CMS data
+            }
+        };
+
+
+        // ======================================================
+        // II. APPLICATION CORE LOGIC (Runs on Load)
+        // ======================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Enhanced admin authentication check
+            const isAdminAuthenticated = localStorage.getItem('adminAuthenticated');
+            const adminUser = localStorage.getItem('adminUser');
+            const adminRole = localStorage.getItem('adminRole');
+            const sessionToken = localStorage.getItem('adminSessionToken');
+            const loginTime = localStorage.getItem('adminLoginTime');
+            
+            if (!isAdminAuthenticated || isAdminAuthenticated !== 'true' || !adminUser || !sessionToken) {
+                alert('Access Denied! Admin authentication required.');
+                window.location.href = 'c3.html';
+                return;
+            }
+            
+            // Check session timeout (2 hours)
+            if (loginTime) {
+                const sessionTimeout = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+                const elapsed = Date.now() - new Date(loginTime).getTime();
+                if (elapsed > sessionTimeout) {
+                    alert('Your admin session has expired. Please login again.');
+                    localStorage.removeItem('adminAuthenticated');
+                    localStorage.removeItem('adminUser');
+                    localStorage.removeItem('adminSessionToken');
+                    localStorage.removeItem('adminLoginTime');
+                    localStorage.removeItem('adminRole');
+                    window.location.href = 'c3.html';
+                    return;
+                }
+            }
+            
+            // Update header with admin info
+            const welcomeSpan = document.querySelector('.user-profile span');
+            if (welcomeSpan) {
+                welcomeSpan.textContent = `Welcome, ${adminUser} (${adminRole})`;
+            }
+            
+            // Log admin portal access
+            logAdminActivity(adminUser, 'PORTAL_ACCESS', 'Admin accessed the portal dashboard');
+            
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Elements
+            const menuTableBody = document.getElementById('menuTableBody');
+            const userTableBody = document.getElementById('userTableBody');
+            const addItemBtn = document.getElementById('addItemBtn');
+            const imageUploader = document.getElementById('imageUploader');
+            const userSearch = document.getElementById('userSearch');
+            const userModal = document.getElementById('userModal');
+            const openAddUserModal = document.getElementById('openAddUserModal');
+            const modalCloseBtn = userModal ? userModal.querySelector('.close-btn') : null;
+            const userForm = document.getElementById('userForm');
+            const dashboardOrderList = document.getElementById('dashboardOrderList');
+            const resetDataBtn = document.getElementById('resetDataBtn');
+            const syncCustomerDataBtn = document.getElementById('syncCustomerDataBtn');
+            const refreshDashboardBtn = document.getElementById('refreshDashboardBtn');
+            
+            // Initial Data Load and UI Render
+            renderDashboard();
+            renderMenuTable();
+            renderUserTable();
+            
+            // Add event listeners for order management controls
+            const refreshOrdersBtn = document.getElementById('refreshOrdersBtn');
+            const markAllReadyBtn = document.getElementById('markAllReadyBtn');
+            const printKitchenTicketsBtn = document.getElementById('printKitchenTicketsBtn');
+            
+            if (refreshOrdersBtn) {
+                refreshOrdersBtn.addEventListener('click', () => {
+                    renderDashboard();
+                    showNotification('Orders refreshed successfully!', 'success');
+                });
+            }
+            
+            if (markAllReadyBtn) {
+                markAllReadyBtn.addEventListener('click', () => {
+                    const orders = CanteenDB.get('orders');
+                    const newOrders = orders.filter(o => o.status === 'NEW');
+                    
+                    if (newOrders.length === 0) {
+                        showNotification('No new orders to mark as ready.', 'info');
+                        return;
+                    }
+                    
+                    if (confirm(`Mark ${newOrders.length} orders as ready for pickup?`)) {
+                        newOrders.forEach(order => {
+                            order.status = 'READY';
+                        });
+                        CanteenDB.set('orders', orders);
+                        renderDashboard();
+                        showNotification(`${newOrders.length} orders marked as ready!`, 'success');
+                    }
+                });
+            }
+            
+            if (printKitchenTicketsBtn) {
+                printKitchenTicketsBtn.addEventListener('click', () => {
+                    const orders = CanteenDB.get('orders');
+                    const newOrders = orders.filter(o => o.status === 'NEW');
+                    
+                    if (newOrders.length === 0) {
+                        showNotification('No new orders to print.', 'info');
+                        return;
+                    }
+                    
+                    // Simulate printing
+                    showNotification(`Printing ${newOrders.length} kitchen tickets...`, 'info');
+                    setTimeout(() => {
+                        showNotification('Kitchen tickets printed successfully!', 'success');
+                    }, 2000);
+                });
+            }
+            
+            // Notification helper function
+            function showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    color: white;
+                    font-weight: 500;
+                    z-index: 9999;
+                    animation: slideIn 0.3s ease;
+                    max-width: 300px;
+                `;
+                
+                const colors = {
+                    success: '#4CAF50',
+                    error: '#f44336',
+                    warning: '#ff9800',
+                    info: '#2196F3'
+                };
+                
+                notification.style.background = colors[type] || colors.info;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+
+            // ======================================================
+            // REAL-TIME ORDER UPDATES
+            // ======================================================
+            
+            // Listen for localStorage changes (from other tabs/windows)
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'admin_refresh_trigger' || e.key === 'GajananCMS_orders') {
+                    console.log('🔄 New order detected! Refreshing dashboard...');
+                    renderDashboard();
+                    
+                    // Show notification
+                    showOrderNotification();
+                }
+                
+                // Auto-sync when new customers sign up or login
+                if (e.key === 'signupLog' || e.key === 'loginLog') {
+                    console.log('👥 Customer activity detected! Auto-syncing data...');
+                    setTimeout(() => {
+                        autoSyncCustomerData();
+                        renderDashboard();
+                        renderUserTable();
+                    }, 1000); // Small delay to ensure data is written
+                }
+            });
+
+            // Listen for custom events (same tab)
+            window.addEventListener('orderUpdated', (e) => {
+                console.log('🔄 Order updated! Refreshing dashboard...');
+                renderDashboard();
+                showOrderNotification();
+            });
+
+            // Auto-refresh every 10 seconds
+            setInterval(() => {
+                renderDashboard();
+            }, 10000);
+
+            // Show notification when new order arrives
+            function showOrderNotification(tableNumber = null) {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 20px 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+                    z-index: 9999;
+                    animation: slideIn 0.3s ease;
+                    font-weight: 600;
+                    font-size: 1.1em;
+                    min-width: 250px;
+                `;
+                const tableText = tableNumber ? ` from Table ${tableNumber}` : '';
+                notification.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="font-size: 2em;">🔔</span>
+                        <div>
+                            <div style="font-size: 1.2em; margin-bottom: 5px;">New Order!</div>
+                            <div style="font-size: 0.9em; opacity: 0.9;">${tableText || 'Check dashboard'}</div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+
+                // Play notification sound (optional)
+                try {
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi77eifTRALUKfj8LZjHAU7k9jzzHksBSh+zPLaizsKGGS56+mjUBELTKXh8bllHgU2jdXzzn0vBSh+zPLaizsKGGS56+mjUBELTKXh8bllHgU2jdXzzn0vBSh+zPLaizsKGGS56+mjUBELTKXh8bllHgU2jdXzzn0vBSh+zPLaizsKGGS56+mjUBELTKXh8bllHgU2jdXzzn0vBSh+zPLaizsKGGS56+mjUBELTKXh8bllHgU2jdXzzn0vBSh+zPLaizsKGGS56+mjUBELTKXh8bllHgU2jdXzzn0vBSh+zPLaizsKGGS56+mjUBELTKXh8bllHgU2jdXzzn0vBQ==');
+                    audio.volume = 0.3;
+                    audio.play().catch(() => {});
+                } catch (e) {}
+
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 5000);
+            }
+            
+            // ======================================================
+            // ORDER SYNC SYSTEM - Real-time cross-device sync
+            // ======================================================
+            if (window.OrderSync) {
+                // Start polling for new orders from mobile devices
+                window.OrderSync.startPolling((newOrders) => {
+                    console.log(`📥 Received ${newOrders.length} new order(s) from sync server`);
+                    
+                    // Add orders to local database
+                    const orders = CanteenDB.get('orders') || [];
+                    
+                    newOrders.forEach(order => {
+                        // Check if order already exists
+                        const exists = orders.find(o => o.id === order.id);
+                        if (!exists) {
+                            // Add to database
+                            orders.unshift(order);
+                            
+                            // Show notification
+                            showOrderNotification(order.tableNumber || order.table_number);
+                            
+                            console.log(`✅ Added order #${order.id} | Table: ${order.tableNumber || order.table_number || 'N/A'}`);
+                        }
+                    });
+                    
+                    // Save updated orders
+                    CanteenDB.set('orders', orders);
+                    
+                    // Refresh dashboard
+                    renderDashboard();
+                });
+                
+                console.log('🔄 Order sync system initialized - polling every 2 seconds');
+            } else {
+                console.warn('⚠️ Order sync not available - using localStorage only');
+            }
+
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(400px); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(400px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+
+
+            // --- Tab Switching Functionality ---
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    const tabId = e.target.getAttribute('data-tab');
+
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    const activeContent = document.getElementById(tabId);
+                    if(activeContent) {
+                        activeContent.classList.add('active');
+                        // Ensure correct data is re-rendered when tabs are switched
+                        if (tabId === 'menu-pricing') renderMenuTable();
+                        if (tabId === 'user-management') renderUserTable();
+                        if (tabId === 'dashboard') renderDashboard();
+
+                        if (window.innerWidth <= 768) {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
+
+            // ======================================================
+            // III. RENDER FUNCTIONS
+            // ======================================================
+
+            function renderDashboard() {
+                try {
+                    const orders = CanteenDB.get('orders') || [];
+                    const users = CanteenDB.get('users') || [];
+                    const totalOrders = orders.length;
+                    const pendingOrders = orders.filter(o => o.status === 'NEW' || o.status === 'READY').length;
+                
+                // Calculate today's orders
+                const today = new Date().toDateString();
+                const todayOrders = orders.filter(o => {
+                    const orderDate = o.timestamp ? new Date(o.timestamp).toDateString() : today;
+                    return orderDate === today;
+                });
+                
+                // Calculate yesterday's orders for comparison
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayOrders = orders.filter(o => {
+                    const orderDate = o.timestamp ? new Date(o.timestamp).toDateString() : null;
+                    return orderDate === yesterday.toDateString();
+                });
+                
+                // Calculate new signups today
+                const signupLog = JSON.parse(localStorage.getItem('signupLog')) || [];
+                const todaySignups = signupLog.filter(log => {
+                    const signupDate = new Date(log.timestamp).toDateString();
+                    return signupDate === today;
+                });
+                
+                // Calculate peak hour data
+                const currentHour = new Date().getHours();
+                const peakHours = [12, 13, 18, 19, 20]; // Lunch and dinner hours
+                const isPeakHour = peakHours.includes(currentHour);
+                const peakHourOrders = todayOrders.filter(o => {
+                    if (!o.timestamp) return false;
+                    const orderHour = new Date(o.timestamp).getHours();
+                    return peakHours.includes(orderHour);
+                });
+                
+                // Update dashboard numbers
+                document.getElementById('dashboardTotalOrders').textContent = todayOrders.length;
+                document.getElementById('dashboardTotalUsers').textContent = users.length;
+                document.getElementById('peakHourOrders').textContent = peakHourOrders.length;
+                document.getElementById('dashboardPendingOrders').textContent = `Total Pending/Ready Orders: ${pendingOrders}`;
+                
+                // Update comparison text
+                const orderDiff = todayOrders.length - yesterdayOrders.length;
+                const comparisonText = orderDiff > 0 ? `+${orderDiff} vs yesterday` : 
+                                     orderDiff < 0 ? `${orderDiff} vs yesterday` : 
+                                     'Same as yesterday';
+                const comparisonColor = orderDiff > 0 ? '#4CAF50' : orderDiff < 0 ? '#f44336' : '#666';
+                
+                document.getElementById('ordersComparison').textContent = comparisonText;
+                document.getElementById('ordersComparison').style.color = comparisonColor;
+                
+                document.getElementById('newSignupsToday').textContent = `New signups today: ${todaySignups.length}`;
+                document.getElementById('queueStatus').textContent = `Orders in queue: ${pendingOrders}`;
+                
+                // Sort by ID in descending order (newest first)
+                const sortedOrders = [...orders].sort((a, b) => b.id - a.id); 
+
+                const listHTML = sortedOrders.slice(0, 10).map(order => {
+                    const statusClass = order.status.toLowerCase();
+                    const userName = users.find(u => u.id === order.userId)?.name || 'Guest';
+                    const orderTime = order.timestamp ? new Date(order.timestamp).toLocaleTimeString() : 'N/A';
+                    return `
+                    <div class="order-item" data-order-id="${order.id}" data-status="${order.status}">
+                        <div class="order-item-details">
+                            <span class="order-item-header">Order #${order.id} | Table ${order.tableNumber} | ${orderTime}</span>
+                            <span class="order-item-meta">${order.items}</span>
+                            <span class="order-item-meta">User: ${userName} (${order.userId}) | Total: ₹${(order.totalAmount || 0).toFixed(2)}</span>
+                        </div>
+                        <span class="order-status status-${statusClass}">${order.status}</span>
+                    </div>
+                `;
+                }).join('');
+
+                if (listHTML === '') {
+                    dashboardOrderList.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;"><i class="fas fa-clipboard-list" style="font-size: 3em; margin-bottom: 15px;"></i><br>No orders yet<br><small>Orders will appear here when customers place them</small></div>';
+                } else {
+                    dashboardOrderList.innerHTML = listHTML;
+                }
+                
+                // Update order management section
+                updateOrderManagement(orders);
+                } catch (error) {
+                    console.error('Error rendering dashboard:', error);
+                    // Set default values if there's an error
+                    const dashboardTotalOrders = document.getElementById('dashboardTotalOrders');
+                    const dashboardTotalUsers = document.getElementById('dashboardTotalUsers');
+                    const peakHourOrders = document.getElementById('peakHourOrders');
+                    const dashboardPendingOrders = document.getElementById('dashboardPendingOrders');
+                    
+                    if (dashboardTotalOrders) dashboardTotalOrders.textContent = '0';
+                    if (dashboardTotalUsers) dashboardTotalUsers.textContent = '0';
+                    if (peakHourOrders) peakHourOrders.textContent = '0';
+                    if (dashboardPendingOrders) dashboardPendingOrders.textContent = 'Error loading data';
+                }
+            }
+            
+            function updateOrderManagement(orders) {
+                const newOrders = orders.filter(o => o.status === 'NEW');
+                const preparingOrders = orders.filter(o => o.status === 'READY');
+                const completedOrders = orders.filter(o => o.status === 'COMPLETE');
+                
+                // Calculate average preparation time (mock calculation)
+                const avgPrepTime = preparingOrders.length > 0 ? 
+                    Math.round(Math.random() * 5) + 3 : 0; // 3-8 minutes
+                
+                // Calculate average waiting time
+                const avgWaitTime = preparingOrders.length > 0 ? 
+                    Math.round(Math.random() * 3) + 1 : 0; // 1-4 minutes
+                
+                // Update order statistics
+                const newOrdersElement = document.getElementById('newOrdersCount');
+                const preparingOrdersElement = document.getElementById('preparingOrdersCount');
+                const readyOrdersElement = document.getElementById('readyOrdersCount');
+                const completeOrdersElement = document.getElementById('completeOrdersCount');
+                const avgPrepTimeElement = document.getElementById('avgPrepTime');
+                const waitingTimeElement = document.getElementById('waitingTime');
+                
+                if (newOrdersElement) {
+                    newOrdersElement.textContent = `New Orders: ${newOrders.length}`;
+                }
+                
+                if (preparingOrdersElement) {
+                    preparingOrdersElement.textContent = `In Preparation: ${preparingOrders.length}`;
+                }
+                
+                if (readyOrdersElement) {
+                    readyOrdersElement.textContent = `Ready for Pickup: ${preparingOrders.length}`;
+                }
+                
+                if (completeOrdersElement) {
+                    completeOrdersElement.textContent = `Complete: ${completedOrders.length}`;
+                }
+                
+                if (avgPrepTimeElement) {
+                    avgPrepTimeElement.textContent = `Avg prep time: ${avgPrepTime} mins`;
+                }
+                
+                if (waitingTimeElement) {
+                    waitingTimeElement.textContent = `Avg Wait: ${avgWaitTime} min`;
+                }
+                
+                // ============================================
+                // POPULATE LIVE ORDERS LIST
+                // ============================================
+                const liveOrdersList = document.getElementById('liveOrdersList');
+                if (liveOrdersList) {
+                    if (orders.length === 0) {
+                        liveOrdersList.innerHTML = `
+                            <div style="text-align: center; padding: 60px 20px; background: rgba(0,0,0,0.03); border-radius: 12px;">
+                                <i class="fas fa-clipboard-list" style="font-size: 4em; color: #ccc; margin-bottom: 20px;"></i>
+                                <h3 style="color: #999; margin: 10px 0;">No Orders Yet</h3>
+                                <p style="color: #bbb;">Orders from the customer app will appear here in real-time</p>
+                            </div>
+                        `;
+                    } else {
+                        // Sort orders by status priority and timestamp
+                        const sortedOrders = [...orders].sort((a, b) => {
+                            const statusPriority = { 'NEW': 1, 'READY': 2, 'COMPLETE': 3 };
+                            const priorityDiff = (statusPriority[a.status] || 99) - (statusPriority[b.status] || 99);
+                            if (priorityDiff !== 0) return priorityDiff;
+                            return new Date(b.timestamp) - new Date(a.timestamp);
+                        });
+                        
+                        liveOrdersList.innerHTML = sortedOrders.map(order => {
+                            const statusColors = {
+                                'NEW': '#ff9800',
+                                'READY': '#2196F3',
+                                'COMPLETE': '#4CAF50'
+                            };
+                            const statusColor = statusColors[order.status] || '#999';
+                            const orderTime = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
+                            const timePassed = order.timestamp ? Math.floor((Date.now() - new Date(order.timestamp).getTime()) / 60000) : 0;
+                            
+                            return `
+                                <div style="background: white; border-left: 5px solid ${statusColor}; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;" 
+                                     onmouseover="this.style.transform='translateY(-2px)'" 
+                                     onmouseout="this.style.transform='translateY(0)'">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                                        <div>
+                                            <h3 style="margin: 0 0 5px 0; color: #333;">
+                                                Order #${order.id} 
+                                                <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75em; margin-left: 10px;">
+                                                    ${order.status}
+                                                </span>
+                                            </h3>
+                                            <p style="margin: 0; color: #666; font-size: 0.9em;">
+                                                <i class="fas fa-clock"></i> ${orderTime} 
+                                                ${timePassed > 0 ? `(${timePassed} min ago)` : '(Just now)'}
+                                            </p>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <p style="margin: 0; font-size: 1.3em; color: ${statusColor}; font-weight: bold;">
+                                                ₹${(order.totalAmount || order.total || 0).toFixed(2)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px;">
+                                        <div style="background: rgba(0,0,0,0.03); padding: 12px; border-radius: 6px;">
+                                            <p style="margin: 0; color: #999; font-size: 0.85em; margin-bottom: 4px;">
+                                                <i class="fas fa-user"></i> Customer
+                                            </p>
+                                            <p style="margin: 0; color: #333; font-weight: 500;">
+                                                ${order.customer || order.userName || order.userId || 'Guest'}
+                                            </p>
+                                        </div>
+                                        <div style="background: rgba(0,0,0,0.03); padding: 12px; border-radius: 6px;">
+                                            <p style="margin: 0; color: #999; font-size: 0.85em; margin-bottom: 4px;">
+                                                <i class="fas fa-table"></i> Table
+                                            </p>
+                                            <p style="margin: 0; color: #333; font-weight: 500;">
+                                                Table ${order.table_number || order.tableNumber || 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div style="background: rgba(0,0,0,0.03); padding: 12px; border-radius: 6px;">
+                                            <p style="margin: 0; color: #999; font-size: 0.85em; margin-bottom: 4px;">
+                                                <i class="fas fa-credit-card"></i> Payment
+                                            </p>
+                                            <p style="margin: 0; color: #333; font-weight: 500; text-transform: capitalize;">
+                                                ${order.payment_method || 'Cash'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                                        <p style="margin: 0 0 8px 0; color: #999; font-size: 0.85em;">
+                                            <i class="fas fa-utensils"></i> Order Items:
+                                        </p>
+                                        <p style="margin: 0; color: #333; line-height: 1.6; font-weight: 500;">
+                                            ${(() => {
+                                                // Handle different item formats
+                                                if (typeof order.items === 'string' && order.items && !order.items.includes('[object')) {
+                                                    return order.items;
+                                                } else if (Array.isArray(order.items)) {
+                                                    return order.items.map(item => `${item.quantity || 1}x ${item.name || item.itemName || 'Item'}`).join(', ');
+                                                } else if (Array.isArray(order.itemsArray)) {
+                                                    return order.itemsArray.map(item => `${item.quantity || 1}x ${item.name || item.itemName || 'Item'}`).join(', ');
+                                                } else {
+                                                    return 'No items listed';
+                                                }
+                                            })()}
+                                        </p>
+                                    </div>
+                                    
+                                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                        ${order.status === 'NEW' ? `
+                                            <button onclick="changeOrderStatus(${order.id}, 'READY')" 
+                                                    style="flex: 1; min-width: 120px; background: #2196F3; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s;"
+                                                    onmouseover="this.style.background='#1976D2'" 
+                                                    onmouseout="this.style.background='#2196F3'">
+                                                <i class="fas fa-check"></i> Mark Ready
+                                            </button>
+                                        ` : ''}
+                                        ${order.status === 'READY' ? `
+                                            <button onclick="changeOrderStatus(${order.id}, 'COMPLETE')" 
+                                                    style="flex: 1; min-width: 120px; background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s;"
+                                                    onmouseover="this.style.background='#45a049'" 
+                                                    onmouseout="this.style.background='#4CAF50'">
+                                                <i class="fas fa-check-double"></i> Mark Complete
+                                            </button>
+                                        ` : ''}
+                                        <button onclick="printOrderTicket(${order.id})" 
+                                                style="background: white; color: #666; border: 2px solid #ddd; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s;"
+                                                onmouseover="this.style.borderColor='#999'; this.style.color='#333'" 
+                                                onmouseout="this.style.borderColor='#ddd'; this.style.color='#666'">
+                                            <i class="fas fa-print"></i> Print
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+            }
+            
+            // Helper function to change order status
+            window.changeOrderStatus = function(orderId, newStatus) {
+                try {
+                    const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                    const orderIndex = centralOrders.findIndex(o => o.id === orderId);
+                    
+                    if (orderIndex !== -1) {
+                        centralOrders[orderIndex].status = newStatus;
+                        localStorage.setItem('canteen_orders', JSON.stringify(centralOrders));
+                        renderDashboard();
+                        showNotification(`Order #${orderId} marked as ${newStatus}`, 'success');
+                    }
+                } catch (error) {
+                    console.error('Error changing order status:', error);
+                    showNotification('Failed to update order status', 'error');
+                }
+            };
+            
+            // Helper function to print order ticket
+            window.printOrderTicket = function(orderId) {
+                const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                const order = centralOrders.find(o => o.id === orderId);
+                
+                if (order) {
+                    showNotification(`Printing ticket for Order #${orderId}...`, 'info');
+                    // In a real system, this would send to a printer
+                    console.log('Print Order:', order);
+                } else {
+                    showNotification('Order not found', 'error');
+                }
+            };
+
+            function renderMenuTable() {
+                const menu = CanteenDB.get('menu');
+                menuTableBody.innerHTML = menu.map(item => `
+                    <tr data-item-id="${item.id}">
+                        <td><input type="text" value="${item.category}"></td>
+                        <td><input type="text" class="item-name" value="${item.name}"></td>
+                        <td><input type="number" value="${item.price}"></td>
+                        <td>
+                            <button class="upload-btn">Add/Change Image</button>
+                            <span class="image-status">${item.imageStatus}</span>
+                        </td>
+                        <td><button class="save-btn" data-action="save">Save</button> <button class="delete-btn" data-action="delete">Delete</button></td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderUserTable(filter = '') {
+                const users = CanteenDB.get('users');
+                const orders = CanteenDB.get('orders');
+                const loginLog = JSON.parse(localStorage.getItem('loginLog')) || [];
+                const signupLog = JSON.parse(localStorage.getItem('signupLog')) || [];
+                
+                // Update user statistics
+                const realCustomers = users.filter(u => u.isRealCustomer).length;
+                const activeUsers = users.filter(u => {
+                    const userLogins = loginLog.filter(log => log.username === u.name || log.username === u.id);
+                    return userLogins.length > 0;
+                }).length;
+                
+                const today = new Date().toDateString();
+                const todaySignups = signupLog.filter(log => {
+                    const signupDate = new Date(log.timestamp).toDateString();
+                    return signupDate === today;
+                }).length;
+                
+                // Update stat cards
+                const realCustomersCountEl = document.getElementById('realCustomersCount');
+                const activeUsersCountEl = document.getElementById('activeUsersCount');
+                const todaySignupsCountEl = document.getElementById('todaySignupsCount');
+                
+                if (realCustomersCountEl) realCustomersCountEl.textContent = realCustomers;
+                if (activeUsersCountEl) activeUsersCountEl.textContent = activeUsers;
+                if (todaySignupsCountEl) todaySignupsCountEl.textContent = todaySignups;
+                
+                userTableBody.innerHTML = users
+                    .filter(user => user.name.toUpperCase().includes(filter.toUpperCase()) || user.id.toUpperCase().includes(filter.toUpperCase()))
+                    .map(user => {
+                        // Calculate user statistics - match by userId, userName, customer name, or user.name
+                        const userOrders = orders.filter(o => 
+                            o.userId === user.id || 
+                            o.userId === user.name ||
+                            o.userName === user.id ||
+                            o.userName === user.name ||
+                            o.customer === user.id ||
+                            o.customer === user.name
+                        );
+                        const totalOrders = userOrders.length;
+                        const totalSpent = userOrders.reduce((sum, o) => sum + (o.totalAmount || o.total || 0), 0);
+                        const lastOrderDate = userOrders.length > 0 
+                            ? new Date(Math.max(...userOrders.map(o => new Date(o.timestamp || Date.now())))).toLocaleDateString()
+                            : 'Never';
+                        
+                        // Calculate login statistics
+                        const userLogins = loginLog.filter(log => log.username === user.name || log.username === user.id);
+                        const totalLogins = userLogins.length;
+                        const lastLogin = userLogins.length > 0
+                            ? new Date(userLogins[userLogins.length - 1].timestamp).toLocaleString()
+                            : 'Never';
+                        
+                        // Get signup date
+                        const userSignup = signupLog.find(log => log.username === user.name || log.userId === user.id);
+                        const signupDate = userSignup 
+                            ? new Date(userSignup.timestamp).toLocaleDateString()
+                            : user.signupDate 
+                            ? new Date(user.signupDate).toLocaleDateString()
+                            : 'N/A';
+                        
+                        // Determine user status and type
+                        const isActive = userLogins.length > 0;
+                        const isRealCustomer = user.isRealCustomer || false;
+                        const statusBadge = isActive 
+                            ? '<span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em;">Active</span>'
+                            : '<span style="background: #6c757d; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em;">Inactive</span>';
+                        
+                        const customerTypeBadge = isRealCustomer 
+                            ? '<span style="background: #007bff; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; margin-left: 5px;">Real Customer</span>'
+                            : user.role === 'Customer' 
+                            ? '<span style="background: #ffc107; color: #212529; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; margin-left: 5px;">Test Customer</span>'
+                            : '';
+                        
+                        return `
+                        <tr data-user-id="${user.id}">
+                            <td>${user.id}</td>
+                            <td>
+                                <strong>${user.name}</strong> ${statusBadge}${customerTypeBadge}<br>
+                                <small style="color: #666;">Orders: ${totalOrders} | Spent: ₹${totalSpent.toFixed(2)}</small><br>
+                                <small style="color: #999;">Joined: ${signupDate}</small>
+                                ${lastOrderDate !== 'Never' ? `<br><small style="color: #999;">Last Order: ${lastOrderDate}</small>` : ''}
+                            </td>
+                            <td>${user.role}</td>
+                            <td>${user.balance === 0 ? 'N/A' : user.balance.toFixed(2)}</td>
+                            <td>
+                                <div style="font-size: 0.9em;">
+                                    <strong style="color: #007bff;">Logins: ${totalLogins}</strong><br>
+                                    <small style="color: #666;">Last Login:</small><br>
+                                    <small style="color: #999;">${lastLogin}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="small-action-btn recharge-btn" ${user.role === 'Canteen Staff' ? 'disabled' : ''}>Recharge</button> 
+                                <button class="small-action-btn reset-pin-btn">Reset PIN</button>
+                                <button class="small-action-btn edit-btn" style="background-color: var(--color-info);">Edit</button>
+                                <button class="small-action-btn view-orders-btn" style="background-color: #17a2b8;">View Orders</button>
+                            </td>
+                        </tr>
+                    `}).join('');
+            }
+
+
+            // ======================================================
+            // IV. ORDER FULFILLMENT LOGIC (Dashboard Click)
+            // ======================================================
+            if (dashboardOrderList) {
+                dashboardOrderList.addEventListener('click', (e) => {
+                    const orderItem = e.target.closest('.order-item');
+                    if (!orderItem) return;
+
+                    const orderId = parseInt(orderItem.getAttribute('data-order-id'));
+                    let currentStatus = orderItem.getAttribute('data-status');
+                    
+                    if (currentStatus === 'COMPLETE') {
+                        alert(`Order #${orderId} is already completed. No further action needed.`);
+                        return;
+                    }
+
+                    // Confirm state change
+                    const confirmAction = confirm(`Mark Order #${orderId} as COMPLETE?`);
+                    
+                    if (confirmAction) {
+                        let orders = CanteenDB.get('orders');
+                        let orderIndex = orders.findIndex(o => o.id === orderId);
+
+                        if (orderIndex > -1) {
+                            // Update status in the mock database
+                            orders[orderIndex].status = 'COMPLETE';
+                            CanteenDB.set('orders', orders);
+                            alert(`Order #${orderId} marked as COMPLETE.`);
+                            renderDashboard(); // Re-render the dashboard immediately
+                        }
+                    }
+                });
+            }
+
+
+            // ======================================================
+            // V. MENU & USER MANAGEMENT LOGIC (Persistence Handlers)
+            // ======================================================
+
+            // Menu Item Template Creator (Function defined earlier, used in Menu logic)
+            function createNewMenuItemRow(category = '', name = '', price = '') {
+                const newId = CanteenDB.getNextItemId();
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-item-id', newId);
+                newRow.classList.add('new-item');
+
+                newRow.innerHTML = `
+                    <td><input type="text" value="${category}"></td>
+                    <td><input type="text" class="item-name" value="${name}"></td>
+                    <td><input type="number" value="${price}"></td>
+                    <td><button class="upload-btn">Add/Change Image</button><span class="image-status">(No Image)</span></td>
+                    <td><button class="save-btn" data-action="save">Save</button> <button class="delete-btn" data-action="delete">Delete</button></td>
+                `;
+                return newRow;
+            }
+
+            // "Add New Item" Button Click Handler
+            if(addItemBtn) {
+                addItemBtn.addEventListener('click', () => {
+                    const newRow = createNewMenuItemRow('New Category', 'New Dish', '0');
+                    menuTableBody.prepend(newRow);
+                    showNotification('New menu item template added. Fill details and click Save to sync with user menu.', 'info');
+                    
+                    // Log admin activity
+                    logAdminActivity(localStorage.getItem('adminUser'), 'MENU_ADD_TEMPLATE', 'Added new menu item template');
+                });
+            }
+
+            // Delegation for Save, Delete, and Image Upload (Persistent)
+            if(menuTableBody) {
+                menuTableBody.addEventListener('click', (e) => {
+                    const target = e.target;
+                    const row = target.closest('tr');
+                    if (!row) return;
+
+                    const itemId = parseInt(row.getAttribute('data-item-id'));
+                    let menu = CanteenDB.get('menu');
+
+                    if (target.classList.contains('save-btn')) {
+                        const category = row.children[0].querySelector('input').value;
+                        const name = row.children[1].querySelector('input').value;
+                        const price = parseFloat(row.children[2].querySelector('input').value);
+                        const imageStatus = row.querySelector('.image-status').textContent;
+
+                        if (!category || !name || price <= 0 || isNaN(price)) {
+                            alert('Error: Please enter valid Category, Name, and Price (>0) to save.');
+                            return;
+                        }
+
+                        let itemIndex = menu.findIndex(item => item.id === itemId);
+
+                        if (itemIndex > -1) {
+                            // Update existing item
+                            menu[itemIndex] = { id: itemId, category, name, price, imageStatus };
+                        } else {
+                            // Add new item (using the temporary ID)
+                            menu.push({ id: CanteenDB.getNextItemId(), category, name, price, imageStatus });
+                        }
+
+                        CanteenDB.set('menu', menu);
+                        renderMenuTable();
+                        
+                        // Trigger menu update event for user-facing app
+                        window.dispatchEvent(new StorageEvent('storage', {
+                            key: 'GajananCMS_menu',
+                            newValue: JSON.stringify(menu)
+                        }));
+                        
+                        showNotification(`Item "${name}" saved and synced to user menu!`, 'success');
+                        
+                        // Log admin activity
+                        logAdminActivity(localStorage.getItem('adminUser'), 'MENU_UPDATE', `Updated menu item: ${name}`);
+                        
+                    } else if (target.classList.contains('delete-btn')) {
+                        if (confirm(`Are you sure you want to delete Item ID ${itemId}?`)) {
+                            menu = menu.filter(item => item.id !== itemId);
+                            CanteenDB.set('menu', menu);
+                            renderMenuTable();
+                            
+                            // Trigger menu update event for user-facing app
+                            window.dispatchEvent(new StorageEvent('storage', {
+                                key: 'GajananCMS_menu',
+                                newValue: JSON.stringify(menu)
+                            }));
+                            
+                            showNotification(`Item deleted and synced to user menu!`, 'success');
+                            
+                            // Log admin activity
+                            logAdminActivity(localStorage.getItem('adminUser'), 'MENU_DELETE', `Deleted menu item ID: ${itemId}`);
+                        }
+                    } else if (target.classList.contains('upload-btn')) {
+                        imageUploader.currentImageRow = row; 
+                        imageUploader.click(); 
+                    }
+                });
+            }
+
+            // Image Uploader Change Listener
+            if(imageUploader) {
+                imageUploader.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    const row = imageUploader.currentImageRow;
+                    
+                    if (file && row) {
+                        const statusSpan = row.querySelector('.image-status');
+                        if (statusSpan) {
+                            statusSpan.textContent = `(File: ${file.name.substring(0, 15)}...)`;
+                        }
+                        alert(`Image selected! Remember to click 'Save' on the row to update the image status.`);
+                    }
+                    imageUploader.value = ''; 
+                });
+            }
+            
+            // --- USER MANAGEMENT LOGIC (Search/Modal/Actions) ---
+
+            if (userSearch) {
+                userSearch.addEventListener('keyup', () => { renderUserTable(userSearch.value); });
+            }
+
+            if (openAddUserModal) {
+                openAddUserModal.addEventListener('click', () => {
+                    document.getElementById('modalTitle').textContent = 'Add New User';
+                    userForm.reset();
+                    userModal.style.display = "block";
+                });
+            }
+            if (modalCloseBtn) { modalCloseBtn.addEventListener('click', () => { userModal.style.display = "none"; }); }
+            window.addEventListener('click', (event) => { if (event.target === userModal) { userModal.style.display = "none"; } });
+
+            if (userForm) {
+                userForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('userName').value;
+                    const role = document.getElementById('userRole').value;
+                    const balance = parseFloat(document.getElementById('userBalance').value);
+                    const id = document.getElementById('userId').value.toUpperCase();
+
+                    let users = CanteenDB.get('users');
+                    
+                    if (users.some(u => u.id === id)) {
+                         alert('Error: User ID already exists.');
+                         return;
+                    }
+
+                    users.push({ id, name, role, balance });
+                    CanteenDB.set('users', users);
+
+                    alert(`User ${name} (ID: ${id}) added successfully!`);
+                    userModal.style.display = "none";
+                    renderUserTable(); 
+                });
+            }
+
+            // Function to show user orders in a modal
+            // Recharge Modal Function
+            function showRechargeModal(userId, userName, currentBalance) {
+                const modal = document.createElement('div');
+                modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 10000;';
+                
+                modal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 12px; width: 400px; max-width: 90vw;">
+                        <h3 style="margin: 0 0 20px 0; color: var(--color-primary);">💳 Recharge Account</h3>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <strong>User:</strong> ${userName}<br>
+                            <strong>Current Balance:</strong> ₹${currentBalance.toFixed(2)}
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Recharge Amount (₹)</label>
+                            <input type="number" id="rechargeAmount" placeholder="Enter amount" min="1" max="10000" 
+                                   style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px;">
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button onclick="this.closest('div').parentElement.remove()" 
+                                    style="padding: 10px 20px; border: 2px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+                            <button onclick="processRecharge('${userId}', '${userName}', ${currentBalance})" 
+                                    style="padding: 10px 20px; background: var(--color-success); color: white; border: none; border-radius: 6px; cursor: pointer;">Recharge</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                document.getElementById('rechargeAmount').focus();
+            }
+            
+            function processRecharge(userId, userName, currentBalance) {
+                const amount = parseFloat(document.getElementById('rechargeAmount').value);
+                
+                if (isNaN(amount) || amount <= 0) {
+                    showNotification('Please enter a valid amount greater than 0', 'error');
+                    return;
+                }
+                
+                let users = CanteenDB.get('users');
+                let userIndex = users.findIndex(u => u.id === userId);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].balance = currentBalance + amount;
+                    CanteenDB.set('users', users);
+                    
+                    // Log activity
+                    logAdminActivity(localStorage.getItem('adminUser'), 'USER_RECHARGE', `Recharged ${userName} with ₹${amount}`);
+                    
+                    showNotification(`Successfully recharged ₹${amount} to ${userName}. New balance: ₹${(currentBalance + amount).toFixed(2)}`, 'success');
+                    renderUserTable();
+                    
+                    // Close modal
+                    document.querySelector('div[style*="position: fixed"]').remove();
+                }
+            }
+            
+            // Reset PIN Modal Function
+            function showResetPinModal(userId, userName) {
+                const modal = document.createElement('div');
+                modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 10000;';
+                
+                modal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 12px; width: 400px; max-width: 90vw;">
+                        <h3 style="margin: 0 0 20px 0; color: var(--color-alert-warning);">🔐 Reset PIN/Password</h3>
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffeaa7;">
+                            <strong>⚠️ Warning:</strong> This will reset the PIN/Password for <strong>${userName}</strong>.<br>
+                            The user will need to set a new PIN on their next login.
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">New Temporary PIN</label>
+                            <input type="text" id="newPin" placeholder="Enter 4-digit PIN" maxlength="4" 
+                                   style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px;">
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button onclick="this.closest('div').parentElement.remove()" 
+                                    style="padding: 10px 20px; border: 2px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+                            <button onclick="processResetPin('${userId}', '${userName}')" 
+                                    style="padding: 10px 20px; background: var(--color-alert-warning); color: white; border: none; border-radius: 6px; cursor: pointer;">Reset PIN</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                document.getElementById('newPin').focus();
+            }
+            
+            function processResetPin(userId, userName) {
+                const newPin = document.getElementById('newPin').value;
+                
+                if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                    showNotification('Please enter a valid 4-digit PIN', 'error');
+                    return;
+                }
+                
+                // Log activity
+                logAdminActivity(localStorage.getItem('adminUser'), 'USER_PIN_RESET', `Reset PIN for ${userName}`);
+                
+                showNotification(`PIN reset successful for ${userName}. New PIN: ${newPin}`, 'success');
+                
+                // Close modal
+                document.querySelector('div[style*="position: fixed"]').remove();
+            }
+            
+            // Edit User Modal Function
+            function showEditUserModal(userId, userName) {
+                let users = CanteenDB.get('users');
+                let user = users.find(u => u.id === userId);
+                
+                if (!user) return;
+                
+                const modal = document.createElement('div');
+                modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 10000;';
+                
+                modal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 12px; width: 500px; max-width: 90vw;">
+                        <h3 style="margin: 0 0 20px 0; color: var(--color-info);">✏️ Edit User Details</h3>
+                        <div style="display: grid; gap: 15px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">User ID</label>
+                                <input type="text" value="${user.id}" disabled 
+                                       style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; background: #f5f5f5;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Name</label>
+                                <input type="text" id="editUserName" value="${user.name}" 
+                                       style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Role</label>
+                                <select id="editUserRole" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px;">
+                                    <option value="Employee" ${user.role === 'Employee' ? 'selected' : ''}>Employee</option>
+                                    <option value="Student" ${user.role === 'Student' ? 'selected' : ''}>Student</option>
+                                    <option value="Customer" ${user.role === 'Customer' ? 'selected' : ''}>Customer</option>
+                                    <option value="Canteen Staff" ${user.role === 'Canteen Staff' ? 'selected' : ''}>Canteen Staff</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Balance (₹)</label>
+                                <input type="number" id="editUserBalance" value="${user.balance}" step="0.01" 
+                                       style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px;">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button onclick="this.closest('div').parentElement.remove()" 
+                                    style="padding: 10px 20px; border: 2px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+                            <button onclick="processEditUser('${userId}')" 
+                                    style="padding: 10px 20px; background: var(--color-info); color: white; border: none; border-radius: 6px; cursor: pointer;">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                document.getElementById('editUserName').focus();
+            }
+            
+            function processEditUser(userId) {
+                const newName = document.getElementById('editUserName').value.trim();
+                const newRole = document.getElementById('editUserRole').value;
+                const newBalance = parseFloat(document.getElementById('editUserBalance').value);
+                
+                if (!newName) {
+                    showNotification('Please enter a valid name', 'error');
+                    return;
+                }
+                
+                if (isNaN(newBalance)) {
+                    showNotification('Please enter a valid balance', 'error');
+                    return;
+                }
+                
+                let users = CanteenDB.get('users');
+                let userIndex = users.findIndex(u => u.id === userId);
+                
+                if (userIndex !== -1) {
+                    const oldData = {...users[userIndex]};
+                    users[userIndex].name = newName;
+                    users[userIndex].role = newRole;
+                    users[userIndex].balance = newBalance;
+                    
+                    CanteenDB.set('users', users);
+                    
+                    // Log activity
+                    logAdminActivity(localStorage.getItem('adminUser'), 'USER_EDIT', `Updated user ${oldData.name} -> ${newName}, Role: ${newRole}, Balance: ₹${newBalance}`);
+                    
+                    showNotification(`User details updated successfully for ${newName}`, 'success');
+                    renderUserTable();
+                    
+                    // Close modal
+                    document.querySelector('div[style*="position: fixed"]').remove();
+                }
+            }
+
+            function showUserOrders(userId, userName) {
+                const orders = CanteenDB.get('orders');
+                // Match orders by userId, userName, or customer field (handle different field names)
+                const userOrders = orders.filter(o => 
+                    o.userId === userId || 
+                    o.userId === userName ||
+                    o.userName === userId ||
+                    o.userName === userName ||
+                    o.customer === userId ||
+                    o.customer === userName
+                ).sort((a, b) => b.id - a.id);
+                
+                if (userOrders.length === 0) {
+                    alert(`${userName} has no orders yet.`);
+                    return;
+                }
+                
+                const totalSpent = userOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+                const completedOrders = userOrders.filter(o => o.status === 'COMPLETE').length;
+                
+                let ordersHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                        <h2 style="margin-top: 0; color: var(--color-primary);">📋 Orders for ${userName}</h2>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <strong>User ID:</strong> ${userId}<br>
+                            <strong>Total Orders:</strong> ${userOrders.length}<br>
+                            <strong>Completed Orders:</strong> ${completedOrders}<br>
+                            <strong>Total Spent:</strong> ₹${totalSpent.toFixed(2)}
+                        </div>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--color-primary); color: white;">
+                                    <th style="padding: 12px; text-align: left;">Order #</th>
+                                    <th style="padding: 12px; text-align: left;">Date</th>
+                                    <th style="padding: 12px; text-align: left;">Items</th>
+                                    <th style="padding: 12px; text-align: left;">Table</th>
+                                    <th style="padding: 12px; text-align: right;">Amount</th>
+                                    <th style="padding: 12px; text-align: center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                userOrders.forEach(order => {
+                    const orderDate = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
+                    const statusColor = order.status === 'COMPLETE' ? '#28a745' : 
+                                       order.status === 'READY' ? '#ffc107' : '#dc3545';
+                    
+                    // Format items properly
+                    let itemsDisplay = order.items || 'No items';
+                    if (typeof itemsDisplay !== 'string' && Array.isArray(order.items)) {
+                        itemsDisplay = order.items.map(item => `${item.quantity || 1}x ${item.name || 'Item'}`).join(', ');
+                    } else if (Array.isArray(order.itemsArray)) {
+                        itemsDisplay = order.itemsArray.map(item => `${item.quantity || 1}x ${item.name || 'Item'}`).join(', ');
+                    }
+                    
+                    ordersHTML += `
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 12px;"><strong>${order.order_number || '#' + order.id}</strong></td>
+                            <td style="padding: 12px;">${orderDate}</td>
+                            <td style="padding: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${itemsDisplay}</td>
+                            <td style="padding: 12px;">${order.tableNumber || order.table_number || 'N/A'}</td>
+                            <td style="padding: 12px; text-align: right;"><strong>₹${(order.totalAmount || order.total || 0).toFixed(2)}</strong></td>
+                            <td style="padding: 12px; text-align: center;">
+                                <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em;">
+                                    ${order.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                ordersHTML += `
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 20px; text-align: right;">
+                            <button onclick="this.closest('div').parentElement.remove(); document.getElementById('userOrdersOverlay').remove();" 
+                                    style="background: var(--color-primary); color: white; border: none; padding: 10px 30px; border-radius: 5px; cursor: pointer; font-size: 1em;">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Create overlay
+                const overlay = document.createElement('div');
+                overlay.id = 'userOrdersOverlay';
+                overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 10000;';
+                overlay.innerHTML = ordersHTML;
+                
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.remove();
+                    }
+                });
+                
+                document.body.appendChild(overlay);
+            }
+
+            if (userTableBody) {
+                userTableBody.addEventListener('click', (e) => {
+                    const target = e.target;
+                    const row = target.closest('tr');
+                    if (!row || !target.classList.contains('small-action-btn')) return;
+
+                    const userId = row.getAttribute('data-user-id');
+                    let users = CanteenDB.get('users');
+                    let userIndex = users.findIndex(u => u.id === userId);
+                    if (userIndex === -1) return; 
+                    
+                    const userName = users[userIndex].name;
+                    let currentBalance = users[userIndex].balance;
+
+                    if (target.classList.contains('recharge-btn')) {
+                        showRechargeModal(userId, userName, currentBalance);
+                    } else if (target.classList.contains('reset-pin-btn')) {
+                        showResetPinModal(userId, userName);
+                    } else if (target.classList.contains('edit-btn')) {
+                        showEditUserModal(userId, userName);
+                    } else if (target.classList.contains('view-orders-btn')) {
+                        showUserOrders(userId, userName);
+                    }
+                });
+            }
+            
+            // --- SYNC REAL CUSTOMER DATA ---
+            function syncCustomerData() {
+                const signupLog = JSON.parse(localStorage.getItem('signupLog')) || [];
+                const loginLog = JSON.parse(localStorage.getItem('loginLog')) || [];
+                const currentUsers = CanteenDB.get('users');
+                
+                // Get unique users from signup log
+                const realCustomers = [];
+                const processedUsernames = new Set();
+                
+                signupLog.forEach(signup => {
+                    if (!processedUsernames.has(signup.username)) {
+                        processedUsernames.add(signup.username);
+                        
+                        // Check if user already exists in current users
+                        const existingUser = currentUsers.find(u => u.name === signup.username || u.id === signup.userId);
+                        
+                        if (!existingUser) {
+                            realCustomers.push({
+                                id: signup.userId || CanteenDB.getNextUserId(),
+                                name: signup.username,
+                                role: 'Customer',
+                                balance: 0.00,
+                                signupDate: signup.timestamp,
+                                isRealCustomer: true
+                            });
+                        }
+                    }
+                });
+                
+                // Add real customers to user database
+                if (realCustomers.length > 0) {
+                    const updatedUsers = [...currentUsers, ...realCustomers];
+                    CanteenDB.set('users', updatedUsers);
+                    
+                    showNotification(`Synced ${realCustomers.length} real customers from signup data!`, 'success');
+                    renderUserTable();
+                    renderDashboard();
+                } else {
+                    showNotification('No new customer data to sync.', 'info');
+                }
+                
+                // Log the sync activity
+                logAdminActivity(localStorage.getItem('adminUser'), 'DATA_SYNC', `Synced ${realCustomers.length} real customers`);
+            }
+            
+            // Auto-sync customer data on dashboard load
+            function autoSyncCustomerData() {
+                const signupLog = JSON.parse(localStorage.getItem('signupLog')) || [];
+                const currentUsers = CanteenDB.get('users');
+                
+                // Check for new signups since last sync
+                const lastSyncTime = localStorage.getItem('lastCustomerSync') || '2024-01-01';
+                const newSignups = signupLog.filter(signup => 
+                    new Date(signup.timestamp) > new Date(lastSyncTime)
+                );
+                
+                if (newSignups.length > 0) {
+                    console.log(`Found ${newSignups.length} new customer signups, auto-syncing...`);
+                    syncCustomerData();
+                    localStorage.setItem('lastCustomerSync', new Date().toISOString());
+                }
+            }
+            
+            if (syncCustomerDataBtn) {
+                syncCustomerDataBtn.addEventListener('click', () => {
+                    syncCustomerData();
+                    localStorage.setItem('lastCustomerSync', new Date().toISOString());
+                });
+            }
+            
+            if (refreshDashboardBtn) {
+                refreshDashboardBtn.addEventListener('click', () => {
+                    autoSyncCustomerData();
+                    renderDashboard();
+                    renderUserTable();
+                    showNotification('Dashboard refreshed with latest data!', 'success');
+                });
+            }
+            
+            // Auto-sync on page load
+            autoSyncCustomerData();
+
+            // --- RESET DATA BUTTON ---
+            if (resetDataBtn) {
+                resetDataBtn.addEventListener('click', () => {
+                    if (confirm("WARNING: Are you sure you want to reset ALL Canteen Data? This cannot be undone.")) {
+                        CanteenDB.resetAll();
+                        alert("Database reset successful! The application will now reload with initial mock data.");
+                        window.location.reload();
+                    }
+                });
+            }
+
+            // --- REAL-TIME ACTIVITY LOG ---
+            function renderActivityLog() {
+                const activityLogBody = document.getElementById('activityLogBody');
+                if (!activityLogBody) return;
+
+                const loginLog = JSON.parse(localStorage.getItem('loginLog')) || [];
+                const signupLog = JSON.parse(localStorage.getItem('signupLog')) || [];
+                const orders = CanteenDB.get('orders');
+                
+                // Combine all activities
+                const activities = [
+                    ...loginLog.map(log => ({ ...log, type: 'LOGIN', icon: '🔑', color: '#28a745' })),
+                    ...signupLog.map(log => ({ ...log, type: 'SIGNUP', icon: '👤', color: '#007bff' })),
+                    ...orders.slice(0, 10).map(order => ({
+                        username: order.userId,
+                        timestamp: order.timestamp,
+                        type: 'ORDER',
+                        icon: '🛒',
+                        color: '#ffc107',
+                        orderId: order.id,
+                        amount: order.totalAmount
+                    }))
+                ];
+
+                // Sort by timestamp (newest first)
+                activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                if (activities.length === 0) {
+                    activityLogBody.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No activity yet...</p>';
+                    return;
+                }
+
+                activityLogBody.innerHTML = activities.slice(0, 20).map(activity => {
+                    const time = new Date(activity.timestamp).toLocaleString();
+                    let message = '';
+                    
+                    if (activity.type === 'LOGIN') {
+                        message = `<strong>${activity.username}</strong> logged in`;
+                    } else if (activity.type === 'SIGNUP') {
+                        message = `<strong>${activity.username}</strong> signed up (ID: ${activity.userId})`;
+                    } else if (activity.type === 'ORDER') {
+                        message = `<strong>${activity.username}</strong> placed Order #${activity.orderId} (₹${activity.amount?.toFixed(2) || '0.00'})`;
+                    }
+                    
+                    return `
+                        <div style="padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
+                            <span style="font-size: 1.5em;">${activity.icon}</span>
+                            <div style="flex: 1;">
+                                <div style="color: ${activity.color}; font-weight: 600;">${message}</div>
+                                <small style="color: #999;">${time}</small>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Listen for storage changes (real-time updates)
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'loginLog' || e.key === 'signupLog' || e.key === 'canteen_orders' || e.key === 'canteen_users') {
+                    console.log('🔔 Real-time update detected:', e.key);
+                    renderActivityLog();
+                    renderDashboard();
+                    renderUserTable();
+                }
+            });
+
+            // Custom event listener for same-window updates
+            window.addEventListener('orderUpdated', () => {
+                console.log('🔔 Order updated event received');
+                renderActivityLog();
+                renderDashboard();
+            });
+
+            // Poll for updates every 3 seconds (fallback) - includes financials
+            setInterval(() => {
+                renderActivityLog();
+                renderFinancials();
+                renderDashboard();
+            }, 3000);
+
+            // Initial render
+            renderActivityLog();
+
+            // --- FINANCIALS & REPORTS ---
+            function renderFinancials() {
+                const orders = CanteenDB.get('orders');
+                const menu = CanteenDB.get('menu');
+                
+                // Calculate today's sales
+                const today = new Date().toDateString();
+                const todayOrders = orders.filter(o => {
+                    const orderDate = o.timestamp ? new Date(o.timestamp).toDateString() : today;
+                    return orderDate === today;
+                });
+                
+                const todaySales = todayOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+                const todayCount = todayOrders.length;
+                
+                // Calculate total revenue
+                const totalRevenue = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+                const totalCount = orders.length;
+                
+                // Calculate average order value
+                const avgValue = totalCount > 0 ? totalRevenue / totalCount : 0;
+                
+                // Update UI
+                document.getElementById('todaySales').textContent = `₹ ${todaySales.toFixed(2)}`;
+                document.getElementById('todayOrderCount').textContent = `${todayCount} orders today`;
+                document.getElementById('totalRevenue').textContent = `₹ ${totalRevenue.toFixed(2)}`;
+                document.getElementById('totalOrderCount').textContent = `${totalCount} total orders`;
+                document.getElementById('avgOrderValue').textContent = `₹ ${avgValue.toFixed(2)}`;
+                
+                // Render category breakdown
+                renderCategoryBreakdown(orders, menu);
+                
+                // Render top selling items
+                renderTopItems(orders, menu);
+            }
+
+            function renderCategoryBreakdown(orders, menu) {
+                const categoryBreakdown = document.getElementById('categoryBreakdown');
+                if (!categoryBreakdown) return;
+                
+                // Get unique categories from menu
+                const categories = [...new Set(menu.map(item => item.category))];
+                
+                // Calculate sales by category
+                const categorySales = {};
+                categories.forEach(cat => {
+                    categorySales[cat] = { sales: 0, orders: 0 };
+                });
+                
+                orders.forEach(order => {
+                    // Handle both array and string formats
+                    let orderItems = order.items;
+                    
+                    if (Array.isArray(orderItems)) {
+                        // Items is an array of {name, price, quantity}
+                        orderItems.forEach(item => {
+                            const menuItem = menu.find(m => m.name === item.name);
+                            if (menuItem && categorySales[menuItem.category]) {
+                                categorySales[menuItem.category].orders += item.quantity || 1;
+                                categorySales[menuItem.category].sales += (item.price * (item.quantity || 1));
+                            }
+                        });
+                    } else if (typeof orderItems === 'string') {
+                        // Fallback for string format
+                        menu.forEach(menuItem => {
+                            if (orderItems.includes(menuItem.name)) {
+                                const category = menuItem.category;
+                                if (categorySales[category]) {
+                                    categorySales[category].orders += 1;
+                                    categorySales[category].sales += menuItem.price;
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // Render category cards
+                categoryBreakdown.innerHTML = categories.map(cat => {
+                    const data = categorySales[cat];
+                    return `
+                        <div class="feature-box" style="border-left: 5px solid var(--color-primary);">
+                            <h4>${cat}</h4>
+                            <p style="font-size: 1.5em; color: var(--color-primary); margin: 5px 0;">₹ ${data.sales.toFixed(2)}</p>
+                            <small>${data.orders} items sold</small>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function renderTopItems(orders, menu) {
+                const topItemsBody = document.getElementById('topItemsBody');
+                if (!topItemsBody) return;
+                
+                // Count item occurrences
+                const itemStats = {};
+                
+                orders.forEach(order => {
+                    let orderItems = order.items;
+                    
+                    if (Array.isArray(orderItems)) {
+                        // Items is an array of {name, price, quantity}
+                        orderItems.forEach(item => {
+                            const menuItem = menu.find(m => m.name === item.name);
+                            if (menuItem) {
+                                if (!itemStats[item.name]) {
+                                    itemStats[item.name] = {
+                                        name: item.name,
+                                        category: menuItem.category,
+                                        price: item.price,
+                                        count: 0,
+                                        revenue: 0
+                                    };
+                                }
+                                itemStats[item.name].count += item.quantity || 1;
+                                itemStats[item.name].revenue += (item.price * (item.quantity || 1));
+                            }
+                        });
+                    } else if (typeof orderItems === 'string') {
+                        // Fallback for string format
+                        menu.forEach(menuItem => {
+                            if (orderItems.includes(menuItem.name)) {
+                                if (!itemStats[menuItem.name]) {
+                                    itemStats[menuItem.name] = {
+                                        name: menuItem.name,
+                                        category: menuItem.category,
+                                        price: menuItem.price,
+                                        count: 0,
+                                        revenue: 0
+                                    };
+                                }
+                                itemStats[menuItem.name].count += 1;
+                                itemStats[menuItem.name].revenue += menuItem.price;
+                            }
+                        });
+                    }
+                });
+                
+                // Sort by count and get top 10
+                const topItems = Object.values(itemStats)
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 10);
+                
+                if (topItems.length === 0) {
+                    topItemsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No sales data available</td></tr>';
+                    return;
+                }
+                
+                topItemsBody.innerHTML = topItems.map((item, index) => `
+                    <tr>
+                        <td><strong>#${index + 1}</strong></td>
+                        <td>${item.name}</td>
+                        <td>${item.category}</td>
+                        <td>${item.count}</td>
+                        <td><strong>₹ ${item.revenue.toFixed(2)}</strong></td>
+                    </tr>
+                `).join('');
+            }
+
+            // Generate Report Button
+            const generateReportBtn = document.getElementById('generateReportBtn');
+            if (generateReportBtn) {
+                generateReportBtn.addEventListener('click', () => {
+                    const startDate = document.getElementById('start-date').value;
+                    const endDate = document.getElementById('end-date').value;
+                    
+                    if (!startDate || !endDate) {
+                        alert('Please select both start and end dates.');
+                        return;
+                    }
+                    
+                    const orders = CanteenDB.get('orders');
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    end.setHours(23, 59, 59, 999); // Include full end date
+                    
+                    // Filter orders by date range
+                    const filteredOrders = orders.filter(o => {
+                        const orderDate = o.timestamp ? new Date(o.timestamp) : new Date();
+                        return orderDate >= start && orderDate <= end;
+                    });
+                    
+                    const totalSales = filteredOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+                    const totalOrders = filteredOrders.length;
+                    const completedOrders = filteredOrders.filter(o => o.status === 'COMPLETE').length;
+                    const avgOrder = totalOrders > 0 ? totalSales / totalOrders : 0;
+                    const estimatedProfit = totalSales * 0.30; // 30% profit margin
+                    
+                    // Update report UI
+                    document.getElementById('reportSales').textContent = `₹ ${totalSales.toFixed(2)}`;
+                    document.getElementById('reportOrders').textContent = totalOrders;
+                    document.getElementById('reportCompleted').textContent = completedOrders;
+                    document.getElementById('reportAvg').textContent = `₹ ${avgOrder.toFixed(2)}`;
+                    document.getElementById('reportProfit').textContent = `₹ ${estimatedProfit.toFixed(2)}`;
+                    
+                    document.getElementById('financialReport').style.display = 'block';
+                });
+            }
+
+            // Initial render of financials
+            renderFinancials();
+
+            // Update financials when orders change
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'canteen_orders') {
+                    renderFinancials();
+                }
+            });
+
+            window.addEventListener('orderUpdated', () => {
+                renderFinancials();
+            });
+
+            // --- AI FORECASTING ---
+            function renderAIForecasting() {
+                const orders = CanteenDB.get('orders');
+                const menu = CanteenDB.get('menu');
+                
+                if (orders.length === 0) {
+                    document.getElementById('todayAnalysis').textContent = 'No order data available yet.';
+                    document.getElementById('forecastPrediction').textContent = 'Not enough data to generate predictions. Place some orders first!';
+                    return;
+                }
+                
+                // Analyze today's orders
+                const today = new Date().toDateString();
+                const todayOrders = orders.filter(o => {
+                    const orderDate = o.timestamp ? new Date(o.timestamp).toDateString() : today;
+                    return orderDate === today;
+                });
+                
+                document.getElementById('todayAnalysis').textContent = 
+                    `${todayOrders.length} orders placed today. Analyzing patterns for tomorrow's forecast.`;
+                
+                // Count item occurrences across all orders
+                const itemStats = {};
+                
+                orders.forEach(order => {
+                    const itemsText = order.items || '';
+                    menu.forEach(menuItem => {
+                        if (itemsText.includes(menuItem.name)) {
+                            if (!itemStats[menuItem.name]) {
+                                itemStats[menuItem.name] = {
+                                    name: menuItem.name,
+                                    category: menuItem.category,
+                                    price: menuItem.price,
+                                    count: 0,
+                                    dates: []
+                                };
+                            }
+                            itemStats[menuItem.name].count += 1;
+                            const orderDate = order.timestamp ? new Date(order.timestamp).toDateString() : today;
+                            if (!itemStats[menuItem.name].dates.includes(orderDate)) {
+                                itemStats[menuItem.name].dates.push(orderDate);
+                            }
+                        }
+                    });
+                });
+                
+                // Calculate daily averages and predictions
+                const itemsArray = Object.values(itemStats);
+                itemsArray.forEach(item => {
+                    const uniqueDays = item.dates.length || 1;
+                    item.avgDaily = item.count / uniqueDays;
+                    // Predict 10% increase for tomorrow (simple forecasting)
+                    item.predicted = Math.ceil(item.avgDaily * 1.1);
+                });
+                
+                // Sort by total count
+                itemsArray.sort((a, b) => b.count - a.count);
+                
+                // Generate top 5 predictions for display
+                const top5 = itemsArray.slice(0, 5);
+                
+                if (top5.length > 0) {
+                    const predictionText = top5.map((item, index) => 
+                        `<strong>${index + 1}. ${item.name}:</strong> ~${item.predicted} units (Avg: ${item.avgDaily.toFixed(1)}/day)`
+                    ).join('<br>');
+                    
+                    document.getElementById('forecastPrediction').innerHTML = predictionText;
+                } else {
+                    document.getElementById('forecastPrediction').textContent = 'Not enough data to generate predictions.';
+                }
+                
+                // Render forecast table
+                const forecastBody = document.getElementById('forecastTopItemsBody');
+                if (forecastBody && itemsArray.length > 0) {
+                    forecastBody.innerHTML = itemsArray.slice(0, 10).map(item => `
+                        <tr>
+                            <td><strong>${item.name}</strong></td>
+                            <td>${item.category}</td>
+                            <td>${item.avgDaily.toFixed(1)}</td>
+                            <td>${item.count}</td>
+                            <td style="color: var(--color-secondary); font-weight: bold; font-size: 1.1em;">
+                                ${item.predicted} units
+                            </td>
+                        </tr>
+                    `).join('');
+                } else if (forecastBody) {
+                    forecastBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No sales data available</td></tr>';
+                }
+            }
+
+            // Send Prediction Button
+            const sendPredictionBtn = document.getElementById('sendPredictionBtn');
+            if (sendPredictionBtn) {
+                sendPredictionBtn.addEventListener('click', () => {
+                    const orders = CanteenDB.get('orders');
+                    if (orders.length === 0) {
+                        alert('No order data available to send predictions.');
+                        return;
+                    }
+                    
+                    alert('✅ Prediction sent to Chef!\n\nThe chef has been notified about tomorrow\'s predicted demand for top-selling items.');
+                });
+            }
+
+            // Initial render of AI forecasting
+            renderAIForecasting();
+
+            // Update forecasting when orders change
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'canteen_orders') {
+                    renderAIForecasting();
+                }
+            });
+
+            window.addEventListener('orderUpdated', () => {
+                renderAIForecasting();
+            });
+
+            // --- BACK TO APP BUTTON ---
+            const backToAppBtn = document.getElementById('back-to-app-btn');
+            if (backToAppBtn) {
+                backToAppBtn.addEventListener('click', () => {
+                    window.location.href = 'c3.html';
+                });
+            }
+
+            // --- ADMIN LOGOUT BUTTON ---
+            const adminLogoutBtn = document.getElementById('admin-logout-btn');
+            if (adminLogoutBtn) {
+                adminLogoutBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to logout from admin portal?')) {
+                        const adminUser = localStorage.getItem('adminUser');
+                        
+                        // Log logout activity
+                        logAdminActivity(adminUser, 'LOGOUT', 'Admin logged out from portal');
+                        
+                        // Clear all admin session data
+                        localStorage.removeItem('adminAuthenticated');
+                        localStorage.removeItem('adminUser');
+                        localStorage.removeItem('adminSessionToken');
+                        localStorage.removeItem('adminLoginTime');
+                        localStorage.removeItem('adminRole');
+                        
+                        alert('Logged out successfully!');
+                        window.location.href = 'c3.html';
+                    }
+                });
+            }
+            
+            // Session management functions
+            function logAdminActivity(username, action, description) {
+                const adminLog = JSON.parse(localStorage.getItem('adminActivityLog')) || [];
+                adminLog.push({
+                    username: username,
+                    action: action,
+                    description: description,
+                    timestamp: new Date().toISOString(),
+                    ip: 'localhost',
+                    userAgent: navigator.userAgent,
+                    sessionId: localStorage.getItem('adminSessionToken')
+                });
+                
+                // Keep only last 100 entries
+                if (adminLog.length > 100) {
+                    adminLog.splice(0, adminLog.length - 100);
+                }
+                
+                localStorage.setItem('adminActivityLog', JSON.stringify(adminLog));
+            }
+            
+            // Auto-refresh session activity
+            function updateSessionInfo() {
+                const loginTime = localStorage.getItem('adminLoginTime');
+                if (loginTime) {
+                    const elapsed = Date.now() - new Date(loginTime).getTime();
+                    const sessionTimeout = 2 * 60 * 60 * 1000; // 2 hours
+                    const remaining = sessionTimeout - elapsed;
+                    
+                    if (remaining > 0) {
+                        const remainingMinutes = Math.ceil(remaining / (60 * 1000));
+                        const sessionInfo = document.querySelector('.session-info');
+                        if (sessionInfo) {
+                            sessionInfo.textContent = `Session expires in ${remainingMinutes} minutes`;
+                        }
+                    }
+                }
+            }
+            
+            // Update session info every minute
+            setInterval(updateSessionInfo, 60000);
+            
+            // Additional refresh functionality is already handled above
+            
+            const initializeDataBtn = document.getElementById('initializeDataBtn');
+            if (initializeDataBtn) {
+                initializeDataBtn.addEventListener('click', () => {
+                    if (confirm('This will create sample data for testing. Continue?')) {
+                        // Initialize sample menu data
+                        const sampleMenu = [
+                            { id: 1, category: 'Tea, Coffee & Milk', name: 'Tea', price: 10, imageStatus: 'Available' },
+                            { id: 2, category: 'Tea, Coffee & Milk', name: 'Coffee', price: 15, imageStatus: 'Available' },
+                            { id: 3, category: 'Snacks', name: 'Samosa', price: 12, imageStatus: 'Available' },
+                            { id: 4, category: 'Snacks', name: 'Vada Pav', price: 15, imageStatus: 'Available' }
+                        ];
+                        
+                        // Initialize sample users
+                        const sampleUsers = [
+                            { id: 'STU001', name: 'John Doe', role: 'Student', balance: 100 },
+                            { id: 'EMP001', name: 'Jane Smith', role: 'Employee', balance: 200 }
+                        ];
+                        
+                        // Initialize sample orders
+                        const sampleOrders = [
+                            { 
+                                id: 1, 
+                                userId: 'STU001', 
+                                items: 'Tea x2, Samosa x1', 
+                                totalAmount: 32, 
+                                status: 'NEW',
+                                timestamp: new Date().toISOString(),
+                                tableNumber: 5
+                            }
+                        ];
+                        
+                        CanteenDB.set('menu', sampleMenu);
+                        CanteenDB.set('users', sampleUsers);
+                        CanteenDB.set('orders', sampleOrders);
+                        
+                        renderDashboard();
+                        renderMenuTable();
+                        renderUserTable();
+                        
+                        showNotification('Sample data initialized successfully!', 'success');
+                    }
+                });
+            }
+            
+            // Add session info to header
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) {
+                const sessionInfo = document.createElement('small');
+                sessionInfo.className = 'session-info';
+                sessionInfo.style.cssText = 'display: block; color: #666; font-size: 11px; margin-top: 2px;';
+                userProfile.insertBefore(sessionInfo, userProfile.querySelector('.logout-btn'));
+                updateSessionInfo();
+            }
+
+            // ========================================
+            // REAL-TIME ORDER MANAGEMENT AUTO-REFRESH
+            // ========================================
+            let autoRefreshInterval = null;
+            let lastUpdateTime = new Date();
+            
+            // Create last update indicator
+            const orderManagementSection = document.getElementById('order-management');
+            if (orderManagementSection) {
+                const updateIndicator = document.createElement('div');
+                updateIndicator.id = 'lastUpdateIndicator';
+                updateIndicator.style.cssText = 'text-align: center; margin: 15px 0; padding: 10px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; font-size: 14px; color: #4CAF50;';
+                updateIndicator.innerHTML = '🔄 Auto-refresh enabled - Last updated: Just now';
+                
+                const firstFeatureBox = orderManagementSection.querySelector('.feature-box-container');
+                if (firstFeatureBox) {
+                    firstFeatureBox.parentNode.insertBefore(updateIndicator, firstFeatureBox);
+                }
+            }
+            
+            // Function to update the last update time display
+            function updateLastUpdateTime() {
+                const indicator = document.getElementById('lastUpdateIndicator');
+                if (indicator) {
+                    const now = new Date();
+                    const secondsAgo = Math.floor((now - lastUpdateTime) / 1000);
+                    
+                    let timeText = 'Just now';
+                    if (secondsAgo > 0) {
+                        timeText = secondsAgo < 60 ? `${secondsAgo} seconds ago` : `${Math.floor(secondsAgo / 60)} minutes ago`;
+                    }
+                    
+                    indicator.innerHTML = `🔄 Auto-refresh enabled - Last updated: ${timeText}`;
+                }
+            }
+            
+            // Function to perform auto-refresh
+            function performAutoRefresh() {
+                // Only refresh if we're on the order management tab
+                const orderManagementTab = document.getElementById('order-management');
+                const isDashboardActive = document.querySelector('.tab-link[data-tab="dashboard"]').classList.contains('active');
+                const isOrderManagementActive = document.querySelector('.tab-link[data-tab="order-management"]').classList.contains('active');
+                
+                if (isDashboardActive || isOrderManagementActive) {
+                    console.log('🔄 Auto-refreshing order data...');
+                    renderDashboard();
+                    lastUpdateTime = new Date();
+                    updateLastUpdateTime();
+                }
+            }
+            
+            // Start auto-refresh (every 5 seconds)
+            function startAutoRefresh() {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                }
+                
+                // Refresh every 5 seconds
+                autoRefreshInterval = setInterval(performAutoRefresh, 5000);
+                
+                // Also update the "time ago" display every second
+                setInterval(updateLastUpdateTime, 1000);
+                
+                console.log('✅ Auto-refresh started - Orders will update every 5 seconds');
+            }
+            
+            // Stop auto-refresh
+            function stopAutoRefresh() {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                    console.log('⏹️ Auto-refresh stopped');
+                }
+            }
+            
+            // Start auto-refresh immediately
+            startAutoRefresh();
+            
+            // Update refresh button to show status (extend existing event listener)
+            setTimeout(() => {
+                const refreshBtn = document.getElementById('refreshOrdersBtn');
+                if (refreshBtn) {
+                    // Add additional click handler for auto-refresh update
+                    refreshBtn.addEventListener('click', () => {
+                        lastUpdateTime = new Date();
+                        updateLastUpdateTime();
+                    });
+                }
+            }, 100);
+            
+            // Add toggle button for auto-refresh
+            const orderManagementSection2 = document.getElementById('order-management');
+            if (orderManagementSection2) {
+                const controlsDiv = orderManagementSection2.querySelector('.feature-box-container');
+                if (controlsDiv) {
+                    const toggleBtn = document.createElement('button');
+                    toggleBtn.id = 'toggleAutoRefresh';
+                    toggleBtn.className = 'refresh-btn';
+                    toggleBtn.style.cssText = 'background: #4CAF50; margin-left: 10px;';
+                    toggleBtn.innerHTML = '⏸️ Pause Auto-Refresh';
+                    
+                    let isPaused = false;
+                    toggleBtn.addEventListener('click', () => {
+                        isPaused = !isPaused;
+                        if (isPaused) {
+                            stopAutoRefresh();
+                            toggleBtn.innerHTML = '▶️ Resume Auto-Refresh';
+                            toggleBtn.style.background = '#FF9800';
+                            
+                            const indicator = document.getElementById('lastUpdateIndicator');
+                            if (indicator) {
+                                indicator.style.background = 'rgba(255, 152, 0, 0.1)';
+                                indicator.style.color = '#FF9800';
+                                indicator.innerHTML = '⏸️ Auto-refresh paused - Click to manually refresh';
+                            }
+                        } else {
+                            startAutoRefresh();
+                            toggleBtn.innerHTML = '⏸️ Pause Auto-Refresh';
+                            toggleBtn.style.background = '#4CAF50';
+                            
+                            const indicator = document.getElementById('lastUpdateIndicator');
+                            if (indicator) {
+                                indicator.style.background = 'rgba(76, 175, 80, 0.1)';
+                                indicator.style.color = '#4CAF50';
+                            }
+                        }
+                    });
+                    
+                    const printBtn = document.getElementById('printKitchenTicketsBtn');
+                    if (printBtn && printBtn.parentNode) {
+                        printBtn.parentNode.insertBefore(toggleBtn, printBtn.nextSibling);
+                    }
+                }
+            }
+            
+            // Play notification sound for new orders (optional)
+            function checkForNewOrders() {
+                const currentOrders = CanteenDB.get('orders');
+                const newOrdersCount = currentOrders.filter(o => o.status === 'NEW').length;
+                
+                // Store in sessionStorage to track changes
+                const prevCount = parseInt(sessionStorage.getItem('prevNewOrdersCount') || '0');
+                
+                if (newOrdersCount > prevCount) {
+                    console.log('🔔 New order detected!');
+                    showNotification(`${newOrdersCount - prevCount} new order(s) received!`, 'success');
+                    
+                    // Optional: Play sound (uncomment if needed)
+                    // const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ4OVKzo8KZYEQ1BnODxwmsiCCuBy/LZiTYHHGm98eeXUR0OWK/k7bRiFQ9HpN7vs5BTDxhgvO7mnlUQEFWy6PKsbR4TUKjh7bJZERBMquLwtV8dElSr5O+zYBQSWLDl67RcGBJRpuHyr2QXE1Gs4u+0YBUTVq3l76xXFhNRqOPwuGMYFFGs4+6zZBkXV7Dl8bJeFxVVreXvsF0XFF');
+                }
+                
+                sessionStorage.setItem('prevNewOrdersCount', newOrdersCount.toString());
+            }
+            
+            // Check for new orders with auto-refresh
+            setInterval(checkForNewOrders, 5000);
+
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Test - Canteen System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.checking {
+            background: #ffc107;
+            color: #000;
+        }
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+        button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #26d0ce;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .instructions {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Connection Test</h1>
+        
+        <div class="instructions">
+            <strong>⚠️ Before Testing:</strong>
+            <ol>
+                <li>Make sure you've run <strong>START_EVERYTHING.bat</strong></li>
+                <li>Wait for both server windows to open</li>
+                <li>Then click the test buttons below</li>
+            </ol>
+        </div>
+
+        <div class="test-box">
+            <h3>Frontend Server Test</h3>
+            <p>Testing: http://localhost:8080</p>
+            <span id="frontend-status" class="status checking">Not Tested</span>
+            <button onclick="testFrontend()">Test Frontend</button>
+            <div id="frontend-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Backend Server Test</h3>
+            <p>Testing: http://localhost:3000/api/health</p>
+            <span id="backend-status" class="status checking">Not Tested</span>
+            <button onclick="testBackend()">Test Backend</button>
+            <div id="backend-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Image Serving Test</h3>
+            <p>Testing: http://localhost:3000/images/chai.jpg</p>
+            <span id="image-status" class="status checking">Not Tested</span>
+            <button onclick="testImage()">Test Images</button>
+            <div id="image-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-box" style="text-align: center; margin-top: 30px;">
+            <h3>🚀 Quick Actions</h3>
+            <button onclick="window.open('http://localhost:8080/c3.html', '_blank')" style="background: #ff6b6b;">
+                Open Customer App
+            </button>
+            <button onclick="window.open('http://localhost:8080/admin_portal.html', '_blank')" style="background: #4ecdc4;">
+                Open Admin Portal
+            </button>
+            <button onclick="testAll()" style="background: #28a745;">
+                Test All Connections
+            </button>
+        </div>
+    </div>
+
+    <script>
+        async function testFrontend() {
+            const statusEl = document.getElementById('frontend-status');
+            const resultEl = document.getElementById('frontend-result');
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status checking';
+            resultEl.style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:8080/c3.html', {
+                    method: 'HEAD'
+                });
+                
+                if (response.ok) {
+                    statusEl.textContent = '✅ Working';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = 'Frontend server is running correctly!';
+                    resultEl.style.display = 'block';
+                } else {
+                    throw new Error('Server returned error');
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Failed';
+                statusEl.className = 'status error';
+                resultEl.textContent = 'Error: Frontend server not responding. Make sure START_EVERYTHING.bat is running.';
+                resultEl.style.display = 'block';
+            }
+        }
+
+        async function testBackend() {
+            const statusEl = document.getElementById('backend-status');
+            const resultEl = document.getElementById('backend-result');
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status checking';
+            resultEl.style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/health');
+                const data = await response.json();
+                
+                if (data.status === 'OK') {
+                    statusEl.textContent = '✅ Working';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = 'Backend API Response: ' + JSON.stringify(data, null, 2);
+                    resultEl.style.display = 'block';
+                } else {
+                    throw new Error('Unexpected response');
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Failed';
+                statusEl.className = 'status error';
+                resultEl.textContent = 'Error: Backend server not responding. Make sure START_EVERYTHING.bat is running.';
+                resultEl.style.display = 'block';
+            }
+        }
+
+        async function testImage() {
+            const statusEl = document.getElementById('image-status');
+            const resultEl = document.getElementById('image-result');
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status checking';
+            resultEl.style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:3000/images/chai.jpg', {
+                    method: 'HEAD'
+                });
+                
+                if (response.ok) {
+                    statusEl.textContent = '✅ Working';
+                    statusEl.className = 'status success';
+                    resultEl.innerHTML = 'Image serving is working!<br><img src="http://localhost:3000/images/chai.jpg" style="max-width: 200px; margin-top: 10px; border-radius: 8px;">';
+                    resultEl.style.display = 'block';
+                } else {
+                    throw new Error('Image not found');
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Failed';
+                statusEl.className = 'status error';
+                resultEl.textContent = 'Error: Cannot load images. Make sure backend server is running.';
+                resultEl.style.display = 'block';
+            }
+        }
+
+        async function testAll() {
+            await testFrontend();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testBackend();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testImage();
+        }
+
+        // Auto-test on page load after 1 second
+        setTimeout(() => {
+            console.log('Auto-testing connections...');
+            testAll();
+        }, 1000);
+    </script>
+</body>
+</html>

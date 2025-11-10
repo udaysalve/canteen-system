@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 How to Add Node.js to PATH</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        .method {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4ecdc4;
+        }
+        .method h2 {
+            color: #4ecdc4;
+            margin-bottom: 20px;
+        }
+        .step {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .step-number {
+            background: #ff6b6b;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .command {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 3px solid #28a745;
+            font-size: 1.1em;
+        }
+        .warning {
+            background: rgba(255, 193, 7, 0.3);
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .success {
+            background: rgba(40, 167, 69, 0.3);
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .path-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+        button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #26d0ce;
+        }
+        ul {
+            line-height: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 How to Add Node.js to PATH</h1>
+        
+        <div class="warning">
+            <h2>⚠️ Why You Need This</h2>
+            <p style="font-size: 1.1em;">
+                After installing Node.js, Windows needs to know WHERE to find it.
+                The PATH variable tells Windows where to look for programs.
+            </p>
+            <p style="margin-top: 15px; font-size: 1.1em;">
+                <strong>Without this:</strong> Commands like <code>node</code> and <code>npm</code> won't work.
+            </p>
+        </div>
+
+        <div class="method">
+            <h2>🚀 METHOD 1: Automatic (EASIEST!)</h2>
+            <p style="font-size: 1.1em; margin-bottom: 20px;">
+                I've created a script that does this automatically for you!
+            </p>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Run the script:</strong>
+                <div class="command">Double-click: ADD_NODEJS_TO_PATH.bat</div>
+                <p style="margin-top: 10px;">This will automatically find Node.js and add it to your PATH.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Close all Command Prompt windows</strong>
+                <p style="margin-top: 10px;">Any open terminals won't see the new PATH yet.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Test it:</strong>
+                <p style="margin-top: 10px;">Open a NEW Command Prompt and type:</p>
+                <div class="command">node --version</div>
+                <p style="margin-top: 10px;">You should see: v24.11.0</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Run your system:</strong>
+                <div class="command">Double-click: FIX_AND_START.bat</div>
+                <p style="margin-top: 10px;">Your servers will now start successfully!</p>
+            </div>
+        </div>
+
+        <div class="method">
+            <h2>🔧 METHOD 2: Manual (If Automatic Fails)</h2>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Find Node.js installation path</strong>
+                <p style="margin-top: 10px;">Node.js is usually installed at one of these locations:</p>
+                <div class="path-box">C:\Program Files\nodejs</div>
+                <div class="path-box">C:\Program Files (x86)\nodejs</div>
+                <div class="path-box">%LOCALAPPDATA%\Programs\nodejs</div>
+                <p style="margin-top: 10px;">Check which one exists on your computer.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Open System Properties</strong>
+                <p style="margin-top: 10px;">Press <strong>Windows Key + R</strong>, then type:</p>
+                <div class="command">sysdm.cpl</div>
+                <p style="margin-top: 10px;">Press Enter</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Go to Environment Variables</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Click the <strong>"Advanced"</strong> tab</li>
+                    <li>Click <strong>"Environment Variables"</strong> button at the bottom</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Edit the Path variable</strong>
+                <ul style="margin-top: 10px;">
+                    <li>In the <strong>"User variables"</strong> section (top half)</li>
+                    <li>Find and select <strong>"Path"</strong></li>
+                    <li>Click <strong>"Edit"</strong></li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>Add Node.js path</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Click <strong>"New"</strong></li>
+                    <li>Type: <code>C:\Program Files\nodejs</code></li>
+                    <li>(Or whatever path you found in Step 1)</li>
+                    <li>Click <strong>"OK"</strong></li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">6</span>
+                <strong>Save and close</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Click <strong>"OK"</strong> on Environment Variables window</li>
+                    <li>Click <strong>"OK"</strong> on System Properties window</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">7</span>
+                <strong>Restart Command Prompt</strong>
+                <p style="margin-top: 10px;">Close all Command Prompt windows and open a new one.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">8</span>
+                <strong>Test it:</strong>
+                <div class="command">node --version</div>
+                <p style="margin-top: 10px;">Should show: v24.11.0</p>
+            </div>
+        </div>
+
+        <div class="method">
+            <h2>⚡ METHOD 3: Restart Computer (SIMPLEST!)</h2>
+            <p style="font-size: 1.1em; margin-bottom: 20px;">
+                The Node.js installer already added it to PATH, but Windows needs a restart to recognize it.
+            </p>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Restart your computer</strong>
+                <p style="margin-top: 10px;">This is the easiest and most reliable method!</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>After restart, run:</strong>
+                <div class="command">FIX_AND_START.bat</div>
+                <p style="margin-top: 10px;">Everything will work automatically!</p>
+            </div>
+        </div>
+
+        <div class="success">
+            <h2>✅ How to Verify It's Working</h2>
+            <p style="font-size: 1.1em; margin-bottom: 15px;">
+                After adding Node.js to PATH, test these commands in a NEW Command Prompt:
+            </p>
+            
+            <div style="margin: 15px 0;">
+                <strong>Test Node.js:</strong>
+                <div class="command">node --version</div>
+                <p>Expected output: <code>v24.11.0</code></p>
+            </div>
+
+            <div style="margin: 15px 0;">
+                <strong>Test NPM:</strong>
+                <div class="command">npm --version</div>
+                <p>Expected output: <code>11.6.1</code> (or similar)</p>
+            </div>
+
+            <div style="margin: 15px 0;">
+                <strong>Test where Node.js is:</strong>
+                <div class="command">where node</div>
+                <p>Should show the path to node.exe</p>
+            </div>
+        </div>
+
+        <div class="warning">
+            <h2>🔍 Common Issues</h2>
+            
+            <div style="margin: 15px 0;">
+                <strong>Issue:</strong> "node is not recognized"
+                <br><strong>Solution:</strong> 
+                <ul>
+                    <li>Make sure you opened a NEW Command Prompt after adding to PATH</li>
+                    <li>Or restart your computer</li>
+                </ul>
+            </div>
+
+            <div style="margin: 15px 0;">
+                <strong>Issue:</strong> Can't find Node.js installation folder
+                <br><strong>Solution:</strong> 
+                <ul>
+                    <li>Search for "node.exe" in Windows Explorer</li>
+                    <li>Use the folder containing node.exe</li>
+                </ul>
+            </div>
+
+            <div style="margin: 15px 0;">
+                <strong>Issue:</strong> Permission denied when editing PATH
+                <br><strong>Solution:</strong> 
+                <ul>
+                    <li>Right-click ADD_NODEJS_TO_PATH.bat</li>
+                    <li>Select "Run as Administrator"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="success" style="text-align: center; padding: 30px;">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">🎯 Quick Recommendation</h2>
+            <p style="font-size: 1.3em; line-height: 1.8;">
+                <strong>Easiest Method:</strong><br>
+                Just restart your computer!<br><br>
+                <strong>If you don't want to restart:</strong><br>
+                Run ADD_NODEJS_TO_PATH.bat<br><br>
+                <strong>Then:</strong><br>
+                Run FIX_AND_START.bat
+            </p>
+        </div>
+    </div>
+</body>
+</html>

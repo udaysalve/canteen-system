@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Order Numbers Status</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        .info-box {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+        .table-container {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            background: #0f3460;
+            font-weight: bold;
+        }
+        .good { color: #4CAF50; }
+        .bad { color: #f44336; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .refresh-btn {
+            background: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Order Numbers Status Check</h1>
+        
+        <div class="info-box">
+            <h2>Database Status</h2>
+            <p id="dbStatus">Loading...</p>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="checkStatus()">🔄 Refresh Status</button>
+            <button class="refresh-btn" onclick="window.location.href='http://localhost:8080/admin_transactions.html'">
+                📋 Open Transaction Records
+            </button>
+        </div>
+
+        <div class="table-container">
+            <h2>Current Orders</h2>
+            <table id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Order Number</th>
+                        <th>Status</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersBody">
+                    <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function checkStatus() {
+            const dbStatus = document.getElementById('dbStatus');
+            const ordersBody = document.getElementById('ordersBody');
+
+            try {
+                const centralOrders = JSON.parse(localStorage.getItem('canteen_orders')) || [];
+                
+                // Check if orders are sequential
+                let isSequential = true;
+                let issues = [];
+
+                if (centralOrders.length === 0) {
+                    dbStatus.innerHTML = '<span class="bad">❌ No orders found in database</span>';
+                    ordersBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No orders</td></tr>';
+                    return;
+                }
+
+                // Sort orders by ID
+                const sortedOrders = [...centralOrders].sort((a, b) => (a.id || 0) - (b.id || 0));
+
+                // Check for sequential numbering
+                sortedOrders.forEach((order, index) => {
+                    const expectedNumber = `ORD${(index + 1).toString().padStart(6, '0')}`;
+                    if (order.order_number !== expectedNumber) {
+                        isSequential = false;
+                        issues.push(`Order ID ${order.id}: Expected ${expectedNumber}, Got ${order.order_number}`);
+                    }
+                });
+
+                // Display status
+                if (isSequential) {
+                    dbStatus.innerHTML = `
+                        <span class="good">✅ Orders are properly sequenced!</span><br>
+                        <strong>Total Orders:</strong> ${centralOrders.length}<br>
+                        <strong>Range:</strong> ORD000001 to ORD${centralOrders.length.toString().padStart(6, '0')}<br>
+                        <strong>Database:</strong> canteen_orders
+                    `;
+                } else {
+                    dbStatus.innerHTML = `
+                        <span class="bad">❌ Orders are NOT sequential</span><br>
+                        <strong>Total Orders:</strong> ${centralOrders.length}<br>
+                        <strong>Issues Found:</strong> ${issues.length}<br>
+                        <div style="margin-top: 10px;">
+                            <button onclick="window.location.href='http://localhost:8080/DIRECT_FIX.html'">
+                                🔧 Fix Now
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // Display orders in table
+                let tableHTML = '';
+                sortedOrders.slice(0, 20).forEach(order => {
+                    const expectedNumber = `ORD${order.id.toString().padStart(6, '0')}`;
+                    const isCorrect = order.order_number === expectedNumber;
+                    const statusClass = isCorrect ? 'good' : 'bad';
+                    const statusIcon = isCorrect ? '✅' : '❌';
+
+                    tableHTML += `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td class="${statusClass}">${order.order_number}</td>
+                            <td>${statusIcon} ${isCorrect ? 'OK' : 'Wrong'}</td>
+                            <td>${order.customer || order.userName || 'Guest'}</td>
+                            <td>₹${(order.totalAmount || order.total || 0).toFixed(2)}</td>
+                            <td><small>${new Date(order.timestamp).toLocaleString()}</small></td>
+                        </tr>
+                    `;
+                });
+
+                if (sortedOrders.length > 20) {
+                    tableHTML += `
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #999;">
+                                ... and ${sortedOrders.length - 20} more orders
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                ordersBody.innerHTML = tableHTML || '<tr><td colspan="6" style="text-align: center;">No orders to display</td></tr>';
+
+            } catch (error) {
+                dbStatus.innerHTML = `<span class="bad">❌ Error: ${error.message}</span>`;
+                console.error('Check error:', error);
+            }
+        }
+
+        // Auto-load on page load
+        window.addEventListener('DOMContentLoaded', checkStatus);
+
+        // Auto-refresh every 5 seconds
+        setInterval(checkStatus, 5000);
+    </script>
+</body>
+</html>
